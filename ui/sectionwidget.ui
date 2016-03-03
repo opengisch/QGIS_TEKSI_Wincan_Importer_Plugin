@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SectionWidget</class>
+ <widget class="QWidget" name="SectionWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>649</width>
+    <height>294</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="endNodeEdit"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Utilisation</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Chambre départ</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Longueur</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Chambre arrivée</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="startNodeEdit"/>
+   </item>
+   <item row="6" column="0" colspan="4">
+    <widget class="InspectionWidget" name="inspectionWidget" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QLineEdit" name="sectionlengthEdit"/>
+   </item>
+   <item row="2" column="3">
+    <widget class="QLineEdit" name="sectionUseEdit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Matériau</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Diameter</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Width</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Profile</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QLineEdit" name="pipeDiaEdit"/>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="pipeMaterialEdit"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="profileEdit"/>
+   </item>
+   <item row="4" column="3">
+    <widget class="QLineEdit" name="pipeWidthEdit"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="sectionCombo"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Section</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="FeatureSelectorWidget" name="sectionSelector" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>InspectionWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">..gui.inspectionwidget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FeatureSelectorWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">..gui.featureselectorwidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,11 @@
+.idea
+*.qgs*
+tmp/
+resources_rc.py
+ui_*.py
+**.pyc
+.project
+.pydevproject
+.settings/
+*.zip
+*.qm
