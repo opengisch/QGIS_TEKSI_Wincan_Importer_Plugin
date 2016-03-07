@@ -28,6 +28,7 @@ from PyQt4.QtCore import pyqtSlot
 from PyQt4.QtGui import QDialog
 
 from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.section import findSection
 from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
@@ -38,6 +39,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.settings = MySettings()
         self.data = data
         self.currentProjectId = None
+
+        self.cannotImportLabel.hide()
 
         self.sectionWidget.finishInit(iface, self.data)
 
@@ -55,5 +58,29 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.nameEdit.setText(self.data[self.currentProjectId]['Name'])
         self.dateTimeEdit.setDateTime(self.data[self.currentProjectId]['Date'])
         self.channelNameEdit.setText(self.data[self.currentProjectId]['Channel'])
-
         self.sectionWidget.setProjectId(self.currentProjectId)
+
+    @pyqtSlot()
+    def on_searchButton_clicked(self):
+        if self.currentProjectId is None:
+            return
+
+        channel = self.data[self.currentProjectId]['Channel']
+        for p_id in self.data.keys():
+            for s_id, section in self.data[p_id]['Sections'].items():
+                feature = findSection(channel, section['StartNode'], section['EndNode'])
+                if feature.isValid():
+                    self.data[p_id]['Sections'][s_id]['QgepChannelId'] = feature.attribute('obj_id')
+
+    @pyqtSlot()
+    def on_importButton_clicked(self):
+        # check that reaches are properly assigned
+        for p_id in self.data.keys():
+            for s_id, section in self.data[p_id]['Sections'].items():
+                for inspection in self.data[p_id]['Sections'][s_id]['Inspections'].values():
+                    if inspection['Import']:
+                        if section['QgepChannelId'] is None:
+                            self.cannotImportLabel.show()
+                            return
+                        break
+

@@ -57,7 +57,18 @@
    <item row="0" column="7">
     <widget class="QLineEdit" name="channelNameEdit"/>
    </item>
-   <item row="1" column="0" colspan="8">
+   <item row="0" column="8">
+    <widget class="QToolButton" name="searchButton">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="9">
     <widget class="SectionWidget" name="sectionWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
@@ -75,10 +86,38 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="7">
+   <item row="2" column="7" colspan="2">
     <widget class="QPushButton" name="importButton">
      <property name="text">
       <string>Importer</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="8">
+    <widget class="QLabel" name="cannotImportLabel">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: red; color:white;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="lineWidth">
+      <number>3</number>
+     </property>
+     <property name="text">
+      <string>Impossible d'importer car des collecteurs n'ont pas été assignés</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="margin">
+      <number>5</number>
      </property>
     </widget>
    </item>
@@ -92,6 +131,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

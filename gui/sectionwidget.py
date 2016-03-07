@@ -30,6 +30,7 @@ from PyQt4.QtGui import QWidget
 from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
 from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.section import findSection, sectionAtId
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
@@ -79,15 +80,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         startNode = self.data[self.projectId]['Sections'][self.sectionId]['StartNode']
         endNode = self.data[self.projectId]['Sections'][self.sectionId]['EndNode']
 
-        layerid = self.settings.value("channelLayer")
-        layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
-        if layer is None:
-            return
-
-        feature = QgsFeature()
-        request = QgsFeatureRequest().setFilterExpression('"rp_from_identifier" = \'{}-{}\' and "rp_to_identifier" = \'{}-{}\''.format(channel, startNode, channel, endNode))
-        for f in layer.getFeatures( request ):
-            feature = QgsFeature(f)
+        feature = findSection(channel, startNode, endNode)
         if feature.isValid():
             self.sectionSelector.setFeature(feature, CanvasExtent.Pan )
             self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId'] = feature.attribute('obj_id')
@@ -114,14 +107,8 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.sectionId = self.sectionCombo.itemData(idx)
             section = self.data[self.projectId]['Sections'][self.sectionId]
 
-            feature = QgsFeature()
-            if section['QgepChannelId'] is not None:
-                layerid = self.settings.value("channelLayer")
-                layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
-                if layer is not None:
-                    request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(section['QgepChannelId']))
-                    for f in layer.getFeatures( request ):
-                        feature = QgsFeature(f)
+            feature = sectionAtId(section['QgepChannelId'])
+
             if feature.isValid():
                 self.sectionSelector.setFeature(feature)
 
