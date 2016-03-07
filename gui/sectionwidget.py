@@ -25,9 +25,9 @@
 
 
 from PyQt4.QtCore import pyqtSlot
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QIcon
 
-from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
+from qgis.core import QgsMapLayerRegistry, QgsApplication
 
 from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
@@ -45,6 +45,8 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.sectionId = None
 
         self.sectionSelector.featureIdentified.connect(self.setQgepChannelId)
+
+        self.inspectionWidget.importChanged.connect(self.updateStatus)
 
     def finishInit(self, iface, data):
         layerid = self.settings.value("channelLayer")
@@ -64,6 +66,22 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         for s_id, section in self.data[prjId]['Sections'].items():
             title = '{0}: de {1} a {2}'.format(section['Counter'], section['StartNode'], section['EndNode'])
             self.sectionCombo.addItem(title, s_id)
+
+        self.updateStatus()
+
+    def updateStatus(self):
+        icon = QgsApplication.getThemeIcon( "/mIconWarn.png" )
+        for s_id, section in self.data[self.projectId]['Sections'].items():
+            ok = section['QgepChannelId'] is not None
+            if not ok:
+                ok = True
+                for inspection in section['Inspections'].values():
+                    if inspection['Import']:
+                        ok = False
+                        break
+            idx = self.sectionCombo.findData(s_id)
+            if idx >= 0:
+                self.sectionCombo.setItemIcon(idx, icon if not ok else QIcon())
 
     def setQgepChannelId(self, feature):
         if self.projectId is None or self.sectionId is None:

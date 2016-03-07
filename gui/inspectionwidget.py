@@ -27,7 +27,7 @@
 #---------------------------------------------------------------------
 
 
-from PyQt4.QtCore import pyqtSlot
+from PyQt4.QtCore import pyqtSlot, pyqtSignal
 from PyQt4.QtGui import QWidget
 
 from wincan2qgep.core.mysettings import MySettings
@@ -36,6 +36,8 @@ from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
 
 
 class InspectionWidget(QWidget, Ui_InspectionWidget):
+    importChanged = pyqtSignal()
+
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         self.setupUi(self)
@@ -84,10 +86,11 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
             self.observationTable.setInspection(self.projectId, self.sectionId, self.inspectionId)
 
     @pyqtSlot(bool)
-    def on_importCheckBox_clicked(self, importO):
+    def on_importCheckBox_clicked(self, toImport):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
-        self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Import'] = importO
+        self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Import'] = toImport
+        self.importChanged.emit()
 
 
 

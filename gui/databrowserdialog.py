@@ -65,12 +65,18 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         if self.currentProjectId is None:
             return
 
+        self.sectionWidget.setEnabled(False)
+
         channel = self.data[self.currentProjectId]['Channel']
         for p_id in self.data.keys():
             for s_id, section in self.data[p_id]['Sections'].items():
                 feature = findSection(channel, section['StartNode'], section['EndNode'])
                 if feature.isValid():
                     self.data[p_id]['Sections'][s_id]['QgepChannelId'] = feature.attribute('obj_id')
+
+        self.sectionWidget.setEnabled(True)
+        self.sectionWidget.setProjectId(self.currentProjectId)
+
 
     @pyqtSlot()
     def on_importButton_clicked(self):
