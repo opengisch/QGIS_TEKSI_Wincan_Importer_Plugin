@@ -24,6 +24,7 @@ class ImportData():
             for row in reader:
                 self.data[row['P_ID']] = dict(Name=row['P_Name'],
                                               Date=QDateTime.fromString(row['P_Date'], 'MM/dd/yy hh:mm:ss').addYears(100),
+                                              Channel='',
                                               Sections={})
 
         with open('/home/drouzaud/Documents/qgis/wincan_import/section.csv') as csvfile:

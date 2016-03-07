@@ -35,6 +35,7 @@ class MySettings(SettingManager):
 
         # project settings
         self.addSetting("channelLayer", "string", "project", 'vw_qgep_reach')
+        self.addSetting("coverLayer", "string", "project", 'vw_qgep_cover')
 
 
 

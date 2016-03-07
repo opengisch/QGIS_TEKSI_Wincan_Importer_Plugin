@@ -61,7 +61,7 @@ class FeatureSelectorWidget(QWidget):
     def setLayer(self, layer):
         self.layer = layer
 
-    def setFeature(self, feature):
+    def setFeature(self, feature, canvasExtent = CanvasExtent.Fixed):
         self.lineEdit.clear()
         self.feature = feature
 
@@ -72,7 +72,7 @@ class FeatureSelectorWidget(QWidget):
         if featureTitle == '':
             featureTitle = feature.id()
         self.lineEdit.setText(str(featureTitle))
-        self.highlightFeature()
+        self.highlightFeature(canvasExtent)
 
 
     def clear(self):
@@ -129,6 +129,7 @@ class FeatureSelectorWidget(QWidget):
         elif canvasExtent == CanvasExtent.Pan:
             centroid = geom.centroid()
             center = centroid.asPoint()
+
             center = self.canvas.mapSettings().layerToMapCoordinates( self.layer, center )
             self.canvas.zoomByFactor( 1.0, center )  # refresh is done in this method
 
