@@ -1,4 +1,27 @@
-#!/bin/python3
+#-----------------------------------------------------------
+#
+# QGIS wincan 2 QGEP Plugin
+# Copyright (C) 2016 Denis Rouzaud
+#
+#-----------------------------------------------------------
+#
+# licensed under the terms of GNU GPL 2
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+#---------------------------------------------------------------------
 
 
 
@@ -82,13 +105,13 @@ class ImportData():
                             if i_id == row['SO_Inspecs_ID']:
                                 self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'][row['SO_ID']] = dict(
                                     Counter=row['SO_Counter'],
-                                    Position=row['SO_Position'],
+                                    Position=float(row['SO_Position']),
                                     ToGoMeter=row['SO_ToGoMeter'],
                                     Text=row['SO_Text'],
                                     MPEGPosition=row['SO_MPEGPosition'],
                                     Photonumber1=row['SO_Photonumber1'],
                                     PhotoFilename1=row['SO_PhotoFilename1'],
-                                    Rate=row['SO_Rate'],
+                                    Rate=int(round(float(row['SO_Rate']))),
                                     OpCode=row['SO_OpCode'],
                                     ClipFileName1=row['SO_ClipFileName1'],
                                     Quant1=row['SO_Quant1'],

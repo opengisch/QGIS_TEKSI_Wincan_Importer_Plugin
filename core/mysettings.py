@@ -1,7 +1,7 @@
 #-----------------------------------------------------------
 #
-# QGIS Quick Finder Plugin
-# Copyright (C) 2014 Denis Rouzaud, Arnaud Morvan
+# QGIS wincan 2 QGEP Plugin
+# Copyright (C) 2016 Denis Rouzaud
 #
 #-----------------------------------------------------------
 #

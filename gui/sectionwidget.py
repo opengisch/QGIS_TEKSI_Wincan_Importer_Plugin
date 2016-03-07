@@ -1,7 +1,7 @@
 #-----------------------------------------------------------
 #
-# QGIS Quick Finder Plugin
-# Copyright (C) 2013 Denis Rouzaud
+# QGIS wincan 2 QGEP Plugin
+# Copyright (C) 2016 Denis Rouzaud
 #
 #-----------------------------------------------------------
 #
@@ -23,8 +23,6 @@
 #
 #---------------------------------------------------------------------
 
-
-from collections import OrderedDict
 
 from PyQt4.QtCore import pyqtSlot
 from PyQt4.QtGui import QWidget

@@ -3,8 +3,8 @@
 
 #-----------------------------------------------------------
 #
-# QGIS Quick Finder Plugin
-# Copyright (C) 2013 Denis Rouzaud
+# QGIS wincan 2 QGEP Plugin
+# Copyright (C) 2016 Denis Rouzaud
 #
 #-----------------------------------------------------------
 #
@@ -27,15 +27,14 @@
 #---------------------------------------------------------------------
 
 
-from collections import OrderedDict
 
-from PyQt4.QtCore import pyqtSlot
-from PyQt4.QtGui import QWidget, QTableWidget, QTableWidgetItem
+from PyQt4.QtCore import pyqtSlot, Qt
+from PyQt4.QtGui import QWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
 
 from wincan2qgep.core.mysettings import MySettings
 
 ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', 'gravité']
-ColumnData = ['ToGoMeter', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate']
+ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate']
 
 
 class ObservationTable(QTableWidget):
@@ -46,6 +45,17 @@ class ObservationTable(QTableWidget):
         self.sectionId = None
         self.inspectionId = None
 
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setColumnCount(0)
+        self.setRowCount(0)
+        self.horizontalHeader().setVisible(True)
+        self.horizontalHeader().setMinimumSectionSize(15)
+        self.verticalHeader().setVisible(True)
+        self.verticalHeader().setDefaultSectionSize(25)
+
+    def finishInit(self, data):
+        self.data = data
         for c, col in enumerate(ColumnHeaders):
             self.insertColumn(c)
             item = QTableWidgetItem(col)
@@ -53,10 +63,7 @@ class ObservationTable(QTableWidget):
             font.setPointSize(font.pointSize() - 2)
             item.setFont(font)
             self.setHorizontalHeaderItem(c, item)
-        self.horizontalHeader().setMinimumSectionSize(15)
-
-    def finishInit(self, data):
-        self.data = data
+        self.adjustSize()
 
     def setInspection(self, projectId, sectionId, inspectionId):
         self.clearContents()
@@ -68,7 +75,6 @@ class ObservationTable(QTableWidget):
         for r in range(self.rowCount() - 1, -1, -1):
             self.removeRow(r)
 
-
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
 
@@ -77,8 +83,9 @@ class ObservationTable(QTableWidget):
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-                item = QTableWidgetItem(row[col])
-                #item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+
+                item = QTableWidgetItem('{}'.format(row[col]))
+                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 font = item.font()
                 font.setPointSize(font.pointSize() - 2)
                 item.setFont(font)

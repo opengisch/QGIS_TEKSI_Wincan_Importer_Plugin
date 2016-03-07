@@ -3,8 +3,8 @@
 
 #-----------------------------------------------------------
 #
-# QGIS Quick Finder Plugin
-# Copyright (C) 2013 Denis Rouzaud
+# QGIS wincan 2 QGEP Plugin
+# Copyright (C) 2016 Denis Rouzaud
 #
 #-----------------------------------------------------------
 #
@@ -26,8 +26,6 @@
 #
 #---------------------------------------------------------------------
 
-
-from collections import OrderedDict
 
 from PyQt4.QtCore import pyqtSlot
 from PyQt4.QtGui import QWidget
@@ -57,7 +55,7 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
         self.sectionId = sectionId
         for i_id, inspection in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'].items():
             self.inspectionCombo.addItem(inspection['InspDate'].toString('dd.MM.yyyy'), i_id)
-            self.observationTable.clear()
+            #self.observationTable.clear()
 
     @pyqtSlot(int)
     def on_inspectionCombo_currentIndexChanged(self, idx):
