@@ -33,7 +33,7 @@ from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
 from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
-from wincan2qgep.ui.sectionwidget import Ui_SectionWidget
+from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
 
 class SectionWidget(QWidget, Ui_SectionWidget):
@@ -47,13 +47,12 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
         self.sectionSelector.featureIdentified.connect(self.setQgepChannelId)
 
-
-
     def finishInit(self, iface, data):
         layerid = self.settings.value("channelLayer")
         self.sectionSelector.setLayer(QgsMapLayerRegistry.instance().mapLayer(layerid))
         self.sectionSelector.setCanvas(iface.mapCanvas())
         self.data = data
+        self.inspectionWidget.finishInit(self.data)
 
     def setProjectId(self, prjId = None):
         self.sectionCombo.clear()
@@ -109,6 +108,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.startNodeEdit.clear()
 
             self.sectionId = None
+            #self.inspectionWidget.clear()
 
             if idx < 0 or self.projectId is None:
                 return
@@ -136,7 +136,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.sectionUseEdit.setText(section['SectionUse'])
             self.startNodeEdit.setText(section['StartNode'])
 
-            self.inspectionWidget.setInspections(section['Inspections'])
+            self.inspectionWidget.setSection(self.projectId, self.sectionId)
 
 
 

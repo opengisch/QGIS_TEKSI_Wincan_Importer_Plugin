@@ -33,7 +33,7 @@ from PyQt4.QtCore import pyqtSlot
 from PyQt4.QtGui import QWidget
 
 from wincan2qgep.core.mysettings import MySettings
-from wincan2qgep.ui.inspectionwidget import Ui_InspectionWidget
+from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
 
 
 
@@ -42,40 +42,44 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
         QWidget.__init__(self, parent)
         self.setupUi(self)
         self.settings = MySettings()
-        self.inspections = {}
-        self.observations = {}
+        self.data = None
+        self.projectId = None
+        self.sectionId = None
+        self.inspectionId = None
 
-    def setInspections(self, inspections):
+    def finishInit(self, data):
+        self.data = data
+        self.observationTable.finishInit(data)
+
+    def setSection(self, projectId, sectionId):
         self.inspectionCombo.clear()
-
-        self.inspections = inspections
-
-        for i_id, inspection in self.inspections.items():
+        self.projectId = projectId
+        self.sectionId = sectionId
+        for i_id, inspection in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'].items():
             self.inspectionCombo.addItem(inspection['InspDate'].toString('dd.MM.yyyy'), i_id)
-
+            self.observationTable.clear()
 
     @pyqtSlot(int)
     def on_inspectionCombo_currentIndexChanged(self, idx):
-
             self.inspMethodEdit.clear()
             self.inspectionDirEdit.clear()
             self.inspectedLengthEdit.clear()
             self.operatorEdit.clear()
-            self.observationTable.clear()
+
+            #self.observationTable.clear()
 
             if idx < 0:
                 return
 
-            inspection = self.inspections[self.inspectionCombo.itemData(idx)]
+            self.inspectionId = self.inspectionCombo.itemData(idx)
+            inspection = self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]
 
             self.inspMethodEdit.setText(inspection['InspMethod'])
             self.inspectionDirEdit.setText(inspection['InspectionDir'])
             self.inspectedLengthEdit.setText('{}'.format(inspection['InspectedLength']))
             self.operatorEdit.setText(inspection['Operator'])
 
-            self.observations = OrderedDict( sorted(inspection['Observations'].items(), key=lambda t: t[1]['Counter']) )
-
-            self.observationTable.setObservations(self.observations)
+            self.observationTable.setInspection(self.projectId, self.sectionId, self.inspectionId)
 
 
 

@@ -28,7 +28,7 @@ from PyQt4.QtCore import pyqtSlot
 from PyQt4.QtGui import QDialog
 
 from wincan2qgep.core.mysettings import MySettings
-from wincan2qgep.ui.databrowserdialog import Ui_DataBrowserDialog
+from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):

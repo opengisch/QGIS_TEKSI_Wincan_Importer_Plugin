@@ -101,12 +101,15 @@ class ImportData():
                                 found = True
                                 break
                     if found: break
-                if found: break
-            if not found:
-                    raise ValueError('observation has no insepction')
+                if not found:
+                        raise ValueError('observation has no insepction')
 
-        # order elements
-        for p_id, project in self.data.items():
+        # order elements by counter
+        for p_id in self.data.keys():
             self.data[p_id]['Sections'] = OrderedDict(sorted(self.data[p_id]['Sections'].items(), key=lambda t: t[1]['Counter']))
+
+            for s_id in self.data[p_id]['Sections'].keys():
+                for i_id in self.data[p_id]['Sections'][s_id]['Inspections'].keys():
+                    self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = OrderedDict( sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Counter']) )
 
 

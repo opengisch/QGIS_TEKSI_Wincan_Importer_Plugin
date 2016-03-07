@@ -41,8 +41,10 @@ ColumnData = ['ToGoMeter', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', '
 class ObservationTable(QTableWidget):
     def __init__(self, parent):
         QTableWidget.__init__(self, parent)
-
-        self.observations  = {}
+        self.data = None
+        self.projectId = None
+        self.sectionId = None
+        self.inspectionId = None
 
         for c, col in enumerate(ColumnHeaders):
             self.insertColumn(c)
@@ -53,14 +55,24 @@ class ObservationTable(QTableWidget):
             self.setHorizontalHeaderItem(c, item)
         self.horizontalHeader().setMinimumSectionSize(15)
 
-    def setObservations(self, observations):
-        self.observations = observations
+    def finishInit(self, data):
+        self.data = data
 
+    def setInspection(self, projectId, sectionId, inspectionId):
         self.clearContents()
+
+        self.projectId = projectId
+        self.sectionId = sectionId
+        self.inspectionId = inspectionId
+
         for r in range(self.rowCount() - 1, -1, -1):
             self.removeRow(r)
 
-        for row in self.observations.values():
+
+        if self.projectId is None or self.sectionId is None or self.inspectionId is None:
+            return
+
+        for row in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].values():
             r = self.rowCount()
             self.insertRow(r)
 
