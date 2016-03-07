@@ -84,7 +84,8 @@ class ImportData():
                                 InclinationFileName=row['SI_InclinationFileName'],
                                 Cleaned=row['SI_Cleaned'],
                                 InspDate=QDateTime.fromString(row['SI_InspDate'], 'MM/dd/yy hh:mm:ss').addYears(100),
-                                Observations={})
+                                Observations={},
+                                Import=True)
                             found = True
                             break
                     if found: break
@@ -120,7 +121,8 @@ class ImportData():
                                     Quant2Unit=row['SO_Quant2Unit'],
                                     ObservCode=row['SO_ObservCode'],
                                     BendAngleDeg=row['SO_BendAngleDeg'],
-                                    BendClockH=row['SO_BendClockH'])
+                                    BendClockH=row['SO_BendClockH'],
+                                    Import=True)
                                 found = True
                                 break
                     if found: break
@@ -133,6 +135,6 @@ class ImportData():
 
             for s_id in self.data[p_id]['Sections'].keys():
                 for i_id in self.data[p_id]['Sections'][s_id]['Inspections'].keys():
-                    self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = OrderedDict( sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Counter']) )
+                    self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = OrderedDict( sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Position']) )
 
 

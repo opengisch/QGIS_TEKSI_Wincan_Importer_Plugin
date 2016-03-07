@@ -67,6 +67,16 @@
    <item row="3" column="0" colspan="4">
     <widget class="ObservationTable" name="observationTable"/>
    </item>
+   <item row="0" column="3">
+    <widget class="QCheckBox" name="importCheckBox">
+     <property name="text">
+      <string>Importer</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>

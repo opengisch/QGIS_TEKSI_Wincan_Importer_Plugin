@@ -66,6 +66,9 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
 
             #self.observationTable.clear()
 
+            if self.projectId is None or self.sectionId is None:
+                return
+
             if idx < 0:
                 return
 
@@ -76,8 +79,15 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
             self.inspectionDirEdit.setText(inspection['InspectionDir'])
             self.inspectedLengthEdit.setText('{}'.format(inspection['InspectedLength']))
             self.operatorEdit.setText(inspection['Operator'])
+            self.importCheckBox.setChecked(inspection['Import'])
 
             self.observationTable.setInspection(self.projectId, self.sectionId, self.inspectionId)
+
+    @pyqtSlot(bool)
+    def on_importCheckBox_clicked(self, importO):
+        if self.projectId is None or self.sectionId is None or self.inspectionId is None:
+            return
+        self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Import'] = importO
 
 
 
