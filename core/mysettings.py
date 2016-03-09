@@ -37,5 +37,7 @@ class MySettings(SettingManager):
         self.addSetting("channelLayer", "string", "project", 'vw_qgep_reach')
         self.addSetting("coverLayer", "string", "project", 'vw_qgep_cover')
 
+        self.addSetting("xmlPath", "string", "project", '')
+
 
 

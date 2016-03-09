@@ -25,7 +25,8 @@
 
 import os.path
 from PyQt4.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, QUrl, pyqtSlot
-from PyQt4.QtGui import QAction, QIcon, QColor, QDesktopServices
+from PyQt4.QtGui import QAction, QIcon, QColor, QDesktopServices, QFileDialog
+from qgis.core import QgsProject
 from qgis.gui import QgsRubberBand, QgsMessageBar
 
 from wincan2qgep.core.mysettings import MySettings
@@ -87,8 +88,6 @@ class wincan2qgep(QObject):
         self.rubber.setWidth(4)
         self.rubber.setBrushStyle(Qt.NoBrush)
 
-        self.openInspection()
-
     def unload(self):
         """ Unload plugin """
         for action in self.actions.itervalues():
@@ -108,8 +107,15 @@ class wincan2qgep(QObject):
             self._reloadFinders()
 
     def openInspection(self):
-        data = ImportData('/home/drouzaud/Documents/qgis/wincan_import/data/GrangchampChillonSecteurMontreux/XML/Project.xml').data
-        self.dlg = DataBrowserDialog(self.iface, data)
-        self.dlg.show()
+        xmlPath = self.settings.value('xmlPath')
+        if xmlPath == '':
+            xmlPath = QgsProject.instance().homePath()
+        filepath = QFileDialog.getOpenFileName(None, "Open WIncan inspection data", xmlPath, "Wincan file (*.xml)")
+
+        if filepath:
+            self.settings.setValue('xmlPath', os.path.dirname(os.path.realpath(filepath)))
+            data = ImportData(filepath).data
+            self.dlg = DataBrowserDialog(self.iface, data)
+            self.dlg.show()
 
 

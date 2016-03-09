@@ -35,10 +35,13 @@ def findSection(channel, startNode, endNode):
     layerid = MySettings().value("channelLayer")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
-        request = QgsFeatureRequest().setFilterExpression('"rp_from_identifier" = \'{}-{}\' and "rp_to_identifier" = \'{}-{}\''.format(channel, startNode, channel, endNode))
+        requestText = '"rp_from_identifier" = \'{}-{}\' and "rp_to_identifier" = \'{}-{}\''.format(channel, startNode, channel, endNode)
+
+        request = QgsFeatureRequest().setFilterExpression(requestText)
         for f in layer.getFeatures( request ):
             feature = QgsFeature(f)
 
+        #print requestText, feature.isValid()
     return feature
 
 
