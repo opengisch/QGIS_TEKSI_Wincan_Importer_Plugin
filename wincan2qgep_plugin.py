@@ -47,6 +47,7 @@ class wincan2qgep(QObject):
         self.iface = iface
         self.actions = {}
         self.settings = MySettings()
+        self.dlg = None
 
         # translation environment
         self.plugin_dir = os.path.dirname(__file__)
@@ -95,6 +96,8 @@ class wincan2qgep(QObject):
         if self.rubber:
             self.iface.mapCanvas().scene().removeItem(self.rubber)
             del self.rubber
+        if self.dlg:
+            self.dlg.close()
 
     @pyqtSlot(str, QgsMessageBar.MessageLevel)
     def displayMessage(self, message, level):
@@ -105,7 +108,7 @@ class wincan2qgep(QObject):
             self._reloadFinders()
 
     def test(self):
-        data = ImportData().data
+        data = ImportData('/home/drouzaud/Documents/qgis/wincan_import/data/GrangchampChillonSecteurMontreux/XML/Project.xml').data
         self.dlg = DataBrowserDialog(self.iface, data)
         self.dlg.show()
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# coding: utf-8 -*-
 
 #-----------------------------------------------------------
 #
@@ -33,7 +33,7 @@ from PyQt4.QtGui import QWidget, QTableWidget, QTableWidgetItem, QAbstractItemVi
 
 from wincan2qgep.core.mysettings import MySettings
 
-ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', 'gravité']
+ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité']
 ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate']
 
 
@@ -84,7 +84,7 @@ class ObservationTable(QTableWidget):
 
             for c, col in enumerate(ColumnData):
 
-                item = QTableWidgetItem('{}'.format(row[col]))
+                item = QTableWidgetItem(u'{}'.format(row[col]))
                 item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 font = item.font()
                 font.setPointSize(font.pointSize() - 2)

@@ -14,50 +14,14 @@
    <string>Wincan 2 QGEP</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Nom</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
+   <item row="0" column="4">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Collecteur</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QLineEdit" name="nameEdit"/>
-   </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Date</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QDateTimeEdit" name="dateTimeEdit">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="displayFormat">
-      <string notr="true">dd/MM/yyyy</string>
-     </property>
-     <property name="calendarPopup">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="projectCombo"/>
-   </item>
-   <item row="0" column="7">
-    <widget class="QLineEdit" name="channelNameEdit"/>
-   </item>
-   <item row="0" column="8">
+   <item row="0" column="6">
     <widget class="QToolButton" name="searchButton">
      <property name="text">
       <string>...</string>
@@ -68,32 +32,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="9">
-    <widget class="SectionWidget" name="sectionWidget" native="true">
-     <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="7" colspan="2">
-    <widget class="QPushButton" name="importButton">
-     <property name="text">
-      <string>Importer</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" colspan="8">
+   <item row="3" column="1" colspan="6">
     <widget class="QLabel" name="cannotImportLabel">
      <property name="autoFillBackground">
       <bool>false</bool>
@@ -120,6 +59,57 @@
       <number>5</number>
      </property>
     </widget>
+   </item>
+   <item row="1" column="0" colspan="7">
+    <widget class="SectionWidget" name="sectionWidget" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Date</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="5" colspan="2">
+    <widget class="QPushButton" name="importButton">
+     <property name="text">
+      <string>Importer</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QDateTimeEdit" name="dateTimeEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="displayFormat">
+      <string notr="true">dd/MM/yyyy</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="projectCombo"/>
+   </item>
+   <item row="0" column="5">
+    <widget class="QLineEdit" name="channelNameEdit"/>
    </item>
   </layout>
  </widget>

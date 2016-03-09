@@ -1,4 +1,7 @@
-#-----------------------------------------------------------
+#!/usr/bin/env python
+# coding: utf-8 -*-
+#
+# #-----------------------------------------------------------
 #
 # QGIS wincan 2 QGEP Plugin
 # Copyright (C) 2016 Denis Rouzaud
@@ -25,65 +28,62 @@
 
 
 
-# root p_t project
-# s_t section
-# si inspection
-#
-# so_t observation
-
-import csv
-
 from collections import OrderedDict
+import xml.etree.ElementTree as ET
 
 from PyQt4.QtCore import QDateTime
 
 
 class ImportData():
-    def __init__(self):
-
+    def __init__(self, filepath):
+        tree = ET.parse(filepath)
+        root = tree.getroot()
         self.data = {}
-        with open('/home/drouzaud/Documents/qgis/wincan_import/project.csv') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                self.data[row['P_ID']] = dict(Name=row['P_Name'],
-                                              Date=QDateTime.fromString(row['P_Date'], 'MM/dd/yy hh:mm:ss').addYears(100),
-                                              Channel='',
-                                              Sections={})
 
-        with open('/home/drouzaud/Documents/qgis/wincan_import/section.csv') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                self.data[row['S_Project_ID']]['Sections'][row['S_ID']] = dict(
+        for child in root:
+
+            # project
+            if child.tag == 'P_T':
+                self.data[child.find('P_ID').text] = dict(
+                    Name=self.getValue(child, 'P_Name'),
+                    Date=QDateTime.fromString(self.getValue(child, 'P_Date'), 'MM/dd/yy hh:mm:ss').addYears(100),
+                    Channel='',
+                    Sections={})
+
+                #print child.find('P_Name').text
+
+            # section
+            if child.tag == 'S_T':
+                self.data[child.find('S_Project_ID').text]['Sections'][child.find('S_ID').text] = dict(
                     QgepChannelId=None,
-                    Counter=row['S_Counter'],
-                    StartNode=row['S_StartNode'],
-                    EndNode=row['S_EndNode'],
-                    Sectionlength=float(row['S_Sectionlength']),
-                    SectionUse=row['S_SectionUse'],
-                    PipeMaterial=row['S_PipeMaterial'],
-                    Profile=row['S_Profile'],
-                    PipeDia=float(row['S_PipeDia']),
-                    PipeWidth=float(row['S_PipeWidth']),
-                    Medianumber=row['S_Medianumber'],
+                    Counter=self.getValue(child, 'S_Counter'),
+                    StartNode=self.getValue(child, 'S_StartNode'),
+                    EndNode=self.getValue(child, 'S_EndNode'),
+                    Sectionlength=float(self.getValue(child, 'S_Sectionlength')),
+                    SectionUse=self.getValue(child, 'S_SectionUse'),
+                    PipeMaterial=self.getValue(child, 'S_PipeMaterial'),
+                    Profile=self.getValue(child, 'S_Profile'),
+                    PipeDia=float(self.getValue(child, 'S_PipeDia')),
+                    PipeWidth=float(self.getValue(child, 'S_PipeWidth')),
+                    #Medianumber=self.getValue(child, 'S_Medianumber'),  # do not exist in XML
                     Inspections={})
 
 
-        with open('/home/drouzaud/Documents/qgis/wincan_import/inspection.csv') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
+            # inspection
+            if child.tag == 'SI_T':
                 found = False
                 for p_id, project in self.data.items():
                     for s_id in project['Sections']:
-                        if s_id == row['SI_Section_ID']:
-                            self.data[p_id]['Sections'][s_id]['Inspections'][row['SI_ID']] = dict(
-                                InspMethod=row['SI_InspMethod'],
-                                InspectionDir=row['SI_InspectionDir'],
-                                InspectedLength=float(row['SI_InspectedLength']),
-                                Operator=row['SI_Operator'],
-                                Weather=row['SI_Weather'],
-                                InclinationFileName=row['SI_InclinationFileName'],
-                                Cleaned=row['SI_Cleaned'],
-                                InspDate=QDateTime.fromString(row['SI_InspDate'], 'MM/dd/yy hh:mm:ss').addYears(100),
+                        if s_id == child.find('SI_Section_ID').text:
+                            self.data[p_id]['Sections'][s_id]['Inspections'][child.find('SI_ID').text] = dict(
+                                InspMethod=self.getValue(child, 'SI_InspMethod'),
+                                InspectionDir=self.getValue(child, 'SI_InspectionDir'),
+                                InspectedLength=float(self.getValue(child, 'SI_InspectedLength')),
+                                Operator=self.getValue(child, 'SI_Operator'),
+                                Weather=self.getValue(child, 'SI_Weather'),
+                                InclinationFileName=self.getValue(child, 'SI_InclinationFileName'),
+                                Cleaned=self.getValue(child, 'SI_Cleaned'),
+                                InspDate=QDateTime.fromString(self.getValue(child, 'SI_InspDate'), 'MM/dd/yy hh:mm:ss').addYears(100),
                                 Observations={},
                                 Import=True)
                             found = True
@@ -92,42 +92,40 @@ class ImportData():
                 if not found:
                     raise ValueError('insepction has no section')
 
-
-
-        with open('/home/drouzaud/Documents/qgis/wincan_import/observation.csv') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
+            # observation
+            if child.tag == 'SO_T':
                 found = False
-                if row['SO_Rate'] == '':
+                if not self.getValue(child, 'SO_Rate'):
                     continue
                 for p_id, project in self.data.items():
                     for s_id, section in project['Sections'].items():
                         for i_id in section['Inspections']:
-                            if i_id == row['SO_Inspecs_ID']:
-                                self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'][row['SO_ID']] = dict(
-                                    Counter=row['SO_Counter'],
-                                    Position=float(row['SO_Position']),
-                                    ToGoMeter=row['SO_ToGoMeter'],
-                                    Text=row['SO_Text'],
-                                    MPEGPosition=row['SO_MPEGPosition'],
-                                    Photonumber1=row['SO_Photonumber1'],
-                                    PhotoFilename1=row['SO_PhotoFilename1'],
-                                    Rate=int(round(float(row['SO_Rate']))),
-                                    OpCode=row['SO_OpCode'],
-                                    ClipFileName1=row['SO_ClipFileName1'],
-                                    Quant1=row['SO_Quant1'],
-                                    Quant2=row['SO_Quant2'],
-                                    Quant1Unit=row['SO_Quant1Unit'],
-                                    Quant2Unit=row['SO_Quant2Unit'],
-                                    ObservCode=row['SO_ObservCode'],
-                                    BendAngleDeg=row['SO_BendAngleDeg'],
-                                    BendClockH=row['SO_BendClockH'],
+                            if i_id == child.find('SO_Inspecs_ID').text:
+                                self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'][child.find('SO_ID').text] = dict(
+                                    Counter=self.getValue(child, 'SO_Counter'),
+                                    Position=float(self.getValue(child, 'SO_Position')),
+                                    ToGoMeter=self.getValue(child, 'SO_ToGoMeter'),
+                                    Text=self.getValue(child, 'SO_Text'),
+                                    MPEGPosition=self.getValue(child, 'SO_MPEGPosition'),
+                                    Photonumber1=self.getValue(child, 'SO_Photonumber1'),
+                                    PhotoFilename1=self.getValue(child, 'SO_PhotoFilename1'),
+                                    Rate=int(round(float(self.getValue(child, 'SO_Rate')))),
+                                    OpCode=self.getValue(child, 'SO_OpCode'),
+                                    ClipFileName1=self.getValue(child, 'SO_ClipFileName1'),
+                                    Quant1=self.getValue(child, 'SO_Quant1'),
+                                    Quant2=self.getValue(child, 'SO_Quant2'),
+                                    Quant1Unit=self.getValue(child, 'SO_Quant1Unit'),
+                                    Quant2Unit=self.getValue(child, 'SO_Quant2Unit'),
+                                    ObservCode=self.getValue(child, 'SO_ObservCode'),
+                                    BendAngleDeg=self.getValue(child, 'SO_BendAngleDeg'),
+                                    BendClockH=self.getValue(child, 'SO_BendClockH'),
                                     Import=True)
                                 found = True
                                 break
                     if found: break
                 if not found:
                         raise ValueError('observation has no insepction')
+
 
         # order elements by counter
         for p_id in self.data.keys():
@@ -137,4 +135,12 @@ class ImportData():
                 for i_id in self.data[p_id]['Sections'][s_id]['Inspections'].keys():
                     self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = OrderedDict( sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Position']) )
 
+
+    def getValue(self, node, tag):
+        val = node.find(tag)
+        if val is not None:
+            return val.text
+        else:
+            #print 'tag {} not found'.format(tag)
+            return None
 
