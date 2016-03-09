@@ -2,11 +2,11 @@
 
 name=Wincan 2 QGEP
 
-description=Wincan importer allows importing Wincan data into QGEP.
+description=Wincan 2 QGEP allows importing Wincan data into QGEP.
 
-about=Wincan importer allows importing pipe inspection TV data of Wincan format into waste-water network data, such as QGEP.
+about=Wincan 2 QGEP allows importing pipe inspection TV data in Wincan format into waste-water network data, such as QGEP. Wincan is a software for the inspection and management of the waste water infrastructure (http://www.wincan.com/). The data respects the EN 13508 norm. You can browse inspection data and review each observation and choose what will be imported. Data will be imported into a QGEP project which has a data model respecting the Swiss-norm VSA-DSS.
 
-version=0.1
+version=0.2
 
 qgisMinimumVersion=2.4
 
@@ -17,7 +17,7 @@ icon=icons/wincan_logo.png
 
 tags=qgep,wincan,wastewater,inspection
 
-homepage=http://3nids.github.io/wincan_importer
-tracker=https://github.com/3nids/wincan_importer/issues
-repository=https://github.com/3nids/wincan_importer
+repository=https://github.com/3nids/wincan2qgep
+tracker=https://github.com/3nids/wincan2qgep/issues
+repository=https://github.com/3nids/wincan2qgep
 
