@@ -1,12 +1,12 @@
 [general]
 
-name=Wincan importer
+name=Wincan 2 QGEP
 
 description=Wincan importer allows importing Wincan data into QGEP.
 
 about=Wincan importer allows importing pipe inspection TV data of Wincan format into waste-water network data, such as QGEP.
 
-version=1.0
+version=0.1
 
 qgisMinimumVersion=2.4
 
