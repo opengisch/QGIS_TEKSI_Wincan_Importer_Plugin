@@ -190,6 +190,8 @@ class FeatureSelectorWidget(QWidget):
             self.canvas.unsetMapTool( self.mapTool )
 
     def highlightActionTriggered( self, action ):
+        self.highlightFeatureButton.setDefaultAction(action)
+
         if action == self.highlightFeatureAction:
             self.highlightFeature()
 
