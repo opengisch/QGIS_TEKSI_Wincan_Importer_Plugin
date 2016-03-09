@@ -13,7 +13,7 @@ qgisMinimumVersion=2.4
 author=Denis Rouzaud
 email=denis.rouzaud@gmail.com
 
-icon=icons/wincan.svg
+icon=icons/wincan_logo.png
 
 tags=qgep,wincan,wastewater,inspection
 
