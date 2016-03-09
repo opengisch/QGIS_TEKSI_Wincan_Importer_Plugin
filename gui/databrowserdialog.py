@@ -80,6 +80,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
     @pyqtSlot()
     def on_importButton_clicked(self):
         # check that reaches are properly assigned
+        self.cannotImportLabel.hide()
         for p_id in self.data.keys():
             for s_id, section in self.data[p_id]['Sections'].items():
                 for inspection in self.data[p_id]['Sections'][s_id]['Inspections'].values():

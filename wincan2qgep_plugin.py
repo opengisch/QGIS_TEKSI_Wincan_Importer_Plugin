@@ -42,7 +42,6 @@ class wincan2qgep(QObject):
     name = u"&Wincan 2 QGEP"
     actions = None
 
-
     def __init__(self, iface):
         QObject.__init__(self)
         self.iface = iface
@@ -66,6 +65,7 @@ class wincan2qgep(QObject):
             self.iface.mainWindow())
         self.actions['openInspection'].triggered.connect(self.openInspection)
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
+        self.iface.addToolBarIcon(self.actions['openInspection'])
 
         self.actions['showSettings'] = QAction(
             QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
@@ -92,6 +92,7 @@ class wincan2qgep(QObject):
         """ Unload plugin """
         for action in self.actions.itervalues():
             self.iface.removePluginMenu(self.name, action)
+            self.iface.removeToolBarIcon(action)
         if self.rubber:
             self.iface.mapCanvas().scene().removeItem(self.rubber)
             del self.rubber
