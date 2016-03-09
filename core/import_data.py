@@ -31,7 +31,7 @@
 from collections import OrderedDict
 import xml.etree.ElementTree as ET
 
-from PyQt4.QtCore import QDateTime
+from PyQt4.QtCore import QDate, QDateTime
 
 
 class ImportData():
@@ -46,7 +46,7 @@ class ImportData():
             if child.tag == 'P_T':
                 self.data[child.find('P_ID').text] = dict(
                     Name=self.getValue(child, 'P_Name'),
-                    Date=QDateTime.fromString(self.getValue(child, 'P_Date'), 'MM/dd/yy hh:mm:ss').addYears(100),
+                    Date=QDateTime.fromString(self.getValue(child, 'P_Date'), 'dd.MM.yyyy hh:mm:ss'),
                     Channel='',
                     Sections={})
 
@@ -83,7 +83,7 @@ class ImportData():
                                 Weather=self.getValue(child, 'SI_Weather'),
                                 InclinationFileName=self.getValue(child, 'SI_InclinationFileName'),
                                 Cleaned=self.getValue(child, 'SI_Cleaned'),
-                                InspDate=QDateTime.fromString(self.getValue(child, 'SI_InspDate'), 'MM/dd/yy hh:mm:ss').addYears(100),
+                                InspDate=QDate.fromString(self.getValue(child, 'SI_InspDate'), 'dd.MM.yyyy'),
                                 Observations={},
                                 Import=True)
                             found = True

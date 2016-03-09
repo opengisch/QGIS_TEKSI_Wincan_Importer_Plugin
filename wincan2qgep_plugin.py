@@ -59,6 +59,13 @@ class wincan2qgep(QObject):
             QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
+        self.actions['openInspection'] = QAction(
+            QIcon(":/plugins/wincan2qgep/icons/wincan_logo.png"),
+            self.tr(u"Ouvrir une inspection"),
+            self.iface.mainWindow())
+        self.actions['openInspection'].triggered.connect(self.openInspection)
+        self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
+
         self.actions['showSettings'] = QAction(
             QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
             self.tr(u"&Settings"),
@@ -73,13 +80,6 @@ class wincan2qgep(QObject):
         self.actions['help'].triggered.connect(lambda: QDesktopServices().openUrl(QUrl("http://3nids.github.io/wincan2qgep")))
         self.iface.addPluginToMenu(self.name, self.actions['help'])
 
-        self.actions['browse'] = QAction(
-            QIcon(":/plugins/wincan2qgep/icons/test.svg"),
-            self.tr("Browse data"),
-            self.iface.mainWindow())
-        self.actions['browse'].triggered.connect(self.test)
-        self.iface.addPluginToMenu(self.name, self.actions['browse'])
-
         self.rubber = QgsRubberBand(self.iface.mapCanvas())
         self.rubber.setColor(QColor(255, 255, 50, 200))
         self.rubber.setIcon(self.rubber.ICON_CIRCLE)
@@ -87,7 +87,7 @@ class wincan2qgep(QObject):
         self.rubber.setWidth(4)
         self.rubber.setBrushStyle(Qt.NoBrush)
 
-        self.test()
+        self.openInspection()
 
     def unload(self):
         """ Unload plugin """
@@ -107,7 +107,7 @@ class wincan2qgep(QObject):
         if ConfigurationDialog().exec_():
             self._reloadFinders()
 
-    def test(self):
+    def openInspection(self):
         data = ImportData('/home/drouzaud/Documents/qgis/wincan_import/data/GrangchampChillonSecteurMontreux/XML/Project.xml').data
         self.dlg = DataBrowserDialog(self.iface, data)
         self.dlg.show()

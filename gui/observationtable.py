@@ -91,6 +91,8 @@ class ObservationTable(QTableWidget):
                 item.setFont(font)
                 self.setItem(r, c, item)
 
+        self.resizeColumnsToContents()
+
 
 
 
