@@ -55,7 +55,9 @@ class ImportData():
             # section
             if child.tag == 'S_T':
                 self.data[child.find('S_Project_ID').text]['Sections'][child.find('S_ID').text] = dict(
-                    QgepChannelId=None,
+                    QgepChannelId1=None,
+                    QgepChannelId2=None,
+                    QgepChannelId3=None,
                     Counter=self.getValue(child, 'S_Counter'),
                     StartNode=self.getValue(child, 'S_StartNode'),
                     EndNode=self.getValue(child, 'S_EndNode'),
@@ -78,7 +80,7 @@ class ImportData():
                             self.data[p_id]['Sections'][s_id]['Inspections'][child.find('SI_ID').text] = dict(
                                 InspMethod=self.getValue(child, 'SI_InspMethod'),
                                 InspectionDir=self.getValue(child, 'SI_InspectionDir'),
-                                InspectedLength=float(self.getValue(child, 'SI_InspectedLength')),
+                                InspectedLength=float(self.getValue(child, 'SI_InspectedLength') or 0),
                                 Operator=self.getValue(child, 'SI_Operator'),
                                 Weather=self.getValue(child, 'SI_Weather'),
                                 InclinationFileName=self.getValue(child, 'SI_InclinationFileName'),

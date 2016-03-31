@@ -7,82 +7,152 @@
     <x>0</x>
     <y>0</y>
     <width>649</width>
-    <height>294</height>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="2">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>Width</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="endNodeEdit"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="startNodeEdit"/>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Longueur</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Chambre départ</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label_9">
      <property name="text">
-      <string>Section</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Utilisation</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Chambre arrivée</string>
+      <string>Collecteur</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
     <widget class="QComboBox" name="sectionCombo"/>
    </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="profileEdit"/>
-   </item>
-   <item row="3" column="2">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Diameter</string>
+   <item row="0" column="2">
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Coll. 2</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Coll. 1</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="FeatureSelectorWidget" name="section1Selector" native="true"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="FeatureSelectorWidget" name="section2Selector" native="true"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Coll. 3</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="FeatureSelectorWidget" name="section3Selector" native="true"/>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="text">
-      <string>Profile</string>
-     </property>
+   <item row="2" column="0" colspan="3">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="endNodeEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Chambre arrivée</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Diamètre</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Longueur</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Chambre départ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Matériau</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="sectionlengthEdit"/>
+      </item>
+      <item row="0" column="6">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Profil</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLineEdit" name="pipeDiaEdit"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="startNodeEdit"/>
+      </item>
+      <item row="0" column="7">
+       <widget class="QLineEdit" name="profileEdit"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="pipeMaterialEdit"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Largeur</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLineEdit" name="pipeWidthEdit"/>
+      </item>
+      <item row="1" column="6">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Utilisation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLineEdit" name="sectionUseEdit"/>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="6" column="0" colspan="5">
+   <item row="9" column="0" colspan="3">
     <widget class="InspectionWidget" name="inspectionWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
@@ -99,42 +169,6 @@
       </property>
      </layout>
     </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Matériau</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="FeatureSelectorWidget" name="sectionSelector" native="true"/>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="pipeMaterialEdit"/>
-   </item>
-   <item row="0" column="3">
-    <widget class="QToolButton" name="searchButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3" colspan="2">
-    <widget class="QLineEdit" name="sectionlengthEdit"/>
-   </item>
-   <item row="2" column="3" colspan="2">
-    <widget class="QLineEdit" name="sectionUseEdit"/>
-   </item>
-   <item row="3" column="3" colspan="2">
-    <widget class="QLineEdit" name="pipeDiaEdit"/>
-   </item>
-   <item row="4" column="3" colspan="2">
-    <widget class="QLineEdit" name="pipeWidthEdit"/>
    </item>
   </layout>
  </widget>

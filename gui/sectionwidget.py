@@ -31,7 +31,6 @@ from qgis.core import QgsMapLayerRegistry, QgsApplication
 
 from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
-from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
 
@@ -44,23 +43,27 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.projectId = None
         self.sectionId = None
 
-        self.sectionSelector.featureIdentified.connect(self.setQgepChannelId)
+        self.section1Selector.featureIdentified.connect(self.setQgepChannelId1)
+        self.section2Selector.featureIdentified.connect(self.setQgepChannelId2)
+        self.section3Selector.featureIdentified.connect(self.setQgepChannelId3)
 
         self.inspectionWidget.importChanged.connect(self.updateStatus)
 
     def finishInit(self, iface, data):
         layerid = self.settings.value("channelLayer")
-        self.sectionSelector.setLayer(QgsMapLayerRegistry.instance().mapLayer(layerid))
-        self.sectionSelector.setCanvas(iface.mapCanvas())
+        for selector in (self.section1Selector, self.section2Selector, self.section3Selector):
+            selector.setLayer(QgsMapLayerRegistry.instance().mapLayer(layerid))
+            selector.setCanvas(iface.mapCanvas())
         self.data = data
         self.inspectionWidget.finishInit(self.data)
 
     def setProjectId(self, prjId = None):
         self.sectionCombo.clear()
 
-        self.projectId = prjId
+        if prjId is not None:
+            self.projectId = prjId
 
-        if prjId is None:
+        if self.projectId is None:
             return
 
         for s_id, section in self.data[prjId]['Sections'].items():
@@ -72,7 +75,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def updateStatus(self):
         icon = QgsApplication.getThemeIcon( "/mIconWarn.png" )
         for s_id, section in self.data[self.projectId]['Sections'].items():
-            ok = section['QgepChannelId'] is not None
+            ok = section['QgepChannelId1'] is not None
             if not ok:
                 ok = True
                 for inspection in section['Inspections'].values():
@@ -83,30 +86,27 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             if idx >= 0:
                 self.sectionCombo.setItemIcon(idx, icon if not ok else QIcon())
 
-    def setQgepChannelId(self, feature):
+    def setQgepChannelId1(self, feature):
         if self.projectId is None or self.sectionId is None:
             return
+        self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId1'] = feature.attribute('obj_id')
+        self.updateStatus()
 
-        self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId'] = feature.attribute('obj_id')
-
-    @pyqtSlot()
-    def on_searchButton_clicked(self):
+    def setQgepChannelId2(self, feature):
         if self.projectId is None or self.sectionId is None:
             return
+        self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId2'] = feature.attribute('obj_id')
 
-        channel = self.data[self.projectId]['Channel']
-        startNode = self.data[self.projectId]['Sections'][self.sectionId]['StartNode']
-        endNode = self.data[self.projectId]['Sections'][self.sectionId]['EndNode']
-
-        feature = findSection(channel, startNode, endNode)
-        if feature.isValid():
-            self.sectionSelector.setFeature(feature, CanvasExtent.Pan )
-            self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId'] = feature.attribute('obj_id')
-
+    def setQgepChannelId3(self, feature):
+        if self.projectId is None or self.sectionId is None:
+            return
+        self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId3'] = feature.attribute('obj_id')
 
     @pyqtSlot(int)
     def on_sectionCombo_currentIndexChanged(self, idx):
-            self.sectionSelector.clear()
+            self.section1Selector.clear()
+            self.section2Selector.clear()
+            self.section3Selector.clear()
             self.endNodeEdit.clear()
             self.pipeDiaEdit.clear()
             self.pipeMaterialEdit.clear()
@@ -125,10 +125,10 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.sectionId = self.sectionCombo.itemData(idx)
             section = self.data[self.projectId]['Sections'][self.sectionId]
 
-            feature = sectionAtId(section['QgepChannelId'])
-
-            if feature.isValid():
-                self.sectionSelector.setFeature(feature)
+            for i,selector in enumerate((self.section1Selector, self.section2Selector, self.section3Selector)):
+                feature = sectionAtId(section['QgepChannelId{}'.format(i+1)])
+                if feature.isValid():
+                    selector.setFeature(feature)
 
             self.endNodeEdit.setText(section['EndNode'])
             self.pipeDiaEdit.setText('{}'.format(section['PipeDia']))

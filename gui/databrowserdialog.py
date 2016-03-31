@@ -71,7 +71,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             for s_id, section in self.data[p_id]['Sections'].items():
                 feature = findSection(channel, section['StartNode'], section['EndNode'])
                 if feature.isValid():
-                    self.data[p_id]['Sections'][s_id]['QgepChannelId'] = feature.attribute('obj_id')
+                    self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
 
         self.sectionWidget.setEnabled(True)
         self.sectionWidget.setProjectId(self.currentProjectId)
@@ -85,7 +85,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             for s_id, section in self.data[p_id]['Sections'].items():
                 for inspection in self.data[p_id]['Sections'][s_id]['Inspections'].values():
                     if inspection['Import']:
-                        if section['QgepChannelId'] is None:
+                        if section['QgepChannelId1'] is None:
                             self.cannotImportLabel.show()
                             return
                         break
