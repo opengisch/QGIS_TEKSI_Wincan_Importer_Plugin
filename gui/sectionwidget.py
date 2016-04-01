@@ -31,6 +31,7 @@ from qgis.core import QgsMapLayerRegistry, QgsApplication
 
 from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
+from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
 
@@ -129,6 +130,8 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                 feature = sectionAtId(section['QgepChannelId{}'.format(i+1)])
                 if feature.isValid():
                     selector.setFeature(feature)
+
+            self.section1Selector.highlightFeature(CanvasExtent.Pan)
 
             self.endNodeEdit.setText(section['EndNode'])
             self.pipeDiaEdit.setText('{}'.format(section['PipeDia']))
