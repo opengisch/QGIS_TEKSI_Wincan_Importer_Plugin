@@ -28,8 +28,8 @@
 
 
 
-from PyQt4.QtCore import pyqtSlot, Qt
-from PyQt4.QtGui import QWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 from wincan2qgep.core.mysettings import MySettings
 
@@ -53,6 +53,8 @@ class ObservationTable(QTableWidget):
         self.horizontalHeader().setMinimumSectionSize(15)
         self.verticalHeader().setVisible(True)
         self.verticalHeader().setDefaultSectionSize(25)
+
+        self.itemClicked.connect(self.importCheckboxClicked)
 
     def finishInit(self, data):
         self.data = data
@@ -78,20 +80,29 @@ class ObservationTable(QTableWidget):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
 
-        for row in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].values():
+        for o_id, obs in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].iteritems():
             r = self.rowCount()
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-
-                item = QTableWidgetItem(u'{}'.format(row[col]))
-                item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                item = QTableWidgetItem(u'{}'.format(obs[col]))
+                if c == 0:
+                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable )
+                    item.setCheckState( Qt.Checked if obs['Import'] else Qt.Unchecked )
+                    item.setData( Qt.UserRole, o_id)
+                else:
+                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 font = item.font()
                 font.setPointSize(font.pointSize() - 2)
                 item.setFont(font)
                 self.setItem(r, c, item)
 
         self.resizeColumnsToContents()
+
+    def importCheckboxClicked(self, item):
+        if item.flags() & Qt.ItemIsUserCheckable:
+            o_id = item.data(Qt.UserRole)
+            self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'][o_id]['Import'] = True if item.checkState() == Qt.Checked else False
 
 
 

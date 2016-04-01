@@ -33,6 +33,8 @@ import xml.etree.ElementTree as ET
 
 from PyQt4.QtCore import QDate, QDateTime
 
+# codes which should not be imported by default
+SkipCode = ('BCD')
 
 class ImportData():
     def __init__(self, filepath):
@@ -103,6 +105,7 @@ class ImportData():
                     for s_id, section in project['Sections'].items():
                         for i_id in section['Inspections']:
                             if i_id == child.find('SO_Inspecs_ID').text:
+                                code = self.getValue(child, 'SO_OpCode')
                                 self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'][child.find('SO_ID').text] = dict(
                                     Counter=self.getValue(child, 'SO_Counter'),
                                     Position=float(self.getValue(child, 'SO_Position')),
@@ -112,7 +115,7 @@ class ImportData():
                                     Photonumber1=self.getValue(child, 'SO_Photonumber1'),
                                     PhotoFilename1=self.getValue(child, 'SO_PhotoFilename1'),
                                     Rate=int(round(float(self.getValue(child, 'SO_Rate')))),
-                                    OpCode=self.getValue(child, 'SO_OpCode'),
+                                    OpCode=code,
                                     ClipFileName1=self.getValue(child, 'SO_ClipFileName1'),
                                     Quant1=self.getValue(child, 'SO_Quant1'),
                                     Quant2=self.getValue(child, 'SO_Quant2'),
@@ -121,7 +124,7 @@ class ImportData():
                                     ObservCode=self.getValue(child, 'SO_ObservCode'),
                                     BendAngleDeg=self.getValue(child, 'SO_BendAngleDeg'),
                                     BendClockH=self.getValue(child, 'SO_BendClockH'),
-                                    Import=True)
+                                    Import=True if code not in SkipCode else False)
                                 found = True
                                 break
                     if found: break
