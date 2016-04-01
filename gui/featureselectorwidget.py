@@ -159,12 +159,14 @@ class FeatureSelectorWidget(QWidget):
         # highlight
         self.deleteHighlight()
         self.highlight = QgsHighlight( self.canvas, geom, self.layer )
+
         settings = QSettings()
         color = QColor( settings.value( "/Map/highlight/color", QGis.DEFAULT_HIGHLIGHT_COLOR.name() ) )
         alpha = int(settings.value( "/Map/highlight/colorAlpha", QGis.DEFAULT_HIGHLIGHT_COLOR.alpha()))
-        buffer = float(settings.value( "/Map/highlight/buffer", QGis.DEFAULT_HIGHLIGHT_BUFFER_MM))
-        minWidth = float(settings.value( "/Map/highlight/minWidth", QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM))
-        
+        buffer = 2*float(settings.value( "/Map/highlight/buffer", QGis.DEFAULT_HIGHLIGHT_BUFFER_MM))
+        minWidth = 2*float(settings.value( "/Map/highlight/minWidth", QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM))
+
+
         self.highlight.setColor( color )  # sets also fill with default alpha
         color.setAlpha( alpha )
         self.highlight.setFillColor( color )  # sets fill with alpha

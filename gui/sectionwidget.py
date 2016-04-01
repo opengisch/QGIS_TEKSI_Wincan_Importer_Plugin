@@ -142,4 +142,15 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.inspectionWidget.setSection(self.projectId, self.sectionId)
 
 
+    @pyqtSlot()
+    def on_previousButton_clicked(self):
+        idx = self.sectionCombo.currentIndex()
+        if idx > 0:
+            self.sectionCombo.setCurrentIndex(idx-1)
+
+    @pyqtSlot()
+    def on_nextButton_clicked(self):
+        idx = self.sectionCombo.currentIndex()
+        if idx < self.sectionCombo.count()-1:
+            self.sectionCombo.setCurrentIndex(idx+1)
 
