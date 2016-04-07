@@ -30,6 +30,7 @@
 
 from collections import OrderedDict
 import xml.etree.ElementTree as ET
+import os
 
 from PyQt4.QtCore import QDate, QDateTime
 
@@ -47,6 +48,7 @@ class ImportData():
             # project
             if child.tag == 'P_T':
                 self.data[child.find('P_ID').text] = dict(
+                    RootPath=os.path.dirname(filepath),
                     Name=self.getValue(child, 'P_Name'),
                     Date=QDateTime.fromString(self.getValue(child, 'P_Date'), 'dd.MM.yyyy hh:mm:ss'),
                     Channel='',
@@ -82,6 +84,7 @@ class ImportData():
                             self.data[p_id]['Sections'][s_id]['Inspections'][child.find('SI_ID').text] = dict(
                                 InspMethod=self.getValue(child, 'SI_InspMethod'),
                                 InspectionDir=self.getValue(child, 'SI_InspectionDir'),
+                                CodeInspectionDir=self.getValue(child, 'CodeSI_InspectionDir'),
                                 InspectedLength=float(self.getValue(child, 'SI_InspectedLength') or 0),
                                 Operator=self.getValue(child, 'SI_Operator'),
                                 Weather=self.getValue(child, 'SI_Weather'),
@@ -134,7 +137,7 @@ class ImportData():
 
         # order elements by counter
         for p_id in self.data.keys():
-            self.data[p_id]['Sections'] = OrderedDict(sorted(self.data[p_id]['Sections'].items(), key=lambda t: t[1]['Counter']))
+            self.data[p_id]['Sections'] = OrderedDict(sorted(self.data[p_id]['Sections'].items(), key=lambda t: int(t[1]['Counter'])))
 
             for s_id in self.data[p_id]['Sections'].keys():
                 for i_id in self.data[p_id]['Sections'][s_id]['Inspections'].keys():

@@ -96,7 +96,11 @@
     <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="1">
-       <widget class="QLineEdit" name="endNodeEdit"/>
+       <widget class="QLineEdit" name="endNodeEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -134,7 +138,11 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLineEdit" name="sectionlengthEdit"/>
+       <widget class="QLineEdit" name="sectionlengthEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="6">
        <widget class="QLabel" name="label_7">
@@ -144,16 +152,32 @@
        </widget>
       </item>
       <item row="0" column="5">
-       <widget class="QLineEdit" name="pipeDiaEdit"/>
+       <widget class="QLineEdit" name="pipeDiaEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="startNodeEdit"/>
+       <widget class="QLineEdit" name="startNodeEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="7">
-       <widget class="QLineEdit" name="profileEdit"/>
+       <widget class="QLineEdit" name="profileEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QLineEdit" name="pipeMaterialEdit"/>
+       <widget class="QLineEdit" name="pipeMaterialEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="4">
        <widget class="QLabel" name="label_8">
@@ -163,7 +187,11 @@
        </widget>
       </item>
       <item row="1" column="5">
-       <widget class="QLineEdit" name="pipeWidthEdit"/>
+       <widget class="QLineEdit" name="pipeWidthEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="6">
        <widget class="QLabel" name="label_4">
@@ -173,7 +201,11 @@
        </widget>
       </item>
       <item row="1" column="7">
-       <widget class="QLineEdit" name="sectionUseEdit"/>
+       <widget class="QLineEdit" name="sectionUseEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

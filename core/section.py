@@ -28,6 +28,17 @@ from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 from wincan2qgep.core.mysettings import MySettings
 
 
+def sectionAtId(fid):
+    feature = QgsFeature()
+
+    layerid = MySettings().value("channelLayer")
+    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    if layer is not None:
+        request = QgsFeatureRequest(fid)
+        for f in layer.getFeatures( request ):
+            feature = QgsFeature(f)
+    return feature
+
 
 def findSection(channel, startNode, endNode):
     feature = QgsFeature()
@@ -40,7 +51,6 @@ def findSection(channel, startNode, endNode):
         request = QgsFeatureRequest().setFilterExpression(requestText)
         for f in layer.getFeatures( request ):
             feature = QgsFeature(f)
-
         #print requestText, feature.isValid()
     return feature
 
