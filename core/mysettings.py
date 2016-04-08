@@ -38,6 +38,9 @@ class MySettings(SettingManager):
         self.addSetting("coverLayer", "string", "project", 'vw_qgep_cover')
         self.addSetting("maintenanceLayer", "string", "project", 'vw_qgep_maintenance')
         self.addSetting("damageLayer", "string", "project", 'vw_qgep_damage')
+        self.addSetting("joinMaintenceWasterwaterstructureLayer", "string", "project", 're_maintenance_event_wastewater_structure')
+        self.addSetting("vlDamageChannelLayer", "string", "project", 'vl_damage_channel_code')
+        self.addSetting("vlDamageSingleClass", "string", "project", 'vl_damage_single_damage_class')
 
         self.addSetting("xmlPath", "string", "project", '')
 

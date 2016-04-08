@@ -35,6 +35,7 @@ from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
 from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
+from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl
 from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
@@ -68,6 +69,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         for p_id, project in self.data.items():
             self.projectCombo.addItem(project['Name'], p_id)
+
+        self.channelNameEdit.setText('5004B')
+        self.on_searchButton_clicked()
 
     @pyqtSlot(str)
     def on_channelNameEdit_textChanged(self, txt):
@@ -108,7 +112,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         mLayer = QgsMapLayerRegistry.instance().mapLayer(mLayerid)
         dLayerid = self.settings.value("damageLayer")
         dLayer = QgsMapLayerRegistry.instance().mapLayer(dLayerid)
-        features = {}  # dictionnary with maintenance event as key, and damages as values
+        jLayerid = self.settings.value("joinMaintenceWasterwaterstructureLayer")
+        jLayer = QgsMapLayerRegistry.instance().mapLayer(jLayerid)
+        features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
             for s_id, section in self.data[p_id]['Sections'].items():
@@ -136,7 +142,6 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
 
                         # create maintenance/examination event
-                        maintenanceFeatures = []
                         for rf in reachFeatures:
                             mf = QgsFeature()
                             initFields = mLayer.dataProvider().fields()
@@ -153,19 +158,17 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf['fs_reach_point'] = rf['rp_from_obj_id']
                             else:
                                 mf['fs_reach_point'] = rf['rp_to_obj_id']
-                            maintenanceFeatures.append(QgsFeature(mf))
+
+                            features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
 
                         # add corresponding damages
-                        damageFeatures = []
-                        for reachIndex in range(0,len(maintenanceFeatures)):
-                            damageFeatures[reachIndex] = []
                         reachIndex = 0
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
 
                                 distance = observation['Position']
                                 while distance > reachFeatures[reachIndex]['length_effective']:
-                                    if reachIndex < len(reachFeatures):
+                                    if reachIndex < len(reachFeatures)-1:
                                         distance -= reachFeatures[reachIndex]['length_effective']
                                         reachIndex += 1
                                     else:
@@ -177,40 +180,46 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                                            ' du ou des collecteurs assignés.'.format(section['Counter'], section['StartNode'], section['EndNode']))
                                             return
 
-                                # get corresponding code for damage level
-                                code2vl = {0: 3707, 1: 3708, 2: 3709, 3: 3710, 4: 3711, 'Unkown': 4561}
-                                if observation['Rate'] in code2vl.keys():
-                                    class_damage = code2vl[observation['Rate']]
-                                else:
-                                    class_damage = code2vl['Unknown']
-
                                 # create maintenance/examination event
                                 df = QgsFeature()
                                 initFields = dLayer.dataProvider().fields()
                                 df.setFields(initFields)
                                 df.initAttributes(initFields.size())
                                 df['comments'] = observation['Text']
-                                df['single_damage_class'] = class_damage
-                                df['channel_damage_code'] = observation['OpCode']
+                                df['single_damage_class'] = damageLevel2vl([observation['Rate']])
+                                df['damage_code'] = damageCode2vl(observation['OpCode'])
                                 df['distance'] = distance
 
-                                damageFeatures[reachIndex].append(df)
-
-                        for reachIndex in range(0,len(maintenanceFeatures)):
-                            features[maintenanceFeatures[reachIndex]] = damageFeatures[reachIndex]
-
-
+                                ws_obj_id = reachFeatures[reachIndex]['ws_obj_id']
+                                features[ws_obj_id]['damages'].append(df)
 
 
         with edit(mLayer):
+            for ws_obj_id, elements in features.iteritems():
 
-            for maintenanceFeature, damageFeatures in features.iteritems():
+                maintenance = elements['maintenance']
+                damages = elements['damages']
 
-                if len(damageFeatures) == 0:
+                if len(damages) == 0:
                     continue
 
-                mLayer.addFeature(maintenanceFeature)
-                fid = maintenanceFeature['obj_id']
+                # write maintenace feature
+                mLayer.addFeature(maintenance)
+
+                # set fkey maintenance event id to all damages
+                for i, _ in enumerate(damages):
+                    damages[i]['fs_examination'] = maintenance['obj_id']
+
+                # write damages
+                dLayer.addFeatures(damages, False)
+
+                # write in relation table (wasterwater structure - maintenance events)
+                jf = QgsFeature()
+                initFields = jLayer.dataProvider().fields()
+                jf.setFields(initFields)
+                jf.initAttributes(initFields.size())
+                jf['fk_wastewater_structure'] = ws_obj_id
+                jf['fk_maintenance_event'] = maintenance['obj_id']
 
 
 
