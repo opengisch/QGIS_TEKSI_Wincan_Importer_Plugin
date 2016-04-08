@@ -154,6 +154,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             mf['time_point'] = QDateTime(inspection['InspDate'])
                             mf['remark'] = ''
                             mf['status'] = 2550  # vl_maintenance_event: accomplished
+                            mf['inspected_length'] = 'Sectionlength'
                             if inspection['CodeInspectionDir'] == 'D':
                                 mf['fs_reach_point'] = rf['rp_from_obj_id']
                             else:
@@ -185,6 +186,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 initFields = dLayer.dataProvider().fields()
                                 df.setFields(initFields)
                                 df.initAttributes(initFields.size())
+                                df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
                                 df['single_damage_class'] = damageLevel2vl([observation['Rate']])
                                 df['damage_code'] = damageCode2vl(observation['OpCode'])
@@ -220,6 +222,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 jf.initAttributes(initFields.size())
                 jf['fk_wastewater_structure'] = ws_obj_id
                 jf['fk_maintenance_event'] = maintenance['obj_id']
+                print jLayer.addFeature(jf)
 
 
 
