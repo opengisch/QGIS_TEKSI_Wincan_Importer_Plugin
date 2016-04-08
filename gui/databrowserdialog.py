@@ -207,14 +207,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
                                 df['single_damage_class'] = damageLevel2vl(observation['Rate'])
-                                df['damage_code'] = int(damageCode2vl(observation['OpCode']))
+                                df['channel_damage_code'] = int(damageCode2vl(observation['OpCode']))
                                 df['distance'] = distance
                                 df['video_counter'] = observation['MPEGPosition']
 
                                 ws_obj_id = reachFeatures[reachIndex]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
-
-                                print damageLevel2vl(observation['Rate'])
 
 
         with edit(mLayer):

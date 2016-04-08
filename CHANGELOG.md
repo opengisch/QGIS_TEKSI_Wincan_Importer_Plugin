@@ -1,5 +1,10 @@
 ## Changelog
 
+** Version 0.4** 7.04.2016
+
+* import inspection data into QGEP layers
+* order sections properly in combo box
+
 **Version 0.3** 01.04.2016
 
 * allow multiple sections to be used
