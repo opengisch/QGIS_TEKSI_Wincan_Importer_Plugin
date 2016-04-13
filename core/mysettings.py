@@ -24,7 +24,7 @@
 #---------------------------------------------------------------------
 
 from PyQt4.QtGui import QColor
-from quickfinder.qgissettingmanager import SettingManager
+from wincan2qgep.qgissettingmanager import SettingManager
 
 pluginName = "quickfinder_plugin"
 

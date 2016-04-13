@@ -72,7 +72,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             self.projectCombo.addItem(project['Name'], p_id)
 
         self.channelNameEdit.setText('5004B')
-        self.on_searchButton_clicked()
+        #self.on_searchButton_clicked()
 
     @pyqtSlot(str)
     def on_channelNameEdit_textChanged(self, txt):
