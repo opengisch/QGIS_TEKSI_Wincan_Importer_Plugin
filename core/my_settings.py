@@ -24,7 +24,7 @@
 #---------------------------------------------------------------------
 
 from PyQt4.QtGui import QColor
-from wincan2qgep.qgissettingmanager import SettingManager
+from qgissettingmanager import *
 
 pluginName = "wincan2qgep_plugin"
 
@@ -34,15 +34,15 @@ class MySettings(SettingManager):
         SettingManager.__init__(self, pluginName)
 
         # project settings
-        self.addSetting("channelLayer", "string", "project", 'vw_qgep_reach')
-        self.addSetting("coverLayer", "string", "project", 'vw_qgep_cover')
-        self.addSetting("maintenanceLayer", "string", "project", 'vw_qgep_maintenance')
-        self.addSetting("damageLayer", "string", "project", 'vw_qgep_damage')
-        self.addSetting("joinMaintenceWastewaterstructureLayer", "string", "project", 're_maintenance_event_wastewater_structure')
-        self.addSetting("vlDamageChannelLayer", "string", "project", 'vl_damage_channel_code')
-        self.addSetting("vlDamageSingleClass", "string", "project", 'vl_damage_single_damage_class')
+        self.add_setting(String('channelLayer', Scope.project, 'vw_qgep_reach'))
+        self.add_setting(String('coverLayer', Scope.project, 'vw_qgep_cover'))
+        self.add_setting(String('maintenanceLayer', Scope.project, 'vw_qgep_maintenance'))
+        self.add_setting(String('damageLayer', Scope.project, 'vw_qgep_damage'))
+        self.add_setting(String('joinMaintenceWastewaterstructureLayer', Scope.project, 're_maintenance_event_wastewater_structure'))
+        self.add_setting(String('vlDamageChannelLayer', Scope.project, 'vl_damage_channel_code'))
+        self.add_setting(String('vlDamageSingleClass', Scope.project, 'vl_damage_single_damage_class'))
 
-        self.addSetting("xmlPath", "string", "project", '')
+        self.add_setting(String('xmlPath', Scope.project, ''))
 
 
 
