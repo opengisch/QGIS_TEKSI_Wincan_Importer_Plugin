@@ -76,7 +76,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def updateStatus(self):
         icon = QgsApplication.getThemeIcon( "/mIconWarn.png" )
         for s_id, section in self.data[self.projectId]['Sections'].items():
-            ok = section['QgepChannelId1'] is not None
+            ok = section['QgepChannelId1'] is not None or section['UsePreviousSection'] is True
             if not ok:
                 ok = True
                 for inspection in section['Inspections'].values():
@@ -103,6 +103,13 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             return
         self.data[self.projectId]['Sections'][self.sectionId]['QgepChannelId3'] = feature.attribute('obj_id')
 
+    @pyqtSlot(bool)
+    def on_usePreviousSectionCheckBox_toggled(self, checked):
+        if self.projectId is None or self.sectionId is None:
+            return
+        self.data[self.projectId]['Sections'][self.sectionId]['UsePreviousSection'] = checked
+        self.updateStatus()
+
     @pyqtSlot(int)
     def on_sectionCombo_currentIndexChanged(self, idx):
             self.section1Selector.clear()
@@ -123,6 +130,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             if idx < 0 or self.projectId is None:
                 return
 
+            # allow use of previous section if not on first section
+            self.usePreviousSectionCheckBox.setEnabled(idx > 0)
+
             self.sectionId = self.sectionCombo.itemData(idx)
             section = self.data[self.projectId]['Sections'][self.sectionId]
 
@@ -133,6 +143,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
             self.section1Selector.highlightFeature(CanvasExtent.Pan)
 
+            self.usePreviousSectionCheckBox.setChecked(section['UsePreviousSection'])
             self.endNodeEdit.setText(section['EndNode'])
             self.pipeDiaEdit.setText('{}'.format(section['PipeDia']))
             self.pipeMaterialEdit.setText(section['PipeMaterial'])

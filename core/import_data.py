@@ -62,6 +62,7 @@ class ImportData():
                     QgepChannelId1=None,
                     QgepChannelId2=None,
                     QgepChannelId3=None,
+                    UsePreviousSection=False,
                     Counter=self.getValue(child, 'S_Counter'),
                     StartNode=self.getValue(child, 'S_StartNode'),
                     EndNode=self.getValue(child, 'S_EndNode'),
