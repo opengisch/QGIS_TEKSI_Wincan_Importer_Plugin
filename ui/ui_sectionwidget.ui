@@ -23,69 +23,33 @@
       </sizepolicy>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Coll. 2</string>
-        </property>
-       </widget>
+      <item row="1" column="1">
+       <widget class="FeatureSelectorWidget" name="section1Selector" native="true"/>
       </item>
-      <item row="0" column="0">
+      <item row="2" column="1">
+       <widget class="FeatureSelectorWidget" name="section2Selector" native="true"/>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Coll. 1</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="FeatureSelectorWidget" name="section1Selector" native="true"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="FeatureSelectorWidget" name="section2Selector" native="true"/>
-      </item>
-      <item row="2" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label_12">
         <property name="text">
          <string>Coll. 3</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="FeatureSelectorWidget" name="section3Selector" native="true"/>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QWidget" name="widget_3" native="true">
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="1">
-       <widget class="QToolButton" name="previousButton">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>...</string>
-        </property>
-        <property name="arrowType">
-         <enum>Qt::UpArrow</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="sectionCombo"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Collecteur</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QToolButton" name="nextButton">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="arrowType">
-         <enum>Qt::DownArrow</enum>
+         <string>Coll. 2</string>
         </property>
        </widget>
       </item>
@@ -213,18 +177,52 @@
    <item row="10" column="1" colspan="2">
     <widget class="InspectionWidget" name="inspectionWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
+      <property name="margin">
        <number>0</number>
       </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QCheckBox" name="usePreviousSectionCheckBox">
+     <property name="text">
+      <string>Réutiliser le collecteur précédent</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="1">
+       <widget class="QToolButton" name="previousButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::UpArrow</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="sectionCombo"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Collecteur</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QToolButton" name="nextButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::DownArrow</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -244,8 +242,39 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>usePreviousSectionCheckBox</tabstop>
+  <tabstop>previousButton</tabstop>
+  <tabstop>sectionCombo</tabstop>
+  <tabstop>nextButton</tabstop>
+  <tabstop>endNodeEdit</tabstop>
+  <tabstop>sectionlengthEdit</tabstop>
+  <tabstop>pipeDiaEdit</tabstop>
+  <tabstop>startNodeEdit</tabstop>
+  <tabstop>profileEdit</tabstop>
+  <tabstop>pipeMaterialEdit</tabstop>
+  <tabstop>pipeWidthEdit</tabstop>
+  <tabstop>sectionUseEdit</tabstop>
+ </tabstops>
  <resources>
   <include location="../resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>usePreviousSectionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widget_2</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>475</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>40</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
