@@ -73,7 +73,8 @@ class ImportData():
                     PipeDia=float(self.getValue(child, 'S_PipeDia')),
                     PipeWidth=float(self.getValue(child, 'S_PipeWidth')),
                     #Medianumber=self.getValue(child, 'S_Medianumber'),  # do not exist in XML
-                    Inspections={})
+                    Inspections={},
+                    Import=True)
 
 
             # inspection

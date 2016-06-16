@@ -66,7 +66,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                                                    self,
                                                                                    editor_context)
 
-        self.sectionWidget.finishInit(iface, self.data)
+        self.sectionWidget.finish_init(iface, self.data)
 
         for p_id, project in self.data.items():
             self.projectCombo.addItem(project['Name'], p_id)
@@ -84,7 +84,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.currentProjectId = self.projectCombo.itemData(idx)
         self.dateTimeEdit.setDateTime(self.data[self.currentProjectId]['Date'])
         self.channelNameEdit.setText(self.data[self.currentProjectId]['Channel'])
-        self.sectionWidget.setProjectId(self.currentProjectId)
+        self.sectionWidget.set_project_id(self.currentProjectId)
 
     @pyqtSlot()
     def on_searchButton_clicked(self):
@@ -116,7 +116,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.hide()
 
         self.sectionWidget.setEnabled(True)
-        self.sectionWidget.setProjectId(self.currentProjectId)
+        self.sectionWidget.set_project_id(self.currentProjectId)
 
 
     @pyqtSlot()
@@ -137,54 +137,68 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].iteritems():
                     if inspection['Import']:
 
-                        # get corresponding reaches in qgep project
-                        reach_features = []
-                        for fid in [section['QgepChannelId{}'.format(i)] for i in (1, 2, 3)]:
-                            if fid is None:
-                                break
-                            f = sectionAtId( fid )
-                            if f.isValid() is False:
+                        # offset in case of several sections in inspection data correspond to a single section in qgep data
+                        distance_offset = 0
+
+                        if section['UsePreviousSection'] is not True:
+                            # get corresponding reaches in qgep project
+                            reach_features = []
+
+                            for fid in [section['QgepChannelId{}'.format(i)] for i in (1, 2, 3)]:
+                                if fid is None:
+                                    break
+                                f = sectionAtId(fid)
+                                if f.isValid() is False:
+                                    self.cannotImportLabel.show()
+                                    self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a un collecteur assigné qui n''existe pas ou plus.'
+                                                                   .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                    return
+                                reach_features.append(QgsFeature(f))
+
+                            if len(reach_features) == 0:
                                 self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a un collecteur assigné qui n''existe pas ou plus.'
+                                self.cannotImportLabel.setText('L''inspection {} chambre {} à {} n''a pas de collecteur assigné.'
                                                                .format(section['Counter'], section['StartNode'], section['EndNode']))
                                 return
-                            reach_features.append(QgsFeature(f))
 
-                        if len(reach_features) == 0:
-                            self.cannotImportLabel.show()
-                            self.cannotImportLabel.setText('L''inspection {} chambre {} à {} n''a pas de collecteur assigné.'
-                                                           .format(section['Counter'], section['StartNode'], section['EndNode']))
-                            return
+                            # create maintenance/examination event (one per qgep reach feature)
+                            for rf in reach_features:
+                                # in case several sections in qgep data correspond to a single section in inspection data
+                                mf = QgsFeature()
+                                init_fields = maintenance_layer.dataProvider().fields()
+                                mf.setFields(init_fields)
+                                mf.initAttributes(init_fields.size())
+                                # mf['identifier'] = i_id  # use custom id to retrieve feature
+                                mf['maintenance_type'] = 'examination'
+                                mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
+                                mf['operator'] = inspection['Operator']
+                                mf['time_point'] = QDateTime(inspection['InspDate'])
+                                mf['remark'] = ''
+                                mf['status'] = 2550  # vl_maintenance_event: accomplished
+                                mf['inspected_length'] = section['Sectionlength']
+                                if self.relationWidgetWrapper is not None:
+                                    mf['fk_operator_company'] = self.relationWidgetWrapper.value()
+                                if inspection['CodeInspectionDir'] == 'D':
+                                    mf['fs_reach_point'] = rf['rp_from_obj_id']
+                                else:
+                                    mf['fs_reach_point'] = rf['rp_to_obj_id']
 
-                        # create maintenance/examination event
-                        for rf in reach_features:
-                            mf = QgsFeature()
-                            initFields = maintenance_layer.dataProvider().fields()
-                            mf.setFields(initFields)
-                            mf.initAttributes(initFields.size())
-                            # mf['identifier'] = i_id  # use custom id to retrieve feature
-                            mf['maintenance_type'] = 'examination'
-                            mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
-                            mf['operator'] = inspection['Operator']
-                            mf['time_point'] = QDateTime(inspection['InspDate'])
-                            mf['remark'] = ''
-                            mf['status'] = 2550  # vl_maintenance_event: accomplished
-                            mf['inspected_length'] = section['Sectionlength']
-                            if self.relationWidgetWrapper is not None:
-                                mf['fk_operator_company'] = self.relationWidgetWrapper.value()
-                            if inspection['CodeInspectionDir'] == 'D':
-                                mf['fs_reach_point'] = rf['rp_from_obj_id']
-                            else:
-                                mf['fs_reach_point'] = rf['rp_to_obj_id']
+                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
 
-                            features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
+                        else:
+                            # in case several sections in inspection data correspond to a single section in qgep data
+                            # substract length from previous sections in inspection data
+                            distance_offset = 0
+                            offset_section_id = s_id
+                            while self.data[p_id]['Sections'][offset_section_id]['UsePreviousSection'] is True:
+                                offset_section_id = self.data[p_id]['Sections']._OrderedDict__map[offset_section_id].previous.key
+                                distance_offset -= self.data[p_id]['Sections'][offset_section_id]['Sectionlength']
 
                         # add corresponding damages
                         reach_index = 0
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
-
-                                distance = observation['Position']
+                                distance = observation['Position'] + distance_offset
                                 while distance > reach_features[reach_index]['length_effective']:
                                     if reach_index < len(reach_features)-1:
                                         distance -= reach_features[reach_index]['length_effective']

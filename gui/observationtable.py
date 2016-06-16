@@ -56,7 +56,7 @@ class ObservationTable(QTableWidget):
 
         self.itemClicked.connect(self.importCheckboxClicked)
 
-    def finishInit(self, data):
+    def finish_init(self, data):
         self.data = data
         for c, col in enumerate(ColumnHeaders):
             self.insertColumn(c)
@@ -67,7 +67,7 @@ class ObservationTable(QTableWidget):
             self.setHorizontalHeaderItem(c, item)
         self.adjustSize()
 
-    def setInspection(self, projectId, sectionId, inspectionId):
+    def set_inspection(self, projectId, sectionId, inspectionId):
         self.clearContents()
 
         self.projectId = projectId

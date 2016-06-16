@@ -34,7 +34,6 @@ from wincan2qgep.core.mysettings import MySettings
 from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
 
 
-
 class InspectionWidget(QWidget, Ui_InspectionWidget):
     importChanged = pyqtSignal()
 
@@ -47,11 +46,11 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
         self.sectionId = None
         self.inspectionId = None
 
-    def finishInit(self, data):
+    def finish_init(self, data):
         self.data = data
-        self.observationTable.finishInit(data)
+        self.observationTable.finish_init(data)
 
-    def setSection(self, projectId, sectionId):
+    def set_section(self, projectId, sectionId):
         self.inspectionCombo.clear()
         self.projectId = projectId
         self.sectionId = sectionId
@@ -83,7 +82,7 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
             self.operatorEdit.setText(inspection['Operator'])
             self.importCheckBox.setChecked(inspection['Import'])
 
-            self.observationTable.setInspection(self.projectId, self.sectionId, self.inspectionId)
+            self.observationTable.set_inspection(self.projectId, self.sectionId, self.inspectionId)
 
     @pyqtSlot(bool)
     def on_importCheckBox_clicked(self, toImport):
