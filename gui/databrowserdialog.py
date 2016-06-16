@@ -52,19 +52,19 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.hide()
 
         self.relationWidgetWrapper = None
-        mLayer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value('maintenanceLayer'))
-        if mLayer is not None:
-            fieldIdx = mLayer.fieldNameIndex('fk_operator_company')
-            widgetConfig = mLayer.editorWidgetV2Config(fieldIdx)
-            editorContext = QgsAttributeEditorContext()
-            editorContext.setVectorLayerTools(iface.vectorLayerTools())
+        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value('maintenanceLayer'))
+        if maintenance_layer is not None:
+            field_idx = maintenance_layer.fieldNameIndex('fk_operator_company')
+            widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
+            editor_context = QgsAttributeEditorContext()
+            editor_context.setVectorLayerTools(iface.vectorLayerTools())
             self.relationWidgetWrapper = QgsEditorWidgetRegistry.instance().create("ValueRelation",
-                                                                                   mLayer,
-                                                                                   fieldIdx,
-                                                                                   widgetConfig,
+                                                                                   maintenance_layer,
+                                                                                   field_idx,
+                                                                                   widget_config,
                                                                                    self.operatingCompanyComboBox,
                                                                                    self,
-                                                                                   editorContext)
+                                                                                   editor_context)
 
         self.sectionWidget.finishInit(iface, self.data)
 
@@ -72,7 +72,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             self.projectCombo.addItem(project['Name'], p_id)
 
         self.channelNameEdit.setText('5004B')
-        #self.on_searchButton_clicked()
+        # self.on_searchButton_clicked()
 
     @pyqtSlot(str)
     def on_channelNameEdit_textChanged(self, txt):
@@ -124,12 +124,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cannotImportLabel.hide()
 
         # initilaize maintenance and damage layers and features
-        mLayerid = self.settings.value("maintenanceLayer")
-        mLayer = QgsMapLayerRegistry.instance().mapLayer(mLayerid)
-        dLayerid = self.settings.value("damageLayer")
-        dLayer = QgsMapLayerRegistry.instance().mapLayer(dLayerid)
-        jLayerid = self.settings.value("joinMaintenceWastewaterstructureLayer")
-        jLayer = QgsMapLayerRegistry.instance().mapLayer(jLayerid)
+        maintenance_layer_id = self.settings.value("maintenanceLayer")
+        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(maintenance_layer_id)
+        damage_layer_id = self.settings.value("damageLayer")
+        damage_layer = QgsMapLayerRegistry.instance().mapLayer(damage_layer_id)
+        join_layer_id = self.settings.value("joinMaintenceWastewaterstructureLayer")
+        join_layer = QgsMapLayerRegistry.instance().mapLayer(join_layer_id)
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
@@ -138,8 +138,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     if inspection['Import']:
 
                         # get corresponding reaches in qgep project
-                        reachFeatures = []
-                        for fid in [section['QgepChannelId{}'.format(i)] for i in (1,2,3)]:
+                        reach_features = []
+                        for fid in [section['QgepChannelId{}'.format(i)] for i in (1, 2, 3)]:
                             if fid is None:
                                 break
                             f = sectionAtId( fid )
@@ -148,22 +148,21 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a un collecteur assigné qui n''existe pas ou plus.'
                                                                .format(section['Counter'], section['StartNode'], section['EndNode']))
                                 return
-                            reachFeatures.append(QgsFeature(f))
+                            reach_features.append(QgsFeature(f))
 
-                        if len(reachFeatures) == 0:
+                        if len(reach_features) == 0:
                             self.cannotImportLabel.show()
                             self.cannotImportLabel.setText('L''inspection {} chambre {} à {} n''a pas de collecteur assigné.'
                                                            .format(section['Counter'], section['StartNode'], section['EndNode']))
                             return
 
-
                         # create maintenance/examination event
-                        for rf in reachFeatures:
+                        for rf in reach_features:
                             mf = QgsFeature()
-                            initFields = mLayer.dataProvider().fields()
+                            initFields = maintenance_layer.dataProvider().fields()
                             mf.setFields(initFields)
                             mf.initAttributes(initFields.size())
-                            #mf['identifier'] = i_id  # use custom id to retrieve feature
+                            # mf['identifier'] = i_id  # use custom id to retrieve feature
                             mf['maintenance_type'] = 'examination'
                             mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
                             mf['operator'] = inspection['Operator']
@@ -181,17 +180,17 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
 
                         # add corresponding damages
-                        reachIndex = 0
+                        reach_index = 0
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
 
                                 distance = observation['Position']
-                                while distance > reachFeatures[reachIndex]['length_effective']:
-                                    if reachIndex < len(reachFeatures)-1:
-                                        distance -= reachFeatures[reachIndex]['length_effective']
-                                        reachIndex += 1
+                                while distance > reach_features[reach_index]['length_effective']:
+                                    if reach_index < len(reach_features)-1:
+                                        distance -= reach_features[reach_index]['length_effective']
+                                        reach_index += 1
                                     else:
-                                        if distance <= reachFeatures[reachIndex]['length_effective'] + .5:  # add 50cm tolerance
+                                        if distance <= reach_features[reach_index]['length_effective'] + .5:  # add 50cm tolerance
                                             break
                                         else:
                                             self.cannotImportLabel.show()
@@ -201,7 +200,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                                 # create maintenance/examination event
                                 df = QgsFeature()
-                                initFields = dLayer.dataProvider().fields()
+                                initFields = damage_layer.dataProvider().fields()
                                 df.setFields(initFields)
                                 df.initAttributes(initFields.size())
                                 df['damage_type'] = 'channel'
@@ -211,11 +210,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df['distance'] = distance
                                 df['video_counter'] = observation['MPEGPosition']
 
-                                ws_obj_id = reachFeatures[reachIndex]['ws_obj_id']
+                                ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
 
-
-        with edit(mLayer):
+        with edit(maintenance_layer):
             self.progressBar.setMaximum(len(features))
             self.progressBar.setMinimum(0)
             self.progressBar.setValue(0)
@@ -230,23 +228,23 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     continue
 
                 # write maintenace feature
-                mLayer.addFeature(maintenance)
+                maintenance_layer.addFeature(maintenance)
 
                 # set fkey maintenance event id to all damages
                 for i, _ in enumerate(damages):
                     damages[i]['fs_examination'] = maintenance['obj_id']
 
                 # write damages
-                dLayer.addFeatures(damages, False)
+                damage_layer.addFeatures(damages, False)
 
                 # write in relation table (wasterwater structure - maintenance events)
                 jf = QgsFeature()
-                initFields = jLayer.dataProvider().fields()
-                jf.setFields(initFields)
-                jf.initAttributes(initFields.size())
+                init_fields = join_layer.dataProvider().fields()
+                jf.setFields(init_fields)
+                jf.initAttributes(init_fields.size())
                 jf['fk_wastewater_structure'] = ws_obj_id
                 jf['fk_maintenance_event'] = maintenance['obj_id']
-                jLayer.addFeature(jf)
+                join_layer.addFeature(jf)
 
                 i += 1
                 self.progressBar.setValue(i)
