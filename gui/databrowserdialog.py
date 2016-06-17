@@ -71,7 +71,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         for p_id, project in self.data.items():
             self.projectCombo.addItem(project['Name'], p_id)
 
-        self.channelNameEdit.setText('5004B')
+        self.channelNameEdit.setText('')
         # self.on_searchButton_clicked()
 
     @pyqtSlot(str)
@@ -133,7 +133,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
+            previousSectionUsed = True
             for s_id, section in self.data[p_id]['Sections'].items():
+                if section['Import'] is not True:
+                    previousSectionUsed = False
+                    continue
+
                 for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].iteritems():
                     if inspection['Import']:
 
@@ -188,6 +193,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
                             # substract length from previous sections in inspection data
+                            if not previousSectionUsed:
+                                self.cannotImportLabel.show()
+                                self.cannotImportLabel.setText(
+                                    'L''inspection {} chambre {} à {} utilise le collecteur précédent mais il n''est pas défini.'
+                                    .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                return
                             distance_offset = 0
                             offset_section_id = s_id
                             while self.data[p_id]['Sections'][offset_section_id]['UsePreviousSection'] is True:

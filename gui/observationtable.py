@@ -87,8 +87,8 @@ class ObservationTable(QTableWidget):
             for c, col in enumerate(ColumnData):
                 item = QTableWidgetItem(u'{}'.format(obs[col]))
                 if c == 0:
-                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable )
-                    item.setCheckState( Qt.Checked if obs['Import'] else Qt.Unchecked )
+                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
+                    item.setCheckState(Qt.Checked if obs['Import'] else Qt.Unchecked)
                     item.setData( Qt.UserRole, o_id)
                 else:
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)

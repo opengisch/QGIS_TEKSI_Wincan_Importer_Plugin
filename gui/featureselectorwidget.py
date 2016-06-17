@@ -157,7 +157,7 @@ class FeatureSelectorWidget(QWidget):
             self.canvas.zoomByFactor(1.0, center)  # refresh is done in this method
 
         # highlight
-        self.deleteHighlight()
+        self.delete_highlight()
         self.highlight = QgsHighlight(self.canvas, geom, self.layer)
 
         settings = QSettings()
@@ -170,17 +170,19 @@ class FeatureSelectorWidget(QWidget):
         color.setAlpha(alpha)
         self.highlight.setFillColor(color)  # sets fill with alpha
         self.highlight.setBuffer(buffer)
-        self.highlight.setmin_width(min_width)
+        self.highlight.setMinWidth(min_width)
+        self.highlight.setWidth(min_width)
         self.highlight.show()
         
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.deleteHighlight)
+        self.timer.timeout.connect(self.delete_highlight)
         self.timer.start(3000)
 
-    def deleteHighlight(self):
+    def delete_highlight(self):
         if self.highlight is not None:
             self.highlight.hide()
+            del self.highlight
             self.highlight = None
 
     def unsetMapTool(self):
