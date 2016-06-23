@@ -29,7 +29,7 @@ from PyQt4.QtGui import QAction, QIcon, QColor, QDesktopServices, QFileDialog
 from qgis.core import QgsProject
 from qgis.gui import QgsRubberBand, QgsMessageBar
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.import_data import ImportData
 from wincan2qgep.gui.configurationdialog import ConfigurationDialog
 from wincan2qgep.gui.databrowserdialog import DataBrowserDialog

@@ -25,7 +25,7 @@
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 
 
 def findSection(channel, startNode, endNode):

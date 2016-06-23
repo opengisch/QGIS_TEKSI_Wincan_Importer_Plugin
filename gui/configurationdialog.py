@@ -33,7 +33,7 @@ from qgis.core import QgsProject
 from qgis.gui import QgsGenericProjectionSelector
 
 from quickfinder.qgissettingmanager import SettingDialog
-from quickfinder.core.mysettings import MySettings
+from quickfinder.core.my_settings import MySettings
 from quickfinder.core.projectfinder import ProjectFinder, createFTSfile
 from quickfinder.gui.projectsearchdialog import ProjectSearchDialog
 from quickfinder.gui.projectsearchmodel import ProjectSearchModel, SearchIdRole

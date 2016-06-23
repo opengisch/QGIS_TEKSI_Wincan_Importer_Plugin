@@ -29,7 +29,7 @@ from PyQt4.QtGui import QWidget, QIcon, QListWidgetItem
 
 from qgis.core import QgsMapLayerRegistry, QgsApplication
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget

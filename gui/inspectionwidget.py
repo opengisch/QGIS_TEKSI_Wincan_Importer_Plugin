@@ -30,7 +30,7 @@
 from PyQt4.QtCore import pyqtSlot, pyqtSignal
 from PyQt4.QtGui import QWidget
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
 
 

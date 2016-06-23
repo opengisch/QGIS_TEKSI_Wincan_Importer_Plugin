@@ -34,15 +34,15 @@ class MySettings(SettingManager):
         SettingManager.__init__(self, pluginName)
 
         # project settings
-        self.add_setting(String('channelLayer', Scope.project, 'vw_qgep_reach'))
-        self.add_setting(String('coverLayer', Scope.project, 'vw_qgep_cover'))
-        self.add_setting(String('maintenanceLayer', Scope.project, 'vw_qgep_maintenance'))
-        self.add_setting(String('damageLayer', Scope.project, 'vw_qgep_damage'))
-        self.add_setting(String('joinMaintenceWastewaterstructureLayer', Scope.project, 're_maintenance_event_wastewater_structure'))
-        self.add_setting(String('vlDamageChannelLayer', Scope.project, 'vl_damage_channel_code'))
-        self.add_setting(String('vlDamageSingleClass', Scope.project, 'vl_damage_single_damage_class'))
+        self.add_setting(String('channelLayer', Scope.Project, 'vw_qgep_reach'))
+        self.add_setting(String('coverLayer', Scope.Project, 'vw_qgep_cover'))
+        self.add_setting(String('maintenanceLayer', Scope.Project, 'vw_qgep_maintenance'))
+        self.add_setting(String('damageLayer', Scope.Project, 'vw_qgep_damage'))
+        self.add_setting(String('joinMaintenceWastewaterstructureLayer', Scope.Project, 're_maintenance_event_wastewater_structure'))
+        self.add_setting(String('vlDamageChannelLayer', Scope.Project, 'vl_damage_channel_code'))
+        self.add_setting(String('vlDamageSingleClass', Scope.Project, 'vl_damage_single_damage_class'))
 
-        self.add_setting(String('xmlPath', Scope.project, ''))
+        self.add_setting(String('xmlPath', Scope.Project, ''))
 
 
 

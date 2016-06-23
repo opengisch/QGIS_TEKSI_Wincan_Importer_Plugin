@@ -25,7 +25,7 @@
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 
 
 # return pkey of vl from VSA damage code

@@ -31,7 +31,7 @@
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QTableWidget, QTableWidgetItem, QAbstractItemView
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 
 ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité']
 ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate']

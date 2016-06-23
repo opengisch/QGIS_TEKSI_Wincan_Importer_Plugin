@@ -33,7 +33,7 @@ from PyQt4.QtGui import QDialog
 from qgis.core import QgsMapLayerRegistry, QgsFeature, edit
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
-from wincan2qgep.core.mysettings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import findSection, sectionAtId
 from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl
 from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
