@@ -27,7 +27,7 @@
 #---------------------------------------------------------------------
 
 
-from PyQt4.QtCore import pyqtSlot, QDateTime
+from PyQt4.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from PyQt4.QtGui import QDialog
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, edit
@@ -47,14 +47,17 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.data = data
         self.currentProjectId = None
         self.channelNameEdit.setFocus()
+        self.cancel = False
 
         self.cannotImportLabel.hide()
+        self.progressBar.setTextVisible(True)
         self.progressBar.hide()
+        self.cancelButton.hide()
 
         self.relationWidgetWrapper = None
         maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value('maintenanceLayer'))
         if maintenance_layer is not None:
-            field_idx = maintenance_layer.fieldNameIndex('fk_operator_company')
+            field_idx = maintenance_layer.fieldNameIndex('fk_operating_company')
             widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
             editor_context = QgsAttributeEditorContext()
             editor_context.setVectorLayerTools(iface.vectorLayerTools())
@@ -87,6 +90,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.sectionWidget.set_project_id(self.currentProjectId)
 
     @pyqtSlot()
+    def on_cancelButton_clicked(self):
+        self.cancel = True
+
+    @pyqtSlot()
     def on_searchButton_clicked(self):
         if self.currentProjectId is None:
             return
@@ -101,19 +108,30 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
+        self.progressBar.setFormat('Recherche les collecteurs %v/%m')
         self.progressBar.show()
+        self.cancelButton.show()
+        self.importButton.hide()
+        self.cancel = False
         i = 0
 
         # find sections
         channel = self.data[self.currentProjectId]['Channel']
         for p_id in self.data.keys():
+            if self.cancel:
+                break
             for s_id, section in self.data[p_id]['Sections'].items():
+                QCoreApplication.processEvents()
+                if self.cancel:
+                    break
                 feature = findSection(channel, section['StartNode'], section['EndNode'])
                 if feature.isValid():
                     self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
                 self.progressBar.setValue(i)
                 i += 1
         self.progressBar.hide()
+        self.cancelButton.hide()
+        self.importButton.show()
 
         self.sectionWidget.setEnabled(True)
         self.sectionWidget.set_project_id(self.currentProjectId)
@@ -133,10 +151,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
-            previousSectionUsed = True
+            previousSectionImported = True
             for s_id, section in self.data[p_id]['Sections'].items():
                 if section['Import'] is not True:
-                    previousSectionUsed = False
+                    previousSectionImported = False
                     continue
 
                 for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].iteritems():
@@ -146,6 +164,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         distance_offset = 0
 
                         if section['UsePreviousSection'] is not True:
+                            previousSectionImported = True
                             # get corresponding reaches in qgep project
                             reach_features = []
 
@@ -182,18 +201,18 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf['status'] = 2550  # vl_maintenance_event: accomplished
                                 mf['inspected_length'] = section['Sectionlength']
                                 if self.relationWidgetWrapper is not None:
-                                    mf['fk_operator_company'] = self.relationWidgetWrapper.value()
+                                    mf['fk_operating_company'] = self.relationWidgetWrapper.value()
                                 if inspection['CodeInspectionDir'] == 'D':
-                                    mf['fs_reach_point'] = rf['rp_from_obj_id']
+                                    mf['fk_reach_point'] = rf['rp_from_obj_id']
                                 else:
-                                    mf['fs_reach_point'] = rf['rp_to_obj_id']
+                                    mf['fk_reach_point'] = rf['rp_to_obj_id']
 
                                 features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
 
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
                             # substract length from previous sections in inspection data
-                            if not previousSectionUsed:
+                            if not previousSectionImported:
                                 self.cannotImportLabel.show()
                                 self.cannotImportLabel.setText(
                                     'L''inspection {} chambre {} à {} utilise le collecteur précédent mais il n''est pas défini.'
@@ -202,7 +221,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             distance_offset = 0
                             offset_section_id = s_id
                             while self.data[p_id]['Sections'][offset_section_id]['UsePreviousSection'] is True:
-                                offset_section_id = self.data[p_id]['Sections']._OrderedDict__map[offset_section_id].previous.key
+                                # get previous section id
+                                # http://stackoverflow.com/questions/28035490/in-python-how-can-i-get-the-next-and-previous-keyvalue-of-a-particular-key-in
+                                offset_section_id = self.data[p_id]['Sections']._OrderedDict__map[offset_section_id][0][2]
+                                print offset_section_id
+                                # cumulate offset
                                 distance_offset -= self.data[p_id]['Sections'][offset_section_id]['Sectionlength']
 
                         # add corresponding damages
@@ -238,13 +261,21 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
 
+        self.progressBar.setMaximum(len(features))
+        self.progressBar.setMinimum(0)
+        self.progressBar.setValue(0)
+        self.progressBar.setFormat('Import des données %v/%m')
+        self.progressBar.show()
+        self.cancelButton.show()
+        self.importButton.hide()
+        self.cancel = False
+
         with edit(maintenance_layer):
-            self.progressBar.setMaximum(len(features))
-            self.progressBar.setMinimum(0)
-            self.progressBar.setValue(0)
-            self.progressBar.show()
             i = 0
             for ws_obj_id, elements in features.iteritems():
+                QCoreApplication.processEvents()
+                if self.cancel:
+                    break
 
                 maintenance = elements['maintenance']
                 damages = elements['damages']
@@ -257,7 +288,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 # set fkey maintenance event id to all damages
                 for i, _ in enumerate(damages):
-                    damages[i]['fs_examination'] = maintenance['obj_id']
+                    damages[i]['fk_examination'] = maintenance['obj_id']
 
                 # write damages
                 damage_layer.addFeatures(damages, False)
@@ -275,6 +306,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 self.progressBar.setValue(i)
 
         self.progressBar.hide()
+        self.cancelButton.hide()
+        self.importButton.show()
 
 
 

@@ -115,7 +115,7 @@ class wincan2qgep(QObject):
         #filepath = '/var/run/user/1000/gvfs/smb-share:server=s4laveyre.sige.ch,share=inspection_tv/SIGE_2014/Rapport 2014/SIGE 5004B 14/XML/Project.xml'
 
         if filepath:
-            self.settings.setValue('xmlPath', os.path.dirname(os.path.realpath(filepath)))
+            self.settings.set_value('xmlPath', os.path.dirname(os.path.realpath(filepath)))
             data = ImportData(filepath).data
             self.dlg = DataBrowserDialog(self.iface, data)
             self.dlg.show()
