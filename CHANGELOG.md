@@ -1,5 +1,10 @@
 ## Changelog
 
+** Version 0.5** 27.06.2016
+
+* Improved gui (list, progress bar, cancel)
+* Can use previous section
+
 ** Version 0.4** 7.04.2016
 
 * import inspection data into QGEP layers
