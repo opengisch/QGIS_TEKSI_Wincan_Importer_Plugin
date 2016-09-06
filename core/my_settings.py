@@ -24,7 +24,7 @@
 #---------------------------------------------------------------------
 
 from PyQt4.QtGui import QColor
-from wincan2qgep.qgissettingmanager import *
+from ..qgissettingmanager import *
 
 pluginName = "wincan2qgep_plugin"
 
@@ -34,6 +34,8 @@ class MySettings(SettingManager):
         SettingManager.__init__(self, pluginName)
 
         # project settings
+        self.add_setting(Bool('remove_trailing_chars', Scope.Global, True))  # TODO: make it false whenever the settings dialog is done
+
         self.add_setting(String('channelLayer', Scope.Project, 'vw_qgep_reach'))
         self.add_setting(String('coverLayer', Scope.Project, 'vw_qgep_cover'))
         self.add_setting(String('maintenanceLayer', Scope.Project, 'vw_qgep_maintenance'))

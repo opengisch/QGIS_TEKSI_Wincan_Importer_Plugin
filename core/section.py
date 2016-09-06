@@ -25,7 +25,7 @@
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
-from wincan2qgep.core.my_settings import MySettings
+from ..core.my_settings import MySettings
 
 
 def findSection(channel, startNode, endNode):
@@ -34,7 +34,7 @@ def findSection(channel, startNode, endNode):
     layerid = MySettings().value("channelLayer")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
-        requestText = '"rp_from_identifier" = \'{}-{}\' and "rp_to_identifier" = \'{}-{}\''.format(channel, startNode, channel, endNode)
+        requestText = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(channel, startNode, channel, endNode)
 
         request = QgsFeatureRequest().setFilterExpression(requestText)
         for f in layer.getFeatures( request ):

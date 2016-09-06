@@ -26,6 +26,7 @@
 #
 #---------------------------------------------------------------------
 
+import re
 
 from PyQt4.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from PyQt4.QtGui import QDialog
@@ -125,6 +126,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 if self.cancel:
                     break
                 feature = findSection(channel, section['StartNode'], section['EndNode'])
+                if not feature.isValid() and self.settings.value('remove_trailing_chars'):
+                    # try without trailing alpha char
+                    feature = findSection(channel, re.sub('\D*$', '', section['StartNode']), re.sub('\D*$', '', section['EndNode']))
                 if feature.isValid():
                     self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
                 self.progressBar.setValue(i)
