@@ -32,7 +32,7 @@ from wincan2qgep.core.my_settings import MySettings
 def damageCode2vl(code):
     feature = QgsFeature()
 
-    layerid = MySettings().value("vlDamageChannelLayer")
+    layerid = MySettings().value("vl_damage_channel_layer")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
         requestText = '"value_en" = \'{}\''.format(code)
@@ -53,7 +53,7 @@ def damageCode2vl(code):
 def damageLevel2vl(code):
     feature = QgsFeature()
 
-    layerid = MySettings().value("vlDamageSingleClass")
+    layerid = MySettings().value("vl_damage_single_class")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
         requestText = '"value_en" = \'EZ{}\''.format(code)

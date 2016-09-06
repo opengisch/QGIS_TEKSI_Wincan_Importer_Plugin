@@ -31,7 +31,7 @@ from ..core.my_settings import MySettings
 def findSection(channel, startNode, endNode):
     feature = QgsFeature()
 
-    layerid = MySettings().value("channelLayer")
+    layerid = MySettings().value("channel_layer")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
         requestText = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(channel, startNode, channel, endNode)
@@ -46,7 +46,7 @@ def findSection(channel, startNode, endNode):
 def sectionAtId(id):
     feature = QgsFeature()
     if id is not None:
-        layerid = MySettings().value("channelLayer")
+        layerid = MySettings().value("channel_layer")
         layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
         if layer is not None:
             request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(id))

@@ -56,7 +56,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cancelButton.hide()
 
         self.relationWidgetWrapper = None
-        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value('maintenanceLayer'))
+        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value("maintenance_layer"))
         if maintenance_layer is not None:
             field_idx = maintenance_layer.fieldNameIndex('fk_operating_company')
             widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
@@ -146,11 +146,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cannotImportLabel.hide()
 
         # initilaize maintenance and damage layers and features
-        maintenance_layer_id = self.settings.value("maintenanceLayer")
+        maintenance_layer_id = self.settings.value("maintenance_layer")
         maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(maintenance_layer_id)
-        damage_layer_id = self.settings.value("damageLayer")
+        damage_layer_id = self.settings.value("damage_layer")
         damage_layer = QgsMapLayerRegistry.instance().mapLayer(damage_layer_id)
-        join_layer_id = self.settings.value("joinMaintenceWastewaterstructureLayer")
+        join_layer_id = self.settings.value("join_maintence_wastewaterstructure_layer")
         join_layer = QgsMapLayerRegistry.instance().mapLayer(join_layer_id)
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
@@ -237,18 +237,19 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
                                 distance = observation['Position'] + distance_offset
-                                while distance > reach_features[reach_index]['length_effective']:
-                                    if reach_index < len(reach_features)-1:
-                                        distance -= reach_features[reach_index]['length_effective']
-                                        reach_index += 1
-                                    else:
-                                        if distance <= reach_features[reach_index]['length_effective'] + .5:  # add 50cm tolerance
-                                            break
+                                if not observation['ForceImport']:
+                                    while distance > reach_features[reach_index]['length_effective']:
+                                        if reach_index < len(reach_features)-1:
+                                            distance -= reach_features[reach_index]['length_effective']
+                                            reach_index += 1
                                         else:
-                                            self.cannotImportLabel.show()
-                                            self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a des observations à des positions supérieures à la longueur'
-                                                                           ' du ou des collecteurs assignés.'.format(section['Counter'], section['StartNode'], section['EndNode']))
-                                            return
+                                            if distance <= reach_features[reach_index]['length_effective'] + self.settings.value('tolerance_channel_length'):  # add 50cm tolerance
+                                                break
+                                            else:
+                                                self.cannotImportLabel.show()
+                                                self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a des observations à des positions supérieures à la longueur'
+                                                                               ' du ou des collecteurs assignés.'.format(section['Counter'], section['StartNode'], section['EndNode']))
+                                                return
 
                                 # create maintenance/examination event
                                 df = QgsFeature()

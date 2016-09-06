@@ -55,7 +55,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.sectionListWidget.itemChanged.connect(self.sectionItemChanged)
 
     def finish_init(self, iface, data):
-        layer_id = self.settings.value("channelLayer")
+        layer_id = self.settings.value("channel_layer")
         for selector in (self.section1Selector, self.section2Selector, self.section3Selector):
             selector.setLayer(QgsMapLayerRegistry.instance().mapLayer(layer_id))
             selector.setCanvas(iface.mapCanvas())

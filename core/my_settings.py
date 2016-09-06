@@ -23,7 +23,7 @@
 #
 #---------------------------------------------------------------------
 
-from PyQt4.QtGui import QColor
+
 from ..qgissettingmanager import *
 
 pluginName = "wincan2qgep_plugin"
@@ -35,14 +35,15 @@ class MySettings(SettingManager):
 
         # project settings
         self.add_setting(Bool('remove_trailing_chars', Scope.Global, True))  # TODO: make it false whenever the settings dialog is done
+        self.add_setting(Double('tolerance_channel_length', Scope.Global, 1))
 
-        self.add_setting(String('channelLayer', Scope.Project, 'vw_qgep_reach'))
-        self.add_setting(String('coverLayer', Scope.Project, 'vw_qgep_cover'))
-        self.add_setting(String('maintenanceLayer', Scope.Project, 'vw_qgep_maintenance'))
-        self.add_setting(String('damageLayer', Scope.Project, 'vw_qgep_damage'))
-        self.add_setting(String('joinMaintenceWastewaterstructureLayer', Scope.Project, 're_maintenance_event_wastewater_structure'))
-        self.add_setting(String('vlDamageChannelLayer', Scope.Project, 'vl_damage_channel_code'))
-        self.add_setting(String('vlDamageSingleClass', Scope.Project, 'vl_damage_single_damage_class'))
+        self.add_setting(String("channel_layer", Scope.Project, 'vw_qgep_reach'))
+        self.add_setting(String("cover_layer", Scope.Project, 'vw_qgep_cover'))
+        self.add_setting(String("maintenance_layer", Scope.Project, 'vw_qgep_maintenance'))
+        self.add_setting(String("damage_layer", Scope.Project, 'vw_qgep_damage'))
+        self.add_setting(String('join_maintence_wastewaterstructure_layer', Scope.Project, 're_maintenance_event_wastewater_structure'))
+        self.add_setting(String("vl_damage_channel_layer", Scope.Project, 'vl_damage_channel_code'))
+        self.add_setting(String("vl_damage_single_class", Scope.Project, 'vl_damage_single_damage_class'))
 
         self.add_setting(String('xmlPath', Scope.Project, ''))
 

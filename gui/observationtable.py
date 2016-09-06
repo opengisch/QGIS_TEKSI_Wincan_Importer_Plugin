@@ -33,8 +33,8 @@ from PyQt4.QtGui import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 from wincan2qgep.core.my_settings import MySettings
 
-ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité']
-ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate']
+ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité', 'forcer']
+ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate', 'ForceImport']
 
 
 class ObservationTable(QTableWidget):
@@ -54,7 +54,7 @@ class ObservationTable(QTableWidget):
         self.verticalHeader().setVisible(True)
         self.verticalHeader().setDefaultSectionSize(25)
 
-        self.itemClicked.connect(self.importCheckboxClicked)
+        self.itemClicked.connect(self.import_checkbox_clicked)
 
     def finish_init(self, data):
         self.data = data
@@ -85,11 +85,13 @@ class ObservationTable(QTableWidget):
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-                item = QTableWidgetItem(u'{}'.format(obs[col]))
-                if c == 0:
+                item = QTableWidgetItem(u'{}'.format(obs[col] if c < 6 else ''))
+                if c in (0,6):
+                    data_column = 'Import' if c == 0 else 'ForceImport'
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
-                    item.setCheckState(Qt.Checked if obs['Import'] else Qt.Unchecked)
-                    item.setData( Qt.UserRole, o_id)
+                    item.setCheckState(Qt.Checked if obs[data_column] else Qt.Unchecked)
+                    item.setData(Qt.UserRole, o_id)
+                    item.setData(Qt.UserRole+1, data_column)
                 else:
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 font = item.font()
@@ -99,10 +101,11 @@ class ObservationTable(QTableWidget):
 
         self.resizeColumnsToContents()
 
-    def importCheckboxClicked(self, item):
+    def import_checkbox_clicked(self, item):
         if item.flags() & Qt.ItemIsUserCheckable:
             o_id = item.data(Qt.UserRole)
-            self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'][o_id]['Import'] = True if item.checkState() == Qt.Checked else False
+            data_column = item.data(Qt.UserRole+1)
+            self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'][o_id][data_column] = True if item.checkState() == Qt.Checked else False
 
 
 

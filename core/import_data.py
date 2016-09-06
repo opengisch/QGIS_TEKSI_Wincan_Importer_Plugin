@@ -129,7 +129,8 @@ class ImportData():
                                     ObservCode=self.getValue(child, 'SO_ObservCode'),
                                     BendAngleDeg=self.getValue(child, 'SO_BendAngleDeg'),
                                     BendClockH=self.getValue(child, 'SO_BendClockH'),
-                                    Import=True if code not in SkipCode else False)
+                                    Import=True if code not in SkipCode else False,
+                                    ForceImport=False)  # force import if observation is out of channel (channel too short)
                                 found = True
                                 break
                     if found: break
