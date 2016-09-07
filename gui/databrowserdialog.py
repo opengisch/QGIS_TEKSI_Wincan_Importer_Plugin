@@ -31,13 +31,13 @@ import re
 from PyQt4.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from PyQt4.QtGui import QDialog
 
-from qgis.core import QgsMapLayerRegistry, QgsFeature, edit
+from qgis.core import QgsMapLayerRegistry, QgsFeature, edit, QgsFeatureRequest
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
-from wincan2qgep.core.my_settings import MySettings
-from wincan2qgep.core.section import findSection, sectionAtId
-from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl
-from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
+from ..core.my_settings import MySettings
+from ..core.section import findSection, sectionAtId
+from ..core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition
+from ..ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
@@ -259,6 +259,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                         # add corresponding damages
                         reach_index = 0
+                        structure_condition = 'Ez4'  # = ok
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
                                 distance = observation['Position'] + distance_offset
@@ -289,9 +290,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df['channel_damage_code'] = int(damageCode2vl(observation['OpCode']))
                                 df['distance'] = distance
                                 df['video_counter'] = observation['MPEGPosition']
-
                                 ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
+                                features[ws_obj_id]['structure_condition'] = min(structure_condition, observation['Rate'])
                 self.progressBar.setValue(i)
                 i += 1
 
@@ -313,6 +314,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 maintenance = elements['maintenance']
                 damages = elements['damages']
+                structure_condition = elements['structure_condition']
 
                 if len(damages) == 0:
                     continue
@@ -335,6 +337,22 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 jf['fk_wastewater_structure'] = ws_obj_id
                 jf['fk_maintenance_event'] = maintenance['obj_id']
                 join_layer.addFeature(jf)
+
+                # get current reach
+                rf = QgsFeature()
+                layer_id = MySettings().value("wastewater_structure")
+                wsl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                if wsl is not None:
+                    request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))
+                    for f in wsl.getFeatures(request):
+                        rf = QgsFeature(f)
+                if rf.isValid():
+                    print 2222
+                    new_code = damage_level_2_structure_condition(structure_condition)
+                    # update structure condition if worse
+                    if rf['structure_condition'] is None or new_code > rf['structure_condition']:
+                        rf['structure_condition'] = new_code
+                        wsl.updateFeature(rf)
 
                 i += 1
                 self.progressBar.setValue(i)

@@ -44,6 +44,8 @@ class MySettings(SettingManager):
         self.add_setting(String('join_maintence_wastewaterstructure_layer', Scope.Project, 're_maintenance_event_wastewater_structure'))
         self.add_setting(String("vl_damage_channel_layer", Scope.Project, 'vl_damage_channel_code'))
         self.add_setting(String("vl_damage_single_class", Scope.Project, 'vl_damage_single_damage_class'))
+        self.add_setting(String("vl_wastewater_structure_structure_condition", Scope.Project, 'vl_wastewater_structure_structure_condition'))
+        self.add_setting(String("wastewater_structure", Scope.Project, 'od_wastewater_structure'))
 
         self.add_setting(String('xmlPath', Scope.Project, ''))
 

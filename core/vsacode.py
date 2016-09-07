@@ -68,3 +68,24 @@ def damageLevel2vl(code):
 
     else:
         return None
+
+
+# return damage code to renovation necessity pkey
+def damage_level_2_structure_condition(level):
+    feature = QgsFeature()
+
+    layerid = MySettings().value("vl_wastewater_structure_structure_condition")
+    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    if layer is not None:
+        requestText = '"value_en" = \'Z{}\''.format(level)
+
+        request = QgsFeatureRequest().setFilterExpression(requestText)
+        for f in layer.getFeatures(request):
+            feature = QgsFeature(f)
+            # print requestText, feature.isValid()
+
+    if feature.isValid():
+        return f['code']
+
+    else:
+        return None
