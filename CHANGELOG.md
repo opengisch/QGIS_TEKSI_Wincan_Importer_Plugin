@@ -1,5 +1,11 @@
 ## Changelog
 
+** Version 0.6** 07.09.2016
+
+* Better UI
+* Can force import when obervation is outside of section
+* Automatically select a section when a problem arises at import
+
 ** Version 0.5** 27.06.2016
 
 * Improved gui (list, progress bar, cancel)
