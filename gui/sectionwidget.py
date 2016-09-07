@@ -54,6 +54,13 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
         self.sectionListWidget.itemChanged.connect(self.sectionItemChanged)
 
+    def select_section(self, section_id):
+        for r in range(0, self.sectionListWidget.count()):
+            item = self.sectionListWidget.item(r)
+            if section_id == item.data(Qt.UserRole):
+                self.sectionListWidget.setCurrentItem(item)
+                break
+
     def finish_init(self, iface, data):
         layer_id = self.settings.value("channel_layer")
         for selector in (self.section1Selector, self.section2Selector, self.section3Selector):

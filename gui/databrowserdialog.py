@@ -144,6 +144,21 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
     @pyqtSlot()
     def on_importButton_clicked(self):
         self.cannotImportLabel.hide()
+        
+        # init progress bar
+        c = 0
+        for p_id in self.data.keys():
+            for s_id, section in self.data[p_id]['Sections'].items():
+                c += 1
+        self.progressBar.setMaximum(c)
+        self.progressBar.setMinimum(0)
+        self.progressBar.setValue(0)
+        self.progressBar.setFormat('Contrôle les collecteurs %v/%m')
+        self.progressBar.show()
+        self.cancelButton.show()
+        self.importButton.hide()
+        self.cancel = False
+        i = 0
 
         # initilaize maintenance and damage layers and features
         maintenance_layer_id = self.settings.value("maintenance_layer")
@@ -155,10 +170,14 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
-            previousSectionImported = True
+            previous_section_imported = True
             for s_id, section in self.data[p_id]['Sections'].items():
+                if self.cancel:
+                    self.hide_progress()
+                    return
+                    
                 if section['Import'] is not True:
-                    previousSectionImported = False
+                    previous_section_imported = False
                     continue
 
                 for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].iteritems():
@@ -168,7 +187,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         distance_offset = 0
 
                         if section['UsePreviousSection'] is not True:
-                            previousSectionImported = True
+                            previous_section_imported = True
                             # get corresponding reaches in qgep project
                             reach_features = []
 
@@ -180,6 +199,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     self.cannotImportLabel.show()
                                     self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a un collecteur assigné qui n''existe pas ou plus.'
                                                                    .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                    self.sectionWidget.select_section(s_id)
+                                    self.hide_progress()
                                     return
                                 reach_features.append(QgsFeature(f))
 
@@ -187,6 +208,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 self.cannotImportLabel.show()
                                 self.cannotImportLabel.setText('L''inspection {} chambre {} à {} n''a pas de collecteur assigné.'
                                                                .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                self.sectionWidget.select_section(s_id)
+                                self.hide_progress()
                                 return
 
                             # create maintenance/examination event (one per qgep reach feature)
@@ -216,11 +239,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
                             # substract length from previous sections in inspection data
-                            if not previousSectionImported:
+                            if not previous_section_imported:
                                 self.cannotImportLabel.show()
                                 self.cannotImportLabel.setText(
                                     'L''inspection {} chambre {} à {} utilise le collecteur précédent mais il n''est pas défini.'
                                     .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                self.sectionWidget.select_section(s_id)
+                                self.hide_progress()
                                 return
                             distance_offset = 0
                             offset_section_id = s_id
@@ -249,6 +274,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 self.cannotImportLabel.show()
                                                 self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a des observations à des positions supérieures à la longueur'
                                                                                ' du ou des collecteurs assignés.'.format(section['Counter'], section['StartNode'], section['EndNode']))
+                                                self.sectionWidget.select_section(s_id)
+                                                self.hide_progress()
                                                 return
 
                                 # create maintenance/examination event
@@ -265,6 +292,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                                 ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
+                self.progressBar.setValue(i)
+                i += 1
 
         self.progressBar.setMaximum(len(features))
         self.progressBar.setMinimum(0)
@@ -314,6 +343,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cancelButton.hide()
         self.importButton.show()
 
-
-
+    def hide_progress(self):
+        self.progressBar.hide()
+        self.cancelButton.hide()
+        self.importButton.show()
 
