@@ -234,7 +234,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 else:
                                     mf['fk_reach_point'] = rf['rp_to_obj_id']
 
-                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': []}
+                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': [], 'structure_condition': 4}
 
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
@@ -319,7 +319,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 if len(damages) == 0:
                     continue
 
-                # write maintenace feature
+                # write maintenance feature
                 maintenance_layer.addFeature(maintenance)
 
                 # set fkey maintenance event id to all damages
@@ -329,7 +329,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 # write damages
                 damage_layer.addFeatures(damages, False)
 
-                # write in relation table (wasterwater structure - maintenance events)
+                # write in relation table (wastewater structure - maintenance events)
                 jf = QgsFeature()
                 init_fields = join_layer.dataProvider().fields()
                 jf.setFields(init_fields)
@@ -347,7 +347,6 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     for f in wsl.getFeatures(request):
                         rf = QgsFeature(f)
                 if rf.isValid():
-                    print 2222
                     new_code = damage_level_2_structure_condition(structure_condition)
                     # update structure condition if worse
                     if rf['structure_condition'] is None or new_code > rf['structure_condition']:
