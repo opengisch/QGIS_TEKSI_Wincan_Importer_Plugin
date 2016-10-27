@@ -1,5 +1,9 @@
 ## Changelog
 
+** Version 0.7** 07.09.2016
+
+* Import pictures
+
 ** Version 0.6** 07.09.2016
 
 * Better UI
