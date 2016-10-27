@@ -111,14 +111,21 @@ class ImportData():
                         for i_id in section['Inspections']:
                             if i_id == child.find('SO_Inspecs_ID').text:
                                 code = self.getValue(child, 'SO_OpCode')
+                                PhotoFilenames = []
+                                i = 1
+                                while True:
+                                    pf = self.getValue(child, 'SO_PhotoFilename{}'.format(i))
+                                    i += 1
+                                    if pf is None:
+                                        break
+                                    PhotoFilenames.append(pf)
                                 self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'][child.find('SO_ID').text] = dict(
                                     Counter=self.getValue(child, 'SO_Counter'),
                                     Position=float(self.getValue(child, 'SO_Position')),
                                     ToGoMeter=self.getValue(child, 'SO_ToGoMeter'),
                                     Text=self.getValue(child, 'SO_Text'),
                                     MPEGPosition=self.getValue(child, 'SO_MPEGPosition'),
-                                    Photonumber1=self.getValue(child, 'SO_Photonumber1'),
-                                    PhotoFilename1=self.getValue(child, 'SO_PhotoFilename1'),
+                                    PhotoFilename=PhotoFilenames,
                                     Rate=int(round(float(self.getValue(child, 'SO_Rate')))),
                                     OpCode=code,
                                     ClipFileName1=self.getValue(child, 'SO_ClipFileName1'),

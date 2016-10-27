@@ -34,7 +34,7 @@ from PyQt4.QtGui import QTableWidget, QTableWidgetItem, QAbstractItemView
 from wincan2qgep.core.my_settings import MySettings
 
 ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité', 'forcer']
-ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename1', 'Rate', 'ForceImport']
+ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
 
 
 class ObservationTable(QTableWidget):

@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8 -*-
+# encoding: utf-8
 #
 # #-----------------------------------------------------------
 #
@@ -167,6 +166,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         damage_layer = QgsMapLayerRegistry.instance().mapLayer(damage_layer_id)
         join_layer_id = self.settings.value("join_maintence_wastewaterstructure_layer")
         join_layer = QgsMapLayerRegistry.instance().mapLayer(join_layer_id)
+        if join_layer is None:
+            self.cannotImportLabel.show()
+            self.cannotImportLabel.setText('La couche de jointure re_maintenance_event_wastewater_structureest manquante.')
+            self.hide_progress()
+            return
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
         for p_id in self.data.keys():
@@ -197,7 +201,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 f = sectionAtId(fid)
                                 if f.isValid() is False:
                                     self.cannotImportLabel.show()
-                                    self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a un collecteur assigné qui n''existe pas ou plus.'
+                                    self.cannotImportLabel.setText('L''inspection {0} chambre {1} à {2} a un collecteur assigné qui n''existe pas ou plus.'
                                                                    .format(section['Counter'], section['StartNode'], section['EndNode']))
                                     self.sectionWidget.select_section(s_id)
                                     self.hide_progress()
@@ -234,7 +238,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 else:
                                     mf['fk_reach_point'] = rf['rp_to_obj_id']
 
-                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': [], 'structure_condition': 4}
+                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': [], 'pictures': [], 'structure_condition': 4}
 
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
@@ -290,8 +294,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df['channel_damage_code'] = int(damageCode2vl(observation['OpCode']))
                                 df['distance'] = distance
                                 df['video_counter'] = observation['MPEGPosition']
+                                # pictures
+                                pics = observation['PhotoFilename']
+                                # get wastewater structure id
                                 ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
+                                features[ws_obj_id]['pictures'].append(pics)
                                 features[ws_obj_id]['structure_condition'] = min(structure_condition, observation['Rate'])
                 self.progressBar.setValue(i)
                 i += 1
@@ -314,6 +322,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 maintenance = elements['maintenance']
                 damages = elements['damages']
+                pictures = elements['pictures']
                 structure_condition = elements['structure_condition']
 
                 if len(damages) == 0:
@@ -323,11 +332,25 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 maintenance_layer.addFeature(maintenance)
 
                 # set fkey maintenance event id to all damages
-                for i, _ in enumerate(damages):
-                    damages[i]['fk_examination'] = maintenance['obj_id']
+                for k, _ in enumerate(damages):
+                    damages[k]['fk_examination'] = maintenance['obj_id']
 
                 # write damages
                 damage_layer.addFeatures(damages, False)
+
+                # add pictures to od_file with reference to damage
+                layer_id = MySettings().value("od_file")
+                ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                for k, damage in enumerate(damages):
+                    of = QgsFeature()
+                    init_fields = ofl.dataProvider().fields()
+                    of.setFields(init_fields)
+                    of.initAttributes(init_fields.size())
+                    of['class'] = 3871  # i.e. damage
+                    of['kind'] = 3772  # i.e. photo
+                    of['object'] = damage['obj_id']
+                    of['identifier'] = pictures[k]
+                    ofl.addFeature(of)
 
                 # write in relation table (wastewater structure - maintenance events)
                 jf = QgsFeature()
