@@ -1,5 +1,10 @@
 ## Changelog
 
+** Version 0.8** 02.03.2017
+
+* fix import pictures
+* import video names
+
 ** Version 0.7** 07.09.2016
 
 * Import pictures
