@@ -115,9 +115,10 @@ class wincan2qgep(QObject):
 
         if filepath:
             absolute_path = os.path.dirname(os.path.realpath(filepath))
+            parent_path = os.path.abspath(os.path.join(absolute_path, os.pardir))
             self.settings.set_value('xmlPath', absolute_path)
             data = ImportData(filepath).data
-            self.dlg = DataBrowserDialog(self.iface, data)
+            self.dlg = DataBrowserDialog(self.iface, data, parent_path)
             self.dlg.show()
 
 

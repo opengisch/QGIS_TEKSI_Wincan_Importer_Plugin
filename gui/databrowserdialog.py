@@ -27,8 +27,8 @@
 
 import re
 
-from PyQt4.QtCore import pyqtSlot, QDateTime, QCoreApplication
-from PyQt4.QtGui import QDialog
+from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
+from qgis.PyQt.QtGui import QDialog
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, edit, QgsFeatureRequest
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
@@ -40,7 +40,7 @@ from ..ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
-    def __init__(self, iface, data):
+    def __init__(self, iface, data, data_path=""):
         QDialog.__init__(self)
         self.setupUi(self)
         self.settings = MySettings()
@@ -48,6 +48,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.currentProjectId = None
         self.channelNameEdit.setFocus()
         self.cancel = False
+
+        self.data_path_line_edit.setText(data_path + '/Picture')
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
@@ -352,6 +354,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         of['kind'] = 3772  # i.e. photo
                         of['object'] = damage['obj_id']
                         of['identifier'] = pic
+                        of['path_relative'] = self.data_path_line_edit.text()
                         ofl.addFeature(of)
 
                 # write in relation table (wastewater structure - maintenance events)
