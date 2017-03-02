@@ -93,6 +93,7 @@ class ImportData():
                                 InclinationFileName=self.getValue(child, 'SI_InclinationFileName'),
                                 Cleaned=self.getValue(child, 'SI_Cleaned'),
                                 InspDate=QDate.fromString(self.getValue(child, 'SI_InspDate'), 'dd.MM.yyyy'),
+                                VideoName=self.getValue(child, 'SI_Virtual_x007E_ClipFilename'),
                                 Observations={},
                                 Import=True)
                             found = True

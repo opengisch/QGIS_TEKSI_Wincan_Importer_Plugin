@@ -37,7 +37,6 @@ class MySettings(SettingManager):
         self.add_setting(Bool('remove_trailing_chars', Scope.Global, True))  # TODO: make it false whenever the settings dialog is done
         self.add_setting(Double('tolerance_channel_length', Scope.Global, 1))
 
-        self.add_setting(String("od_file", Scope.Project, 'od_file20160921105557083'))
         self.add_setting(String("wastewater_structure", Scope.Project, 'od_wastewater_structure'))
 
         self.add_setting(String('join_maintence_wastewaterstructure_layer', Scope.Project, 're_maintenance_event_wastewater_structure'))
@@ -46,6 +45,7 @@ class MySettings(SettingManager):
         self.add_setting(String("cover_layer", Scope.Project, 'vw_qgep_wastewater_structure'))
         self.add_setting(String("maintenance_layer", Scope.Project, 'vw_qgep_maintenance'))
         self.add_setting(String("damage_layer", Scope.Project, 'vw_qgep_damage'))
+        self.add_setting(String("file_layer", Scope.Project, 'od_file20160921105557083'))
 
         self.add_setting(String("vl_damage_channel_layer", Scope.Project, 'vl_damage_channel_channel_damage_code'))
         self.add_setting(String("vl_damage_single_class", Scope.Project, 'vl_damage_single_damage_class'))

@@ -231,6 +231,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf['remark'] = ''
                                 mf['status'] = 2550  # vl_maintenance_event: accomplished
                                 mf['inspected_length'] = section['Sectionlength']
+                                mf['videonumber'] = inspection['VideoName']
                                 if self.relationWidgetWrapper is not None:
                                     mf['fk_operating_company'] = self.relationWidgetWrapper.value()
                                 if inspection['CodeInspectionDir'] == 'D':
@@ -307,7 +308,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(len(features))
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
-        self.progressBar.setFormat('Import des données %v/%m')
+        self.progressBar.setFormat(u'Import des données %v/%m')
         self.progressBar.show()
         self.cancelButton.show()
         self.importButton.hide()
@@ -336,21 +337,22 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     damages[k]['fk_examination'] = maintenance['obj_id']
 
                 # write damages
-                damage_layer.addFeatures(damages, False)
-
-                # add pictures to od_file with reference to damage
-                layer_id = MySettings().value("od_file")
-                ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
                 for k, damage in enumerate(damages):
-                    of = QgsFeature()
-                    init_fields = ofl.dataProvider().fields()
-                    of.setFields(init_fields)
-                    of.initAttributes(init_fields.size())
-                    of['class'] = 3871  # i.e. damage
-                    of['kind'] = 3772  # i.e. photo
-                    of['object'] = damage['obj_id']
-                    of['identifier'] = pictures[k]
-                    ofl.addFeature(of)
+                    damage_layer.addFeature(damage, False)
+
+                    # add pictures to od_file with reference to damage
+                    layer_id = MySettings().value("file_layer")
+                    ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                    for pic in pictures[k]:
+                        of = QgsFeature()
+                        init_fields = ofl.dataProvider().fields()
+                        of.setFields(init_fields)
+                        of.initAttributes(init_fields.size())
+                        of['class'] = 3871  # i.e. damage
+                        of['kind'] = 3772  # i.e. photo
+                        of['object'] = damage['obj_id']
+                        of['identifier'] = pic
+                        ofl.addFeature(of)
 
                 # write in relation table (wastewater structure - maintenance events)
                 jf = QgsFeature()
