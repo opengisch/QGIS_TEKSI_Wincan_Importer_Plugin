@@ -49,7 +49,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.channelNameEdit.setFocus()
         self.cancel = False
 
-        self.data_path_line_edit.setText(data_path + '/Picture')
+        self.data_path_line_edit.setText(data_path + '\Picture')
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
