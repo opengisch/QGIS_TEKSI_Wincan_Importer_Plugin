@@ -49,7 +49,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.channelNameEdit.setFocus()
         self.cancel = False
 
-        self.data_path_line_edit.setText(data_path + '\Picture')
+        self.data_path_line_edit.setText(data_path)
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
@@ -334,6 +334,21 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 # write maintenance feature
                 maintenance_layer.addFeature(maintenance)
 
+                # write video
+                layer_id = MySettings().value("file_layer")
+                ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                of = QgsFeature()
+                init_fields = ofl.dataProvider().fields()
+                of.setFields(init_fields)
+                of.initAttributes(init_fields.size())
+                of['class'] = 3825  # i.e. maintenance event
+                of['kind'] = 3771  # i.e. video
+                of['object'] = maintenance['obj_id']
+                of['identifier'] = maintenance['videonumber']
+                of['path_relative'] = self.data_path_line_edit.text() + '\Video'
+                ofl.addFeature(of)
+
+
                 # set fkey maintenance event id to all damages
                 for k, _ in enumerate(damages):
                     damages[k]['fk_examination'] = maintenance['obj_id']
@@ -354,7 +369,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         of['kind'] = 3772  # i.e. photo
                         of['object'] = damage['obj_id']
                         of['identifier'] = pic
-                        of['path_relative'] = self.data_path_line_edit.text()
+                        of['path_relative'] = self.data_path_line_edit.text() + '\Picture'
                         ofl.addFeature(of)
 
                 # write in relation table (wastewater structure - maintenance events)
