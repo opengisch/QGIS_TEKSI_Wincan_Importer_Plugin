@@ -147,6 +147,15 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="channelNameEdit"/>
+      </item>
+      <item row="1" column="2" colspan="3">
+       <widget class="QLineEdit" name="data_path_line_edit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QComboBox" name="projectCombo"/>
+      </item>
       <item row="0" column="3">
        <widget class="QToolButton" name="searchButton">
         <property name="text">
@@ -155,6 +164,23 @@
         <property name="icon">
          <iconset resource="../resources.qrc">
           <normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Collecteur</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Répertoire</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -171,31 +197,22 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Collecteur</string>
+      <item row="2" column="2">
+       <widget class="QgsFileWidget" name="pdf_path_widget">
+        <property name="useLink">
+         <bool>true</bool>
+        </property>
+        <property name="filter">
+         <string>*.pdf</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="channelNameEdit"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QComboBox" name="projectCombo"/>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QLabel" name="label_4">
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Répertoire image</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <string>PDF</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="2" colspan="3">
-       <widget class="QLineEdit" name="data_path_line_edit"/>
       </item>
      </layout>
     </widget>
@@ -239,6 +256,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>SectionWidget</class>
    <extends>QWidget</extends>
    <header location="global">..gui.sectionwidget</header>
@@ -256,12 +278,12 @@
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>503</x>
-     <y>31</y>
+     <x>452</x>
+     <y>43</y>
     </hint>
     <hint type="destinationlabel">
-     <x>763</x>
-     <y>25</y>
+     <x>486</x>
+     <y>38</y>
     </hint>
    </hints>
   </connection>

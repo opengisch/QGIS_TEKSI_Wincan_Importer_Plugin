@@ -50,11 +50,14 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cancel = False
 
         self.data_path_line_edit.setText(data_path)
+        self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
         self.progressBar.hide()
         self.cancelButton.hide()
+
+        self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.relationWidgetWrapper = None
         maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value("maintenance_layer"))
@@ -234,6 +237,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf['status'] = 2550  # vl_maintenance_event: accomplished
                                 mf['inspected_length'] = section['Sectionlength']
                                 mf['videonumber'] = inspection['VideoName']
+                                mf['base_data'] = self.pdf_path_widget.filePath()
                                 if self.relationWidgetWrapper is not None:
                                     mf['fk_operating_company'] = self.relationWidgetWrapper.value()
                                 if inspection['CodeInspectionDir'] == 'D':

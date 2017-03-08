@@ -14,8 +14,9 @@
 ####################################################
 # CONFIGURATION
 
-# QGIS DIR
-QGISDIR = $(HOME)/.qgis2
+QGIS_MAJOR_VERSION=2
+
+QGISBUILDDIR = $(HOME)/opt/QGIS${QGIS_MAJOR_VERSION}/build/output/python
 
 # i18n
 LN_DIR = i18n
@@ -26,9 +27,10 @@ TRANSLATED_LANG = fr de
 OPEN = xdg-open
 
 
-
 ###################################################
 # DO NOT EDIT BELOW !
+
+QGISDIR = $(HOME)/.qgis${QGIS_MAJOR_VERSION}
 
 PLUGINNAME =$(shell basename $(CURDIR))
 VERSION = `cat $(PLUGINNAME)/metadata.txt | grep version | sed 's/version=//'`
@@ -50,7 +52,7 @@ GEN_FILES = ${UI_FILES} ${RC_FILES}
 all: $(GEN_FILES)
 
 $(UI_FILES): %.py: %.ui
-	pyuic4 -o $@ $<
+	PYTHONPATH=$(PYTHONPATH):${QGISBUILDDIR} python${QGIS_MAJOR_VERSION} -m qgis.PyQt.uic.pyuic --from-imports -o $@ $<
 
 $(RC_FILES): %_rc.py: %.qrc
 	pyrcc4 -o $@ $<
