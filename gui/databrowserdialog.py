@@ -35,7 +35,7 @@ from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
 from ..core.my_settings import MySettings
 from ..core.section import findSection, sectionAtId
-from ..core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition
+from ..core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition, structure_condition_2_damage_level
 from ..ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
@@ -270,7 +270,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                         # add corresponding damages
                         reach_index = 0
-                        structure_condition = 'Ez4'  # = ok
+                        structure_condition = 4  # = ok
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
                             if observation['Import']:
                                 distance = observation['Position'] + distance_offset
@@ -307,7 +307,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 ws_obj_id = reach_features[reach_index]['ws_obj_id']
                                 features[ws_obj_id]['damages'].append(df)
                                 features[ws_obj_id]['pictures'].append(pics)
-                                features[ws_obj_id]['structure_condition'] = min(structure_condition, observation['Rate'])
+                                structure_condition = min(structure_condition, observation['Rate'])
+                                features[ws_obj_id]['structure_condition'] = structure_condition
                 self.progressBar.setValue(i)
                 i += 1
 
@@ -394,10 +395,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     for f in wsl.getFeatures(request):
                         rf = QgsFeature(f)
                 if rf.isValid():
-                    new_code = damage_level_2_structure_condition(structure_condition)
                     # update structure condition if worse
-                    if rf['structure_condition'] is None or new_code > rf['structure_condition']:
-                        rf['structure_condition'] = new_code
+                    old_level = structure_condition_2_damage_level(rf['structure_condition'])
+                    if old_level is None or old_level > 'Z{}'.format(structure_condition):
+                        rf['structure_condition'] = damage_level_2_structure_condition(structure_condition)
                         wsl.updateFeature(rf)
 
                 i += 1
