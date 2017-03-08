@@ -1,5 +1,10 @@
 ## Changelog
 
+**Version 0.10** 08.03.2017
+
+* save PDF
+* adapt structure condition
+
 **Version 0.9** 06.03.2017
 
 * save video
