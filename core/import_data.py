@@ -105,8 +105,6 @@ class ImportData():
             # observation
             if child.tag == 'SO_T':
                 found = False
-                if not self.getValue(child, 'SO_Rate'):
-                    continue
                 for p_id, project in self.data.items():
                     for s_id, section in project['Sections'].items():
                         for i_id in section['Inspections']:
@@ -127,7 +125,7 @@ class ImportData():
                                     Text=self.getValue(child, 'SO_Text'),
                                     MPEGPosition=self.getValue(child, 'SO_MPEGPosition'),
                                     PhotoFilename=PhotoFilenames,
-                                    Rate=int(round(float(self.getValue(child, 'SO_Rate')))),
+                                    Rate=int(round(float(self.getValue(child, 'SO_Rate') or 4))),
                                     OpCode=code,
                                     ClipFileName1=self.getValue(child, 'SO_ClipFileName1'),
                                     Quant1=self.getValue(child, 'SO_Quant1'),
