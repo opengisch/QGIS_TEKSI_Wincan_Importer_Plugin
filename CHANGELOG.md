@@ -1,5 +1,9 @@
 ## Changelog
 
+**Version 0.11** 11.04.2017
+
+* Handle missing rate in observations (default to 4)
+
 **Version 0.10** 08.03.2017
 
 * save PDF
