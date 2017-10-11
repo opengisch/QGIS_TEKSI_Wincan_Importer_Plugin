@@ -228,6 +228,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 init_fields = maintenance_layer.dataProvider().fields()
                                 mf.setFields(init_fields)
                                 mf.initAttributes(init_fields.size())
+                                mf['obj_id'] = maintenance_layer.dataProvider().defaultValue(maintenance_layer.fieldNameIndex('obj_id'))
                                 # mf['identifier'] = i_id  # use custom id to retrieve feature
                                 mf['maintenance_type'] = 'examination'
                                 mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
@@ -295,6 +296,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 initFields = damage_layer.dataProvider().fields()
                                 df.setFields(initFields)
                                 df.initAttributes(initFields.size())
+                                df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fieldNameIndex('obj_id'))
                                 df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
                                 df['single_damage_class'] = damageLevel2vl(observation['Rate'])
@@ -341,17 +343,18 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 # write video
                 layer_id = MySettings().value("file_layer")
-                ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                file_layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
                 of = QgsFeature()
-                init_fields = ofl.dataProvider().fields()
+                init_fields = file_layer.dataProvider().fields()
                 of.setFields(init_fields)
                 of.initAttributes(init_fields.size())
+                of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fieldNameIndex('obj_id'))
                 of['class'] = 3825  # i.e. maintenance event
                 of['kind'] = 3771  # i.e. video
                 of['object'] = maintenance['obj_id']
                 of['identifier'] = maintenance['videonumber']
                 of['path_relative'] = self.data_path_line_edit.text() + '\Video'
-                ofl.addFeature(of)
+                file_layer.addFeature(of)
 
 
                 # set fkey maintenance event id to all damages
@@ -364,24 +367,26 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                     # add pictures to od_file with reference to damage
                     layer_id = MySettings().value("file_layer")
-                    ofl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                    file_layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
                     for pic in pictures[k]:
                         of = QgsFeature()
-                        init_fields = ofl.dataProvider().fields()
+                        init_fields = file_layer.dataProvider().fields()
                         of.setFields(init_fields)
                         of.initAttributes(init_fields.size())
+                        of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fieldNameIndex('obj_id'))
                         of['class'] = 3871  # i.e. damage
                         of['kind'] = 3772  # i.e. photo
                         of['object'] = damage['obj_id']
                         of['identifier'] = pic
                         of['path_relative'] = self.data_path_line_edit.text() + '\Picture'
-                        ofl.addFeature(of)
+                        file_layer.addFeature(of)
 
                 # write in relation table (wastewater structure - maintenance events)
                 jf = QgsFeature()
                 init_fields = join_layer.dataProvider().fields()
                 jf.setFields(init_fields)
                 jf.initAttributes(init_fields.size())
+                jf['obj_id'] = join_layer.dataProvider().defaultValue(join_layer.fieldNameIndex('obj_id'))
                 jf['fk_wastewater_structure'] = ws_obj_id
                 jf['fk_maintenance_event'] = maintenance['obj_id']
                 join_layer.addFeature(jf)
