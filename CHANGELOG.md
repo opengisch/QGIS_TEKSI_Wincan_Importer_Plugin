@@ -1,5 +1,9 @@
 ## Changelog
 
+**Version 0.12** 11.10.2017
+
+* Fixes default values in QGIS 2.18
+
 **Version 0.11** 11.04.2017
 
 * Handle missing rate in observations (default to 4)
