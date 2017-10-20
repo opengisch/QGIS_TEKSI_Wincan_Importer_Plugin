@@ -25,7 +25,7 @@
 
 
 from PyQt4.QtCore import pyqtSlot, Qt
-from PyQt4.QtGui import QWidget, QIcon, QListWidgetItem
+from PyQt4.QtGui import QWidget, QIcon, QListWidgetItem, QColor
 
 from qgis.core import QgsMapLayerRegistry, QgsApplication
 
@@ -100,9 +100,11 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                         ok = False
                         break
             if ok:
-                item.setIcon(QIcon())
+                # item.setIcon(QIcon())  # doesn't seem to be working next to checkboxes
+                item.setBackground(Qt.white)
             else:
-                item.setIcon(warning_icon)
+                # item.setIcon(warning_icon)  # doesn't seem to be working next to checkboxes
+                item.setBackground(QColor(255, 190, 190))
 
     def sectionItemChanged(self, item):
         s_id = item.data(Qt.UserRole)
