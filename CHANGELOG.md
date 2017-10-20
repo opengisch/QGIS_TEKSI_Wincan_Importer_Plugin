@@ -1,5 +1,10 @@
 ## Changelog
 
+**Version 0.13** 20.10.2017
+
+* Fix crash when importing data with no code
+* Add color to highlight unreferenced reaches
+
 **Version 0.12** 11.10.2017
 
 * Fixes default values in QGIS 2.18
