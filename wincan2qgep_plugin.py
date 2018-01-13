@@ -74,12 +74,12 @@ class wincan2qgep(QObject):
         self.actions['showSettings'].triggered.connect(self.showSettings)
         self.iface.addPluginToMenu(self.name, self.actions['showSettings'])
 
-        self.actions['help'] = QAction(
-            QIcon(":/plugins/wincan2qgep/icons/help.svg"),
-            self.tr("Help"),
-            self.iface.mainWindow())
-        self.actions['help'].triggered.connect(lambda: QDesktopServices().openUrl(QUrl("http://3nids.github.io/wincan2qgep")))
-        self.iface.addPluginToMenu(self.name, self.actions['help'])
+        # self.actions['help'] = QAction(
+        #     QIcon(":/plugins/wincan2qgep/icons/help.svg"),
+        #     self.tr("Help"),
+        #     self.iface.mainWindow())
+        # self.actions['help'].triggered.connect(lambda: QDesktopServices().openUrl(QUrl("http://3nids.github.io/wincan2qgep")))
+        # self.iface.addPluginToMenu(self.name, self.actions['help'])
 
         self.rubber = QgsRubberBand(self.iface.mapCanvas())
         self.rubber.setColor(QColor(255, 255, 50, 200))
