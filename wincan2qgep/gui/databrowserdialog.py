@@ -32,12 +32,12 @@ from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
-from qgis.core import QgsMapLayerRegistry, QgsFeature, edit, QgsFeatureRequest
+from qgis.core import QgsProject, QgsFeature, edit, QgsFeatureRequest
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
-from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition, structure_condition_2_damage_level
+from wincan2qgep.core.vsacode import damage_code_to_vl, damage_level_to_vl, damage_level_2_structure_condition, structure_condition_2_damage_level
 
 Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/databrowserdialog.ui'))
 
@@ -63,7 +63,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.relationWidgetWrapper = None
-        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(self.settings.value("maintenance_layer"))
+        maintenance_layer = QgsProject.instance().mapLayer(self.settings.value("maintenance_layer"))
         if maintenance_layer is not None:
             field_idx = maintenance_layer.fieldNameIndex('fk_operating_company')
             widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
@@ -174,11 +174,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         # initialize maintenance and damage layers and features
         maintenance_layer_id = self.settings.value("maintenance_layer")
-        maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(maintenance_layer_id)
+        maintenance_layer = QgsProject.instance().mapLayer(maintenance_layer_id)
         damage_layer_id = self.settings.value("damage_layer")
-        damage_layer = QgsMapLayerRegistry.instance().mapLayer(damage_layer_id)
+        damage_layer = QgsProject.instance().mapLayer(damage_layer_id)
         join_layer_id = self.settings.value("join_maintence_wastewaterstructure_layer")
-        join_layer = QgsMapLayerRegistry.instance().mapLayer(join_layer_id)
+        join_layer = QgsProject.instance().mapLayer(join_layer_id)
         if join_layer is None:
             self.cannotImportLabel.show()
             self.cannotImportLabel.setText('La couche de jointure re_maintenance_event_wastewater_structureest manquante.')
@@ -323,8 +323,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fieldNameIndex('obj_id'))
                                 df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
-                                df['single_damage_class'] = damageLevel2vl(observation['Rate'])
-                                df['channel_damage_code'] = int(damageCode2vl(observation['OpCode']))
+                                df['single_damage_class'] = damage_level_to_vl(observation['Rate'])
+                                df['channel_damage_code'] = int(damage_code_to_vl(observation['OpCode']))
                                 df['distance'] = distance
                                 df['video_counter'] = observation['MPEGPosition']
                                 # pictures
@@ -367,7 +367,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 # write video
                 layer_id = MySettings().value("file_layer")
-                file_layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                file_layer = QgsProject.instance().mapLayer(layer_id)
                 of = QgsFeature()
                 init_fields = file_layer.dataProvider().fields()
                 of.setFields(init_fields)
@@ -391,7 +391,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                     # add pictures to od_file with reference to damage
                     layer_id = MySettings().value("file_layer")
-                    file_layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                    file_layer = QgsProject.instance().mapLayer(layer_id)
                     for pic in pictures[k]:
                         of = QgsFeature()
                         init_fields = file_layer.dataProvider().fields()
@@ -418,7 +418,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 # get current reach
                 rf = QgsFeature()
                 layer_id = MySettings().value("wastewater_structure")
-                wsl = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+                wsl = QgsProject.instance().mapLayer(layer_id)
                 if wsl is not None:
                     request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))
                     for f in wsl.getFeatures(request):

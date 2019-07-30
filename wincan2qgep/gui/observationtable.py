@@ -26,12 +26,9 @@
 #
 #---------------------------------------------------------------------
 
-
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
-from wincan2qgep.core.my_settings import MySettings
 
 ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', 'gravité', 'forcer']
 ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
@@ -62,7 +59,7 @@ class ObservationTable(QTableWidget):
             self.insertColumn(c)
             item = QTableWidgetItem(col)
             font = item.font()
-            font.setPointSize(font.pointSize() - 2)
+            font.setPointSize(font.pointSize()-2)
             item.setFont(font)
             self.setHorizontalHeaderItem(c, item)
         self.adjustSize()
@@ -85,8 +82,8 @@ class ObservationTable(QTableWidget):
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-                item = QTableWidgetItem('{}'.format(obs[col] if c < 6 else ''))
-                if c in (0,6):
+                item = QTableWidgetItem(obs[col] if c < 6 else '')
+                if c in (0, 6):
                     data_column = 'Import' if c == 0 else 'ForceImport'
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
                     item.setCheckState(Qt.Checked if obs[data_column] else Qt.Unchecked)

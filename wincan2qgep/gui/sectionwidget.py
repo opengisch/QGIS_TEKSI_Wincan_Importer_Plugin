@@ -29,7 +29,7 @@ from qgis.PyQt.QtGui import QIcon, QColor
 from qgis.PyQt.QtWidgets import QWidget, QListWidgetItem
 from qgis.PyQt.uic import loadUiType
 
-from qgis.core import QgsMapLayerRegistry, QgsApplication
+from qgis.core import QgsProject, QgsApplication
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
@@ -68,12 +68,12 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def finish_init(self, iface, data):
         layer_id = self.settings.value("channel_layer")
         for selector in (self.section1Selector, self.section2Selector, self.section3Selector):
-            selector.setLayer(QgsMapLayerRegistry.instance().mapLayer(layer_id))
+            selector.setLayer(QgsProject.instance().mapLayer(layer_id))
             selector.setCanvas(iface.mapCanvas())
         self.data = data
         self.inspectionWidget.finish_init(self.data)
 
-    def set_project_id(self, prjId = None):
+    def set_project_id(self, prjId=None):
         self.sectionListWidget.clear()
 
         if prjId is not None:

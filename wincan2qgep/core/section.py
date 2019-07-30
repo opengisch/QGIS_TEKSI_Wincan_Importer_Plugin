@@ -23,7 +23,7 @@
 #
 #---------------------------------------------------------------------
 
-from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
+from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
 from wincan2qgep.core.my_settings import MySettings
 
@@ -32,9 +32,11 @@ def find_section(channel, start_node, end_node):
     feature = QgsFeature()
 
     layerid = MySettings().value("channel_layer")
-    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    layer = QgsProject.instance().mapLayer(layerid)
     if layer is not None:
-        request_text = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(channel, start_node, channel, end_node)
+        request_text = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(
+            channel, start_node, channel, end_node
+        )
         request = QgsFeatureRequest().setFilterExpression(request_text)
         for f in layer.getFeatures(request):
             feature = QgsFeature(f)
@@ -46,7 +48,7 @@ def section_at_id(id):
     feature = QgsFeature()
     if id is not None:
         layer_id = MySettings().value("channel_layer")
-        layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
+        layer = QgsProject.instance().mapLayer(layer_id)
         if layer is not None:
             request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(id))
             for f in layer.getFeatures( request ):

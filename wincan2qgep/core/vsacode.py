@@ -23,87 +23,84 @@
 #
 #---------------------------------------------------------------------
 
-from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
+from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
 from wincan2qgep.core.my_settings import MySettings
 
 
-# return pkey of vl from VSA damage code
-def damageCode2vl(code):
+def damage_code_to_vl(code: str) -> str:
+    """
+    return pkey of vl from VSA damage code
+    """
     feature = QgsFeature()
 
-    layerid = MySettings().value("vl_damage_channel_layer")
-    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    layer_id = MySettings().value("vl_damage_channel_layer")
+    layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        requestText = '"value_en" = \'{}\''.format(code)
-
-        request = QgsFeatureRequest().setFilterExpression(requestText)
-        for f in layer.getFeatures( request ):
-            feature = QgsFeature(f)
-        #print requestText, feature.isValid()
+        request_text = '"value_en" = \'{}\''.format(code)
+        request = QgsFeatureRequest().setFilterExpression(request_text)
+        feature = next(layer.getFeatures(request))
+        # print request_text, feature.isValid()
 
     if feature.isValid():
         return f['code']
-
     else:
         return None
 
 
-# return pkey of vl from VSA damage level
-def damageLevel2vl(code):
+def damage_level_to_vl(code):
+    """
+    return pkey of vl from VSA damage level
+    """
     feature = QgsFeature()
 
-    layerid = MySettings().value("vl_damage_single_class")
-    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    layer_id = MySettings().value("vl_damage_single_class")
+    layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        requestText = '"value_en" = \'EZ{}\''.format(code)
-
-        request = QgsFeatureRequest().setFilterExpression(requestText)
-        for f in layer.getFeatures( request ):
-            feature = QgsFeature(f)
-        #print requestText, feature.isValid()
+        request_text = '"value_en" = \'EZ{}\''.format(code)
+        request = QgsFeatureRequest().setFilterExpression(request_text)
+        feature = next(layer.getFeatures(request))
+        # print request_text, feature.isValid()
 
     if feature.isValid():
         return f['code']
-
     else:
         return None
 
 
-# return damage code to renovation necessity pkey
 def damage_level_2_structure_condition(level):
+    """
+    return damage code to renovation necessity pkey
+    """
     feature = QgsFeature()
-
-    layerid = MySettings().value("vl_wastewater_structure_structure_condition")
-    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    layer_id = MySettings().value("vl_wastewater_structure_structure_condition")
+    layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        requestText = '"value_en" = \'Z{}\''.format(level)
-
-        request = QgsFeatureRequest().setFilterExpression(requestText)
-        for f in layer.getFeatures(request):
-            feature = QgsFeature(f)
-            # print requestText, feature.isValid()
+        request_text = '"value_en" = \'Z{}\''.format(level)
+        request = QgsFeatureRequest().setFilterExpression(request_text)
+        feature = next(layer.getFeatures(request))
+        # print request_text, feature.isValid()
 
     if feature.isValid():
         return f['code']
-
     else:
         return None
 
 
-# return damage code to renovation necessity pkey
 def structure_condition_2_damage_level(code):
+    """
+    return damage code to renovation necessity pkey
+    """
     feature = QgsFeature()
 
-    layerid = MySettings().value("vl_wastewater_structure_structure_condition")
-    layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+    layer_id = MySettings().value("vl_wastewater_structure_structure_condition")
+    layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        requestText = '"code" = \'{}\''.format(code)
+        request_text = '"code" = \'{}\''.format(code)
 
-        request = QgsFeatureRequest().setFilterExpression(requestText)
-        for f in layer.getFeatures(request):
-            feature = QgsFeature(f)
-            # print requestText, feature.isValid()
+        request = QgsFeatureRequest().setFilterExpression(request_text)
+        feature = next(layer.getFeatures(request))
+        # print request_text, feature.isValid()
 
     if feature.isValid():
         return f['value_en']
