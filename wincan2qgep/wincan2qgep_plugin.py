@@ -28,21 +28,21 @@ from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslat
 from qgis.PyQt.QtGui import QIcon, QColor
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject
-from qgis.gui import QgsRubberBand, QgsMessageBar
+from qgis.gui import QgsRubberBand, QgsMessageBar, QgisInterface
 
-from wincan2qgep.core.my_settings import MySettings
-from wincan2qgep.core.import_data import ImportData
-from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
+from .core.my_settings import MySettings
+from .core.import_data import ImportData
+from .gui.databrowserdialog import DataBrowserDialog
 
-import wincan2qgep.resources_rc
+import resources_rc  # NOQA
 
 
-class wincan2qgep(QObject):
+class Wincan2Qgep:
 
     name = "&Wincan 2 QGEP"
     actions = None
 
-    def __init__(self, iface):
+    def __init__(self, iface: QgisInterface):
         QObject.__init__(self)
         self.iface = iface
         self.actions = {}
@@ -63,7 +63,7 @@ class wincan2qgep(QObject):
             QIcon(":/plugins/wincan2qgep/icons/wincan_logo.png"),
             self.tr("Ouvrir une inspection"),
             self.iface.mainWindow())
-        self.actions['openInspection'].triggered.connect(self.openInspection)
+        self.actions['openInspection'].triggered.connect(self.open_inspection)
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
         self.iface.addToolBarIcon(self.actions['openInspection'])
 
@@ -99,15 +99,15 @@ class wincan2qgep(QObject):
         if self.dlg:
             self.dlg.close()
 
-    @pyqtSlot(str, QgsMessageBar.MessageLevel)
-    def displayMessage(self, message, level):
-        self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
+    #@pyqtSlot(str, QgsMessageBar.MessageLevel)
+    #def display_message(self, message, level):
+    #    self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
 
     # def showSettings(self):
     #     if ConfigurationDialog().exec_():
     #         self._reloadFinders()
 
-    def openInspection(self):
+    def open_inspection(self):
         xml_path = self.settings.value('xml_path')
         if xml_path == '':
             xml_path = QgsProject.instance().homePath()
