@@ -23,6 +23,7 @@
 #
 #---------------------------------------------------------------------
 
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings, QTimer
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction

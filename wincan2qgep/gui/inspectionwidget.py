@@ -26,7 +26,7 @@
 #
 #---------------------------------------------------------------------
 
-
+import os
 from qgis.PyQt.QtCore import pyqtSlot, pyqtSignal
 from qgis.PyQt.QtWidgets import QWidget
 from qgis.PyQt.uic import loadUiType

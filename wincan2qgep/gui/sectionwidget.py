@@ -23,16 +23,16 @@
 #
 #---------------------------------------------------------------------
 
-
+import os
 from qgis.PyQt.QtCore import pyqtSlot, Qt
-from qgis.PyQt.QtGui import QIcon, QColor
+from qgis.PyQt.QtGui import QColor
 from qgis.PyQt.QtWidgets import QWidget, QListWidgetItem
 from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsApplication
 
 from wincan2qgep.core.my_settings import MySettings
-from wincan2qgep.core.section import find_section, section_at_id
+from wincan2qgep.core.section import section_at_id
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 
 Ui_SectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/../sectionwidget.ui'))
