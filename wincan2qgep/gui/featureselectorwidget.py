@@ -23,7 +23,7 @@
 #
 #---------------------------------------------------------------------
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QTimer
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings, QTimer
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction
 
@@ -38,57 +38,57 @@ class CanvasExtent(object):
 
 
 class FeatureSelectorWidget(QWidget):
-    featureIdentified = pyqtSignal(QgsFeature)
+    feature_identified = pyqtSignal(QgsFeature)
 
     def __init__(self, parent):
         QWidget.__init__(self, parent)
 
-        editLayout = QHBoxLayout()
-        editLayout.setContentsMargins(0, 0, 0, 0)
-        editLayout.setSpacing(2)
-        self.setLayout(editLayout)
+        edit_layout = QHBoxLayout()
+        edit_layout.setContentsMargins(0, 0, 0, 0)
+        edit_layout.setSpacing(2)
+        self.setLayout(edit_layout)
 
-        self.lineEdit = QLineEdit(self)
-        self.lineEdit.setReadOnly(True)
-        editLayout.addWidget(self.lineEdit)
+        self.line_edit = QLineEdit(self)
+        self.line_edit.setReadOnly(True)
+        edit_layout.addWidget(self.line_edit)
         
-        self.highlightFeatureButton = QToolButton(self)
-        self.highlightFeatureButton.setPopupMode(QToolButton.MenuButtonPopup)
-        self.highlightFeatureAction = QAction(QgsApplication.getThemeIcon("/mActionHighlightFeature.svg"), "Highlight feature", self)
-        self.scaleHighlightFeatureAction = QAction(QgsApplication.getThemeIcon("/mActionScaleHighlightFeature.svg"), "Scale and highlight feature", self)
-        self.panHighlightFeatureAction = QAction(QgsApplication.getThemeIcon("/mActionPanHighlightFeature.svg"), "Pan and highlight feature", self)
-        self.highlightFeatureButton.addAction(self.highlightFeatureAction)
-        self.highlightFeatureButton.addAction(self.scaleHighlightFeatureAction)
-        self.highlightFeatureButton.addAction(self.panHighlightFeatureAction)
-        self.highlightFeatureButton.setDefaultAction(self.highlightFeatureAction)
-        editLayout.addWidget(self.highlightFeatureButton)
+        self.highlight_feature_button = QToolButton(self)
+        self.highlight_feature_button.setPopupMode(QToolButton.MenuButtonPopup)
+        self.highlight_feature_action = QAction(QgsApplication.getThemeIcon("/mActionHighlightFeature.svg"), "Highlight feature", self)
+        self.scale_highlight_feature_action = QAction(QgsApplication.getThemeIcon("/mActionScaleHighlightFeature.svg"), "Scale and highlight feature", self)
+        self.pan_highlight_feature_action = QAction(QgsApplication.getThemeIcon("/mActionPanHighlightFeature.svg"), "Pan and highlight feature", self)
+        self.highlight_feature_button.addAction(self.highlight_feature_action)
+        self.highlight_feature_button.addAction(self.scale_highlight_feature_action)
+        self.highlight_feature_button.addAction(self.pan_highlight_feature_action)
+        self.highlight_feature_button.setDefaultAction(self.highlight_feature_action)
+        edit_layout.addWidget(self.highlight_feature_button)
 
-        self.mapIdentificationButton = QToolButton(self)
-        self.mapIdentificationButton.setIcon(QgsApplication.getThemeIcon("/mActionMapIdentification.svg"))
-        self.mapIdentificationButton.setText("Select on map")
-        self.mapIdentificationButton.setCheckable(True)
-        editLayout.addWidget(self.mapIdentificationButton)
+        self.map_identification_button = QToolButton(self)
+        self.map_identification_button.setIcon(QgsApplication.getThemeIcon("/mActionMapIdentification.svg"))
+        self.map_identification_button.setText("Select on map")
+        self.map_identification_button.setCheckable(True)
+        edit_layout.addWidget(self.map_identification_button)
 
-        self.mapIdentificationButton.clicked.connect(self.map_identification)
-        self.highlightFeatureButton.triggered.connect(self.highlightActionTriggered)
+        self.map_identification_button.clicked.connect(self.map_identification)
+        self.highlight_feature_button.triggered.connect(self.highlight_action_triggered)
 
         self.layer = None
         self.map_tool = None
         self.canvas = None
-        self.windowWidget = None
+        self.window_widget = None
         self.highlight = None
         self.feature = QgsFeature()
 
     def set_canvas(self, map_canvas):
         self.map_tool = QgsMapToolIdentifyFeature(map_canvas)
-        self.map_tool.setButton(self.mapIdentificationButton)
+        self.map_tool.setButton(self.map_identification_button)
         self.canvas = map_canvas
 
     def set_layer(self, layer):
         self.layer = layer
 
     def set_feature(self, feature, canvas_extent = CanvasExtent.Fixed):
-        self.lineEdit.clear()
+        self.line_edit.clear()
         self.feature = feature
 
         if not self.feature.isValid() or self.layer is None:
@@ -97,13 +97,14 @@ class FeatureSelectorWidget(QWidget):
         feature_title = feature.attribute(self.layer.displayField())
         if feature_title == '':
             feature_title = feature.id()
-        self.lineEdit.setText(str(feature_title))
+        self.line_edit.setText(str(feature_title))
         self.highlight_feature(canvas_extent)
 
     def clear(self):
         self.feature = QgsFeature()
-        self.lineEdit.clear()
+        self.line_edit.clear()
 
+    @pyqtSlot
     def map_identification(self):
         if self.layer is None or self.map_tool is None or self.canvas is None:
             return
@@ -111,26 +112,27 @@ class FeatureSelectorWidget(QWidget):
         self.map_tool.set_layer(self.layer)
         self.canvas.setMapTool(self.map_tool)
 
-        self.windowWidget = QWidget.window(self)
+        self.window_widget = QWidget.window(self)
         self.canvas.window().raise_()
         self.canvas.activateWindow()
         self.canvas.setFocus()
 
-        self.map_tool.featureIdentified.connect(self.mapToolFeatureIdentified)
-        self.map_tool.deactivated.connect(self.mapToolDeactivated)
+        self.map_tool.feature_identified.connect(self.map_tool_feature_identified)
+        self.map_tool.deactivated.connect(self.map_tool_deactivated)
 
-    def mapToolFeatureIdentified(self, feature):
+    @pyqtSlot(QgsFeature)
+    def map_tool_feature_identified(self, feature):
         feature = QgsFeature(feature)
-        self.featureIdentified.emit(feature)
-        self.unsetMapTool()
+        self.feature_identified.emit(feature)
+        self.unset_map_tool()
         self.set_feature(feature)
 
-    def mapToolDeactivated(self):
-        if self.windowWidget is not None:
-            self.windowWidget.raise_()
-            self.windowWidget.activateWindow()
+    def map_tool_deactivated(self):
+        if self.window_widget is not None:
+            self.window_widget.raise_()
+            self.window_widget.activateWindow()
 
-    def highlight_feature(self, canvasExtent=CanvasExtent.Fixed):
+    def highlight_feature(self, canvas_extent=CanvasExtent.Fixed):
         if self.canvas is None or not self.feature.isValid():
             return
 
@@ -139,17 +141,17 @@ class FeatureSelectorWidget(QWidget):
         if geom is None:
             return
   
-        if canvasExtent == CanvasExtent.Scale:
-            featBBox = geom.boundingBox()
-            featBBox = self.canvas.mapSettings().layerToMapCoordinates(self.layer, featBBox)
+        if canvas_extent == CanvasExtent.Scale:
+            feature_bounding_box = geom.boundingBox()
+            feature_bounding_box = self.canvas.mapSettings().layerToMapCoordinates(self.layer, feature_bounding_box)
             extent = self.canvas.extent()
-            if not extent.contains(featBBox):
-                extent.combineExtentWith(featBBox)
+            if not extent.contains(feature_bounding_box):
+                extent.combineExtentWith(feature_bounding_box)
                 extent.scale(1.1)
                 self.canvas.setExtent(extent)
                 self.canvas.refresh()
             
-        elif canvasExtent == CanvasExtent.Pan:
+        elif canvas_extent == CanvasExtent.Pan:
             centroid = geom.centroid()
             center = centroid.asPoint()
 
@@ -185,19 +187,19 @@ class FeatureSelectorWidget(QWidget):
             del self.highlight
             self.highlight = None
 
-    def unsetMapTool(self):
+    def unset_map_tool(self):
         if self.canvas is not None and self.map_tool is not None:
             # this will call mapToolDeactivated
             self.canvas.unsetMapTool(self.map_tool)
 
-    def highlightActionTriggered(self, action):
-        self.highlightFeatureButton.setDefaultAction(action)
+    def highlight_action_triggered(self, action):
+        self.highlight_feature_button.setDefaultAction(action)
 
-        if action == self.highlightFeatureAction:
+        if action == self.highlight_feature_action:
             self.highlight_feature()
 
-        elif action == self.scaleHighlightFeatureAction:
+        elif action == self.scale_highlight_feature_action:
             self.highlight_feature(CanvasExtent.Scale)
 
-        elif action == self.panHighlightFeatureAction:
+        elif action == self.pan_highlight_feature_action:
             self.highlight_feature(CanvasExtent.Pan)

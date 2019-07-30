@@ -50,9 +50,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.projectId = None
         self.section_id = None
 
-        self.section1Selector.featureIdentified.connect(self.setQgepChannelId1)
-        self.section2Selector.featureIdentified.connect(self.setQgepChannelId2)
-        self.section3Selector.featureIdentified.connect(self.setQgepChannelId3)
+        self.section1Selector.feature_identified.connect(self.setQgepChannelId1)
+        self.section2Selector.feature_identified.connect(self.setQgepChannelId2)
+        self.section3Selector.feature_identified.connect(self.setQgepChannelId3)
 
         self.inspectionWidget.importChanged.connect(self.update_status)
 
