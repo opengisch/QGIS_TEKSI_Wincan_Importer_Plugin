@@ -69,69 +69,68 @@ class FeatureSelectorWidget(QWidget):
         self.mapIdentificationButton.setCheckable(True)
         editLayout.addWidget(self.mapIdentificationButton)
 
-        self.mapIdentificationButton.clicked.connect(self.mapIdentification)
+        self.mapIdentificationButton.clicked.connect(self.map_identification)
         self.highlightFeatureButton.triggered.connect(self.highlightActionTriggered)
 
         self.layer = None
-        self.mapTool = None
+        self.map_tool = None
         self.canvas = None
         self.windowWidget = None
         self.highlight = None
         self.feature = QgsFeature()
 
-    def setCanvas(self, mapCanvas):
-        self.mapTool = QgsMapToolIdentifyFeature(mapCanvas)
-        self.mapTool.setButton(self.mapIdentificationButton)
-        self.canvas = mapCanvas
+    def set_canvas(self, map_canvas):
+        self.map_tool = QgsMapToolIdentifyFeature(map_canvas)
+        self.map_tool.setButton(self.mapIdentificationButton)
+        self.canvas = map_canvas
 
-    def setLayer(self, layer):
+    def set_layer(self, layer):
         self.layer = layer
 
-    def setFeature(self, feature, canvasExtent = CanvasExtent.Fixed):
+    def set_feature(self, feature, canvas_extent = CanvasExtent.Fixed):
         self.lineEdit.clear()
         self.feature = feature
 
         if not self.feature.isValid() or self.layer is None:
             return
 
-        featureTitle = feature.attribute(self.layer.displayField())
-        if featureTitle == '':
-            featureTitle = feature.id()
-        self.lineEdit.setText(str(featureTitle))
-        self.highlightFeature(canvasExtent)
-
+        feature_title = feature.attribute(self.layer.displayField())
+        if feature_title == '':
+            feature_title = feature.id()
+        self.lineEdit.setText(str(feature_title))
+        self.highlight_feature(canvas_extent)
 
     def clear(self):
         self.feature = QgsFeature()
         self.lineEdit.clear()
 
-    def mapIdentification(self):
-        if self.layer is None or self.mapTool is None or self.canvas is None:
+    def map_identification(self):
+        if self.layer is None or self.map_tool is None or self.canvas is None:
             return
 
-        self.mapTool.setLayer(self.layer)
-        self.canvas.setMapTool(self.mapTool)
+        self.map_tool.set_layer(self.layer)
+        self.canvas.setMapTool(self.map_tool)
 
         self.windowWidget = QWidget.window(self)
         self.canvas.window().raise_()
         self.canvas.activateWindow()
         self.canvas.setFocus()
 
-        self.mapTool.featureIdentified.connect(self.mapToolFeatureIdentified)
-        self.mapTool.deactivated.connect(self.mapToolDeactivated)
+        self.map_tool.featureIdentified.connect(self.mapToolFeatureIdentified)
+        self.map_tool.deactivated.connect(self.mapToolDeactivated)
 
     def mapToolFeatureIdentified(self, feature):
         feature = QgsFeature(feature)
         self.featureIdentified.emit(feature)
         self.unsetMapTool()
-        self.setFeature(feature)
+        self.set_feature(feature)
 
     def mapToolDeactivated(self):
         if self.windowWidget is not None:
             self.windowWidget.raise_()
             self.windowWidget.activateWindow()
 
-    def highlightFeature(self, canvasExtent = CanvasExtent.Fixed):
+    def highlight_feature(self, canvasExtent=CanvasExtent.Fixed):
         if self.canvas is None or not self.feature.isValid():
             return
 
@@ -187,18 +186,18 @@ class FeatureSelectorWidget(QWidget):
             self.highlight = None
 
     def unsetMapTool(self):
-        if self.canvas is not None and self.mapTool is not None:
+        if self.canvas is not None and self.map_tool is not None:
             # this will call mapToolDeactivated
-            self.canvas.unsetMapTool(self.mapTool)
+            self.canvas.unsetMapTool(self.map_tool)
 
     def highlightActionTriggered(self, action):
         self.highlightFeatureButton.setDefaultAction(action)
 
         if action == self.highlightFeatureAction:
-            self.highlightFeature()
+            self.highlight_feature()
 
         elif action == self.scaleHighlightFeatureAction:
-            self.highlightFeature(CanvasExtent.Scale)
+            self.highlight_feature(CanvasExtent.Scale)
 
         elif action == self.panHighlightFeatureAction:
-            self.highlightFeature(CanvasExtent.Pan)
+            self.highlight_feature(CanvasExtent.Pan)

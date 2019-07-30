@@ -68,8 +68,8 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def finish_init(self, iface, data):
         layer_id = self.settings.value("channel_layer")
         for selector in (self.section1Selector, self.section2Selector, self.section3Selector):
-            selector.setLayer(QgsProject.instance().mapLayer(layer_id))
-            selector.setCanvas(iface.mapCanvas())
+            selector.set_layer(QgsProject.instance().mapLayer(layer_id))
+            selector.set_canvas(iface.mapCanvas())
         self.data = data
         self.inspectionWidget.finish_init(self.data)
 
@@ -173,9 +173,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             for i, selector in enumerate((self.section1Selector, self.section2Selector, self.section3Selector)):
                 feature = section_at_id(section['QgepChannelId{}'.format(i + 1)])
                 if feature.isValid():
-                    selector.setFeature(feature)
+                    selector.set_feature(feature)
 
-            self.section1Selector.highlightFeature(CanvasExtent.Pan)
+            self.section1Selector.highlight_feature(CanvasExtent.Pan)
 
             self.usePreviousSectionCheckBox.setChecked(section['UsePreviousSection'])
             self.endNodeEdit.setText(section['EndNode'])
