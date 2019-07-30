@@ -50,9 +50,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.projectId = None
         self.section_id = None
 
-        self.section1Selector.feature_identified.connect(self.setQgepChannelId1)
-        self.section2Selector.feature_identified.connect(self.setQgepChannelId2)
-        self.section3Selector.feature_identified.connect(self.setQgepChannelId3)
+        self.section1Selector.feature_identified.connect(self.set_qgep_channel_id1)
+        self.section2Selector.feature_identified.connect(self.set_qgep_channel_id2)
+        self.section3Selector.feature_identified.connect(self.set_qgep_channel_id3)
 
         self.inspectionWidget.importChanged.connect(self.update_status)
 
@@ -116,18 +116,18 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             return
         self.data[self.projectId]['Sections'][s_id]['Import'] = bool(item.checkState())
 
-    def setQgepChannelId1(self, feature):
+    def set_qgep_channel_id1(self, feature):
         if self.projectId is None or self.section_id is None:
             return
         self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId1'] = feature.attribute('obj_id')
         self.update_status()
 
-    def setQgepChannelId2(self, feature):
+    def set_qgep_channel_id2(self, feature):
         if self.projectId is None or self.section_id is None:
             return
         self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId2'] = feature.attribute('obj_id')
 
-    def setQgepChannelId3(self, feature):
+    def set_qgep_channel_id3(self, feature):
         if self.projectId is None or self.section_id is None:
             return
         self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId3'] = feature.attribute('obj_id')
@@ -141,9 +141,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
     @pyqtSlot()
     def on_sectionListWidget_itemSelectionChanged(self):
-            self.section1Selector.clear()
-            self.section2Selector.clear()
-            self.section3Selector.clear()
+            self.section_1_selector.clear()
+            self.section_2_selector.clear()
+            self.section_3_selector.clear()
             self.endNodeEdit.clear()
             self.pipeDiaEdit.clear()
             self.pipeMaterialEdit.clear()
@@ -170,12 +170,12 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
             section = self.data[self.projectId]['Sections'][self.section_id]
 
-            for i, selector in enumerate((self.section1Selector, self.section2Selector, self.section3Selector)):
+            for i, selector in enumerate((self.section_1_selector, self.section_2_selector, self.section_3_selector)):
                 feature = section_at_id(section['QgepChannelId{}'.format(i + 1)])
                 if feature.isValid():
                     selector.set_feature(feature)
 
-            self.section1Selector.highlight_feature(CanvasExtent.Pan)
+            self.section_1_selector.highlight_feature(CanvasExtent.Pan)
 
             self.usePreviousSectionCheckBox.setChecked(section['UsePreviousSection'])
             self.endNodeEdit.setText(section['EndNode'])

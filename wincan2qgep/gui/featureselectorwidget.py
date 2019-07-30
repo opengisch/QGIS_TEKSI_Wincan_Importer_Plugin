@@ -189,7 +189,7 @@ class FeatureSelectorWidget(QWidget):
 
     def unset_map_tool(self):
         if self.canvas is not None and self.map_tool is not None:
-            # this will call mapToolDeactivated
+            # this will call mapTool.deactivated
             self.canvas.unsetMapTool(self.map_tool)
 
     def highlight_action_triggered(self, action):

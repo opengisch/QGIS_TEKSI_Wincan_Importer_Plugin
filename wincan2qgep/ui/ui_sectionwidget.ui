@@ -69,10 +69,10 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="1" column="1">
-       <widget class="FeatureSelectorWidget" name="section1Selector" native="true"/>
+       <widget class="FeatureSelectorWidget" name="section_1_selector" native="true"/>
       </item>
       <item row="2" column="1">
-       <widget class="FeatureSelectorWidget" name="section2Selector" native="true"/>
+       <widget class="FeatureSelectorWidget" name="section_2_selector" native="true"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_10">
@@ -89,7 +89,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="FeatureSelectorWidget" name="section3Selector" native="true"/>
+       <widget class="FeatureSelectorWidget" name="section_3_selector" native="true"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_11">
