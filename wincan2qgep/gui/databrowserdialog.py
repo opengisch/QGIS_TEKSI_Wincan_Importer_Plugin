@@ -33,7 +33,7 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsFeature, edit, QgsFeatureRequest
-from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
+from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext, QgisInterface
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
@@ -44,12 +44,12 @@ Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), '..
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
-    def __init__(self, iface, data, data_path=""):
+    def __init__(self, iface: QgisInterface, data, data_path=""):
         QDialog.__init__(self)
         self.setupUi(self)
         self.settings = MySettings()
         self.data = data
-        self.currentProjectId = None
+        self.current_project_id = None
         self.channelNameEdit.setFocus()
         self.cancel = False
 
@@ -90,15 +90,15 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
     @pyqtSlot(str)
     def on_channelNameEdit_textChanged(self, txt):
-        if self.currentProjectId is not None:
-            self.data[self.currentProjectId]['Channel'] = txt
+        if self.current_project_id is not None:
+            self.data[self.current_project_id]['Channel'] = txt
 
     @pyqtSlot(int)
     def on_projectCombo_currentIndexChanged(self, idx):
-        self.currentProjectId = self.projectCombo.itemData(idx)
-        self.dateTimeEdit.setDateTime(self.data[self.currentProjectId]['Date'])
-        self.channelNameEdit.setText(self.data[self.currentProjectId]['Channel'])
-        self.sectionWidget.set_project_id(self.currentProjectId)
+        self.current_project_id = self.projectCombo.itemData(idx)
+        self.dateTimeEdit.setDateTime(self.data[self.current_project_id]['Date'])
+        self.channelNameEdit.setText(self.data[self.current_project_id]['Channel'])
+        self.sectionWidget.set_project_id(self.current_project_id)
 
     @pyqtSlot()
     def on_cancelButton_clicked(self):
@@ -106,7 +106,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
     @pyqtSlot()
     def on_searchButton_clicked(self):
-        if self.currentProjectId is None:
+        if self.current_project_id is None:
             return
 
         self.sectionWidget.setEnabled(False)
@@ -127,7 +127,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         i = 0
 
         # find sections
-        channel = self.data[self.currentProjectId]['Channel']
+        channel = self.data[self.current_project_id]['Channel']
         for p_id in self.data.keys():
             if self.cancel:
                 break
@@ -144,7 +144,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         re.sub('\D*$', '', section['EndNode'])
                     )
                 if feature.isValid():
-                    self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
+                    self.data[p_id]['Sections'][s_id]['qgep_channel_id_1'] = feature.attribute('obj_id')
                 self.progressBar.setValue(i)
                 i += 1
         self.progressBar.hide()
@@ -152,7 +152,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.importButton.show()
 
         self.sectionWidget.setEnabled(True)
-        self.sectionWidget.set_project_id(self.currentProjectId)
+        self.sectionWidget.set_project_id(self.current_project_id)
 
     @pyqtSlot()
     def on_importButton_clicked(self):
@@ -209,7 +209,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             # get corresponding reaches in qgep project
                             reach_features = []
 
-                            for fid in [section['QgepChannelId{}'.format(i)] for i in (1, 2, 3)]:
+                            for fid in [section['qgep_channel_id_{}'.format(i)] for i in (1, 2, 3)]:
                                 if fid is None:
                                     break
                                 f = section_at_id(fid)

@@ -96,7 +96,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             item = self.sectionListWidget.item(r)
             s_id = item.data(Qt.UserRole)
             section = self.data[self.projectId]['Sections'][s_id]
-            ok = section['QgepChannelId1'] is not None or section['UsePreviousSection'] is True
+            ok = section['qgep_channel_id_1'] is not None or section['UsePreviousSection'] is True
             if not ok:
                 ok = True
                 for inspection in section['Inspections'].values():
@@ -119,18 +119,18 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def set_qgep_channel_id1(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId1'] = feature.attribute('obj_id')
+        self.data[self.projectId]['Sections'][self.section_id]['qgep_channel_id_1'] = feature.attribute('obj_id')
         self.update_status()
 
     def set_qgep_channel_id2(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId2'] = feature.attribute('obj_id')
+        self.data[self.projectId]['Sections'][self.section_id]['qgep_channel_id_2'] = feature.attribute('obj_id')
 
     def set_qgep_channel_id3(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]['Sections'][self.section_id]['QgepChannelId3'] = feature.attribute('obj_id')
+        self.data[self.projectId]['Sections'][self.section_id]['qgep_channel_id_3'] = feature.attribute('obj_id')
 
     @pyqtSlot(bool)
     def on_usePreviousSectionCheckBox_toggled(self, checked):
@@ -171,7 +171,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             section = self.data[self.projectId]['Sections'][self.section_id]
 
             for i, selector in enumerate((self.section_1_selector, self.section_2_selector, self.section_3_selector)):
-                feature = section_at_id(section['QgepChannelId{}'.format(i + 1)])
+                feature = section_at_id(section['qgep_channel_id_{}'.format(i + 1)])
                 if feature.isValid():
                     selector.set_feature(feature)
 

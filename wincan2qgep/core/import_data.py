@@ -61,9 +61,9 @@ class ImportData():
             # section
             if child.tag == 'S_T':
                 self.data[child.find('S_Project_ID').text]['Sections'][child.find('S_ID').text] = dict(
-                    QgepChannelId1=None,
-                    QgepChannelId2=None,
-                    QgepChannelId3=None,
+                    qgep_channel_id_1=None,
+                    qgep_channel_id_2=None,
+                    qgep_channel_id_3=None,
                     UsePreviousSection=False,
                     Counter=self.get_value(child, 'S_Counter'),
                     StartNode=self.get_value(child, 'S_StartNode'),
