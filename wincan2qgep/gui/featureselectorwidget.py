@@ -23,8 +23,9 @@
 #
 #---------------------------------------------------------------------
 
-from PyQt4.QtCore import pyqtSignal, QSettings, QTimer
-from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction, QColor
+from PyQt5.QtCore import pyqtSignal, QSettings, QTimer
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction
 
 from qgis.core import QgsApplication, QgsFeature, QGis
 from qgis.gui import QgsMapToolIdentifyFeature, QgsHighlight

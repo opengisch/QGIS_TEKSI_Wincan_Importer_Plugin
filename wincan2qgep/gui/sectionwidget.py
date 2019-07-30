@@ -24,13 +24,14 @@
 #---------------------------------------------------------------------
 
 
-from PyQt4.QtCore import pyqtSlot, Qt
-from PyQt4.QtGui import QWidget, QIcon, QListWidgetItem, QColor
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtWidgets import QWidget, QListWidgetItem
 
 from qgis.core import QgsMapLayerRegistry, QgsApplication
 
 from wincan2qgep.core.my_settings import MySettings
-from wincan2qgep.core.section import findSection, sectionAtId
+from wincan2qgep.core.section import find_section, section_at_id
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
@@ -167,7 +168,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             section = self.data[self.projectId]['Sections'][self.section_id]
 
             for i, selector in enumerate((self.section1Selector, self.section2Selector, self.section3Selector)):
-                feature = sectionAtId(section['QgepChannelId{}'.format(i+1)])
+                feature = section_at_id(section['QgepChannelId{}'.format(i + 1)])
                 if feature.isValid():
                     selector.setFeature(feature)
 

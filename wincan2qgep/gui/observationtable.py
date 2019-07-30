@@ -28,12 +28,12 @@
 
 
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 from wincan2qgep.core.my_settings import MySettings
 
-ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', u'gravité', 'forcer']
+ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', 'gravité', 'forcer']
 ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
 
 
@@ -80,12 +80,12 @@ class ObservationTable(QTableWidget):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
 
-        for o_id, obs in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].iteritems():
+        for o_id, obs in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].items():
             r = self.rowCount()
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-                item = QTableWidgetItem(u'{}'.format(obs[col] if c < 6 else ''))
+                item = QTableWidgetItem('{}'.format(obs[col] if c < 6 else ''))
                 if c in (0,6):
                     data_column = 'Import' if c == 0 else 'ForceImport'
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)

@@ -28,15 +28,15 @@
 import re
 
 from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
-from qgis.PyQt.QtGui import QDialog
+from qgis.PyQt.QtWidgets import QDialog
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, edit, QgsFeatureRequest
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 
-from ..core.my_settings import MySettings
-from ..core.section import findSection, sectionAtId
-from ..core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition, structure_condition_2_damage_level
-from ..ui.ui_databrowserdialog import Ui_DataBrowserDialog
+from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.section import find_section, section_at_id
+from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition, structure_condition_2_damage_level
+from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
@@ -129,10 +129,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 QCoreApplication.processEvents()
                 if self.cancel:
                     break
-                feature = findSection(channel, section['StartNode'], section['EndNode'])
+                feature = find_section(channel, section['StartNode'], section['EndNode'])
                 if not feature.isValid() and self.settings.value('remove_trailing_chars'):
                     # try without trailing alpha char
-                    feature = findSection(channel, re.sub('\D*$', '', section['StartNode']), re.sub('\D*$', '', section['EndNode']))
+                    feature = find_section(channel, re.sub('\D*$', '', section['StartNode']), re.sub('\D*$', '', section['EndNode']))
                 if feature.isValid():
                     self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
                 self.progressBar.setValue(i)
@@ -189,7 +189,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     previous_section_imported = False
                     continue
 
-                for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].iteritems():
+                for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].items():
                     if inspection['Import']:
 
                         # offset in case of several sections in inspection data correspond to a single section in qgep data
@@ -203,7 +203,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             for fid in [section['QgepChannelId{}'.format(i)] for i in (1, 2, 3)]:
                                 if fid is None:
                                     break
-                                f = sectionAtId(fid)
+                                f = section_at_id(fid)
                                 if f.isValid() is False:
                                     self.cannotImportLabel.show()
                                     self.cannotImportLabel.setText('L''inspection {0} chambre {1} à {2} a un collecteur assigné qui n''existe pas ou plus.'
@@ -265,7 +265,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # get previous section id
                                 # http://stackoverflow.com/questions/28035490/in-python-how-can-i-get-the-next-and-previous-keyvalue-of-a-particular-key-in
                                 offset_section_id = self.data[p_id]['Sections']._OrderedDict__map[offset_section_id][0][2]
-                                print offset_section_id
+                                print(offset_section_id)
                                 # cumulate offset
                                 distance_offset -= self.data[p_id]['Sections'][offset_section_id]['Sectionlength']
 
@@ -317,7 +317,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(len(features))
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
-        self.progressBar.setFormat(u'Import des données %v/%m')
+        self.progressBar.setFormat('Import des données %v/%m')
         self.progressBar.show()
         self.cancelButton.show()
         self.importButton.hide()
@@ -325,7 +325,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         with edit(maintenance_layer):
             i = 0
-            for ws_obj_id, elements in features.iteritems():
+            for ws_obj_id, elements in features.items():
                 QCoreApplication.processEvents()
                 if self.cancel:
                     break

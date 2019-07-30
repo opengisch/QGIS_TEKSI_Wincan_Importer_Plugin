@@ -24,14 +24,13 @@
 #---------------------------------------------------------------------
 
 import os.path
-from PyQt4.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, QUrl, pyqtSlot
-from PyQt4.QtGui import QAction, QIcon, QColor, QDesktopServices, QFileDialog
+from PyQt5.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, QUrl, pyqtSlot
+from PyQt5.QtGui import QAction, QIcon, QColor, QDesktopServices, QFileDialog
 from qgis.core import QgsProject
 from qgis.gui import QgsRubberBand, QgsMessageBar
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.import_data import ImportData
-from wincan2qgep.gui.configurationdialog import ConfigurationDialog
 from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
 
 import resources_rc
@@ -39,7 +38,7 @@ import resources_rc
 
 class wincan2qgep(QObject):
 
-    name = u"&Wincan 2 QGEP"
+    name = "&Wincan 2 QGEP"
     actions = None
 
     def __init__(self, iface):
@@ -61,7 +60,7 @@ class wincan2qgep(QObject):
     def initGui(self):
         self.actions['openInspection'] = QAction(
             QIcon(":/plugins/wincan2qgep/icons/wincan_logo.png"),
-            self.tr(u"Ouvrir une inspection"),
+            self.tr("Ouvrir une inspection"),
             self.iface.mainWindow())
         self.actions['openInspection'].triggered.connect(self.openInspection)
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
@@ -69,7 +68,7 @@ class wincan2qgep(QObject):
 
         self.actions['showSettings'] = QAction(
             QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
-            self.tr(u"&Settings"),
+            self.tr("&Settings"),
             self.iface.mainWindow())
         self.actions['showSettings'].triggered.connect(self.showSettings)
         self.iface.addPluginToMenu(self.name, self.actions['showSettings'])
@@ -90,7 +89,7 @@ class wincan2qgep(QObject):
 
     def unload(self):
         """ Unload plugin """
-        for action in self.actions.itervalues():
+        for action in self.actions.values():
             self.iface.removePluginMenu(self.name, action)
             self.iface.removeToolBarIcon(action)
         if self.rubber:

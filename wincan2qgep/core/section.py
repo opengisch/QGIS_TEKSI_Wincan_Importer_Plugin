@@ -25,29 +25,28 @@
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, QgsFeatureRequest
 
-from ..core.my_settings import MySettings
+from wincan2qgep.core.my_settings import MySettings
 
 
-def findSection(channel, startNode, endNode):
+def find_section(channel, start_node, end_node):
     feature = QgsFeature()
 
     layerid = MySettings().value("channel_layer")
     layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
     if layer is not None:
-        requestText = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(channel, startNode, channel, endNode)
-
-        request = QgsFeatureRequest().setFilterExpression(requestText)
-        for f in layer.getFeatures( request ):
+        request_text = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(channel, start_node, channel, end_node)
+        request = QgsFeatureRequest().setFilterExpression(request_text)
+        for f in layer.getFeatures(request):
             feature = QgsFeature(f)
-        #print requestText, feature.isValid()
+        # print requestText, feature.isValid()
     return feature
 
 
-def sectionAtId(id):
+def section_at_id(id):
     feature = QgsFeature()
     if id is not None:
-        layerid = MySettings().value("channel_layer")
-        layer = QgsMapLayerRegistry.instance().mapLayer(layerid)
+        layer_id = MySettings().value("channel_layer")
+        layer = QgsMapLayerRegistry.instance().mapLayer(layer_id)
         if layer is not None:
             request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(id))
             for f in layer.getFeatures( request ):

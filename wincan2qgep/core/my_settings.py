@@ -24,7 +24,7 @@
 #---------------------------------------------------------------------
 
 
-from ..qgissettingmanager import *
+from wincan2qgep.qgissettingmanager import *
 
 pluginName = "wincan2qgep_plugin"
 

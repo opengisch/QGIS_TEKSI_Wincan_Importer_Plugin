@@ -27,8 +27,8 @@
 #---------------------------------------------------------------------
 
 
-from PyQt4.QtCore import pyqtSlot, pyqtSignal
-from PyQt4.QtGui import QWidget
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtWidgets import QWidget
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
