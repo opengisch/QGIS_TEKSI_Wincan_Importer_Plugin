@@ -24,9 +24,9 @@
 #---------------------------------------------------------------------
 
 import os.path
-from PyQt5.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, pyqtSlot
-from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QAction, QFileDialog
+from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, pyqtSlot
+from qgis.PyQt.QtGui import QIcon, QColor
+from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject
 from qgis.gui import QgsRubberBand, QgsMessageBar
 
@@ -52,10 +52,10 @@ class wincan2qgep(QObject):
         # translation environment
         self.plugin_dir = os.path.dirname(__file__)
         locale = QSettings().value("locale/userLocale")[0:2]
-        localePath = os.path.join(self.plugin_dir, 'i18n', 'wincan2qgep_{0}.qm'.format(locale))
-        if os.path.exists(localePath):
+        locale_path = os.path.join(self.plugin_dir, 'i18n', 'wincan2qgep_{0}.qm'.format(locale))
+        if os.path.exists(locale_path):
             self.translator = QTranslator()
-            self.translator.load(localePath)
+            self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
@@ -103,21 +103,21 @@ class wincan2qgep(QObject):
     def displayMessage(self, message, level):
         self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
 
-    def showSettings(self):
-        if ConfigurationDialog().exec_():
-            self._reloadFinders()
+    # def showSettings(self):
+    #     if ConfigurationDialog().exec_():
+    #         self._reloadFinders()
 
     def openInspection(self):
-        xmlPath = self.settings.value('xmlPath')
-        if xmlPath == '':
-            xmlPath = QgsProject.instance().homePath()
-        filepath = QFileDialog.getOpenFileName(None, "Open WIncan inspection data", xmlPath, "Wincan file (*.xml)")
+        xml_path = self.settings.value('xml_path')
+        if xml_path == '':
+            xml_path = QgsProject.instance().homePath()
+        file_path = QFileDialog.getOpenFileName(None, "Open WIncan inspection data", xml_path, "Wincan file (*.xml)")
 
-        if filepath:
-            absolute_path = os.path.dirname(os.path.realpath(filepath))
+        if file_path:
+            absolute_path = os.path.dirname(os.path.realpath(file_path))
             parent_path = os.path.abspath(os.path.join(absolute_path, os.pardir))
-            self.settings.set_value('xmlPath', absolute_path)
-            data = ImportData(filepath).data
+            self.settings.set_value('xml_path', absolute_path)
+            data = ImportData(file_path).data
             self.dlg = DataBrowserDialog(self.iface, data, parent_path)
             self.dlg.show()
 

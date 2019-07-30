@@ -31,7 +31,7 @@ import xml.etree.ElementTree as et
 import os
 import sys
 
-from PyQt5.QtCore import QDate, QDateTime
+from qgis.PyQt.QtCore import QDate, QDateTime
 
 # codes which should not be imported by default
 SkipCode = ('BCD')

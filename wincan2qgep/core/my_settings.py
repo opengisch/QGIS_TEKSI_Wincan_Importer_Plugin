@@ -51,7 +51,7 @@ class MySettings(SettingManager):
         self.add_setting(String("vl_damage_single_class", Scope.Project, 'vl_damage_single_damage_class'))
         self.add_setting(String("vl_wastewater_structure_structure_condition", Scope.Project, 'vl_wastewater_structure_structure_condition'))
 
-        self.add_setting(String('xmlPath', Scope.Project, ''))
+        self.add_setting(String('xml_path', Scope.Project, ''))
 
 
 
