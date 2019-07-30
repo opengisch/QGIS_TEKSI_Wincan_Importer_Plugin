@@ -1,4 +1,5 @@
 .idea
+.DS_Store
 *.qgs*
 tmp/
 resources_rc.py
