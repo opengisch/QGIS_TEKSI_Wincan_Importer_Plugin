@@ -33,7 +33,7 @@ from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.import_data import ImportData
 from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
 
-import resources_rc
+import wincan2qgep.resources_rc
 
 
 class wincan2qgep(QObject):
