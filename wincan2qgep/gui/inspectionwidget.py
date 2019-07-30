@@ -33,7 +33,7 @@ from qgis.PyQt.uic import loadUiType
 
 from wincan2qgep.core.my_settings import MySettings
 
-Ui_InspectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/../inspectionwidget.ui'))
+Ui_InspectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/inspectionwidget.ui'))
 
 
 

@@ -35,7 +35,7 @@ from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import section_at_id
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 
-Ui_SectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/../sectionwidget.ui'))
+Ui_SectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/sectionwidget.ui'))
 
 
 warning_icon = QgsApplication.getThemeIcon("/mIconWarn.png")

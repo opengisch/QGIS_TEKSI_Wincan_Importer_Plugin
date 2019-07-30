@@ -39,7 +39,7 @@ from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
 from wincan2qgep.core.vsacode import damage_code_to_vl, damage_level_to_vl, damage_level_2_structure_condition, structure_condition_2_damage_level
 
-Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/../databrowserdialog.ui'))
+Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/databrowserdialog.ui'))
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
