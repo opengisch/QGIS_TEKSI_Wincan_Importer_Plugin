@@ -24,18 +24,21 @@
 #---------------------------------------------------------------------
 
 
-from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QWidget, QListWidgetItem
+from qgis.PyQt.QtCore import pyqtSlot, Qt
+from qgis.PyQt.QtGui import QIcon, QColor
+from qgis.PyQt.QtWidgets import QWidget, QListWidgetItem
+from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsMapLayerRegistry, QgsApplication
 
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
-from wincan2qgep.ui.ui_sectionwidget import Ui_SectionWidget
 
-warning_icon = QgsApplication.getThemeIcon( "/mIconWarn.png" )
+Ui_SectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/sectionwidget.ui'))
+
+
+warning_icon = QgsApplication.getThemeIcon("/mIconWarn.png")
 
 
 class SectionWidget(QWidget, Ui_SectionWidget):

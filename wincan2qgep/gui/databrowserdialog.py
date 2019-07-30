@@ -26,9 +26,11 @@
 #---------------------------------------------------------------------
 
 import re
+import os
 
 from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsMapLayerRegistry, QgsFeature, edit, QgsFeatureRequest
 from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
@@ -36,7 +38,8 @@ from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext
 from wincan2qgep.core.my_settings import MySettings
 from wincan2qgep.core.section import find_section, section_at_id
 from wincan2qgep.core.vsacode import damageCode2vl, damageLevel2vl, damage_level_2_structure_condition, structure_condition_2_damage_level
-from wincan2qgep.ui.ui_databrowserdialog import Ui_DataBrowserDialog
+
+Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/databrowserdialog.ui'))
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
@@ -66,13 +69,15 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
             editor_context = QgsAttributeEditorContext()
             editor_context.setVectorLayerTools(iface.vectorLayerTools())
-            self.relationWidgetWrapper = QgsEditorWidgetRegistry.instance().create("ValueRelation",
-                                                                                   maintenance_layer,
-                                                                                   field_idx,
-                                                                                   widget_config,
-                                                                                   self.operatingCompanyComboBox,
-                                                                                   self,
-                                                                                   editor_context)
+            self.relationWidgetWrapper = QgsEditorWidgetRegistry.instance().create(
+                "ValueRelation",
+                maintenance_layer,
+                field_idx,
+                widget_config,
+                self.operatingCompanyComboBox,
+                self,
+                editor_context
+            )
 
         self.sectionWidget.finish_init(iface, self.data)
 
@@ -132,7 +137,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 feature = find_section(channel, section['StartNode'], section['EndNode'])
                 if not feature.isValid() and self.settings.value('remove_trailing_chars'):
                     # try without trailing alpha char
-                    feature = find_section(channel, re.sub('\D*$', '', section['StartNode']), re.sub('\D*$', '', section['EndNode']))
+                    feature = find_section(
+                        channel,
+                        re.sub('\D*$', '', section['StartNode']),
+                        re.sub('\D*$', '', section['EndNode'])
+                    )
                 if feature.isValid():
                     self.data[p_id]['Sections'][s_id]['QgepChannelId1'] = feature.attribute('obj_id')
                 self.progressBar.setValue(i)
@@ -143,7 +152,6 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         self.sectionWidget.setEnabled(True)
         self.sectionWidget.set_project_id(self.currentProjectId)
-
 
     @pyqtSlot()
     def on_importButton_clicked(self):
@@ -164,7 +172,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cancel = False
         i = 0
 
-        # initilaize maintenance and damage layers and features
+        # initialize maintenance and damage layers and features
         maintenance_layer_id = self.settings.value("maintenance_layer")
         maintenance_layer = QgsMapLayerRegistry.instance().mapLayer(maintenance_layer_id)
         damage_layer_id = self.settings.value("damage_layer")
@@ -206,8 +214,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 f = section_at_id(fid)
                                 if f.isValid() is False:
                                     self.cannotImportLabel.show()
-                                    self.cannotImportLabel.setText('L''inspection {0} chambre {1} à {2} a un collecteur assigné qui n''existe pas ou plus.'
-                                                                   .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                    self.cannotImportLabel.setText(
+                                        'L''inspection {i} chambre {c1} à {c2} a un '
+                                        'collecteur assigné qui n''existe pas ou plus.'.format(
+                                            i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
+                                        )
+                                    )
                                     self.sectionWidget.select_section(s_id)
                                     self.hide_progress()
                                     return
@@ -215,8 +227,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             if len(reach_features) == 0:
                                 self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText('L''inspection {} chambre {} à {} n''a pas de collecteur assigné.'
-                                                               .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                self.cannotImportLabel.setText(
+                                    'L''inspection {i} chambre {c1} à {c2} n''a pas de collecteur assigné.'.format(
+                                        i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
+                                    )
+                                )
                                 self.sectionWidget.select_section(s_id)
                                 self.hide_progress()
                                 return
@@ -246,7 +261,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 else:
                                     mf['fk_reach_point'] = rf['rp_to_obj_id']
 
-                                features[rf['ws_obj_id']] = {'maintenance': QgsFeature(mf), 'damages': [], 'pictures': [], 'structure_condition': 4}
+                                features[rf['ws_obj_id']] = {
+                                    'maintenance': QgsFeature(mf),
+                                    'damages': [], 'pictures': [],
+                                    'structure_condition': 4
+                                }
 
                         else:
                             # in case several sections in inspection data correspond to a single section in qgep data
@@ -285,8 +304,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 break
                                             else:
                                                 self.cannotImportLabel.show()
-                                                self.cannotImportLabel.setText('L''inspection {} chambre {} à {} a des observations à des positions supérieures à la longueur'
-                                                                               ' du ou des collecteurs assignés.'.format(section['Counter'], section['StartNode'], section['EndNode']))
+                                                self.cannotImportLabel.setText(
+                                                    'L''inspection {} chambre {} à {} a des observations à des '
+                                                    'positions supérieures à la longueu du ou des collecteurs'
+                                                    ' assignés.'.format(
+                                                        section['Counter'], section['StartNode'], section['EndNode']
+                                                    )
+                                                )
                                                 self.sectionWidget.select_section(s_id)
                                                 self.hide_progress()
                                                 return

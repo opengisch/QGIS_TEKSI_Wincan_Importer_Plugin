@@ -27,11 +27,14 @@
 #---------------------------------------------------------------------
 
 
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QWidget
+from qgis.PyQt.QtCore import pyqtSlot, pyqtSignal
+from qgis.PyQt.QtWidgets import QWidget
+from qgis.PyQt.uic import loadUiType
 
 from wincan2qgep.core.my_settings import MySettings
-from wincan2qgep.ui.ui_inspectionwidget import Ui_InspectionWidget
+
+Ui_InspectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'ui/inspectionwidget.ui'))
+
 
 
 class InspectionWidget(QWidget, Ui_InspectionWidget):
