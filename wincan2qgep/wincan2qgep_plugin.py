@@ -24,8 +24,9 @@
 #---------------------------------------------------------------------
 
 import os.path
-from PyQt5.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, QUrl, pyqtSlot
-from PyQt5.QtGui import QAction, QIcon, QColor, QDesktopServices, QFileDialog
+from PyQt5.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, pyqtSlot
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject
 from qgis.gui import QgsRubberBand, QgsMessageBar
 
