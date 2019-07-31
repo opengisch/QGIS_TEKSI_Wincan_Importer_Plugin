@@ -82,7 +82,7 @@ class ObservationTable(QTableWidget):
             self.insertRow(r)
 
             for c, col in enumerate(ColumnData):
-                item = QTableWidgetItem(obs[col] if c < 6 else '')
+                item = QTableWidgetItem('{}'.format(obs[col] if c < 6 else ''))
                 if c in (0, 6):
                     data_column = 'Import' if c == 0 else 'ForceImport'
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)

@@ -166,7 +166,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             self.section_id = items[0].data(Qt.UserRole)
 
             # allow use of previous section if not on first section
-            self.usePreviousSectionCheckBox.setEnabled(self.section_id !=  self.data[self.projectId]['Sections'].keys()[0])
+            self.usePreviousSectionCheckBox.setEnabled(self.section_id != list(self.data[self.projectId]['Sections'].keys())[0])
 
             section = self.data[self.projectId]['Sections'][self.section_id]
 
