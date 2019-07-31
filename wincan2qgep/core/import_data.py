@@ -151,11 +151,11 @@ class ImportData():
         # order elements by counter
         for p_id in self.data.keys():
             # in Python 3.7+, dictionaries are ordered
-            self.data[p_id]['Sections'] = sorted(self.data[p_id]['Sections'].items(), key=lambda t: int(t[1]['Counter']))
+            self.data[p_id]['Sections'] = dict(sorted(self.data[p_id]['Sections'].items(), key=lambda t: int(t[1]['Counter'])))
 
             for s_id in self.data[p_id]['Sections'].keys():
                 for i_id in self.data[p_id]['Sections'][s_id]['Inspections'].keys():
-                    self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Position'])
+                    self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'] = dict(sorted(self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].items(), key=lambda t: t[1]['Position']))
 
     def get_value(self, node, tag):
         val = node.find(tag)

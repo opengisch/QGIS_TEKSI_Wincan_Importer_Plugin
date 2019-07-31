@@ -50,9 +50,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.projectId = None
         self.section_id = None
 
-        self.section1Selector.feature_identified.connect(self.set_qgep_channel_id1)
-        self.section2Selector.feature_identified.connect(self.set_qgep_channel_id2)
-        self.section3Selector.feature_identified.connect(self.set_qgep_channel_id3)
+        self.section_1_selector.feature_identified.connect(self.set_qgep_channel_id1)
+        self.section_2_selector.feature_identified.connect(self.set_qgep_channel_id2)
+        self.section_3_selector.feature_identified.connect(self.set_qgep_channel_id3)
 
         self.inspectionWidget.importChanged.connect(self.update_status)
 
@@ -67,7 +67,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
     def finish_init(self, iface, data):
         layer_id = self.settings.value("channel_layer")
-        for selector in (self.section1Selector, self.section2Selector, self.section3Selector):
+        for selector in (self.section_1_selector, self.section_2_selector, self.section_3_selector):
             selector.set_layer(QgsProject.instance().mapLayer(layer_id))
             selector.set_canvas(iface.mapCanvas())
         self.data = data

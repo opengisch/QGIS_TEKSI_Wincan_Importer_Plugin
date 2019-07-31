@@ -111,7 +111,7 @@ class Wincan2Qgep(QObject):
         xml_path = self.settings.value('xml_path')
         if xml_path == '':
             xml_path = QgsProject.instance().homePath()
-        file_path = QFileDialog.getOpenFileName(None, "Open WIncan inspection data", xml_path, "Wincan file (*.xml)")
+        file_path, _ = QFileDialog.getOpenFileName(None, "Open WIncan inspection data", xml_path, "Wincan file (*.xml)")
 
         if file_path:
             absolute_path = os.path.dirname(os.path.realpath(file_path))
