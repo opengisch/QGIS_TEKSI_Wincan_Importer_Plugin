@@ -37,7 +37,7 @@ from .gui.databrowserdialog import DataBrowserDialog
 import wincan2qgep.resources_rc
 
 
-class Wincan2Qgep:
+class Wincan2Qgep(QObject):
 
     name = "&Wincan 2 QGEP"
     actions = None
