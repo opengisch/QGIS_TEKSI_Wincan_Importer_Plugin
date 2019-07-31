@@ -38,17 +38,17 @@ def find_section(channel, start_node, end_node):
             channel, start_node, channel, end_node
         )
         request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request))
+        feature = next(layer.getFeatures(request), QgsFeature())
         # print requestText, feature.isValid()
     return feature
 
 
-def section_at_id(id):
+def section_at_id(obj_id):
     feature = QgsFeature()
-    if id is not None:
+    if obj_id is not None:
         layer_id = MySettings().value("channel_layer")
         layer = QgsProject.instance().mapLayer(layer_id)
         if layer is not None:
-            request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(id))
-            feature = next(layer.getFeatures(request))
+            request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(obj_id))
+            feature = next(layer.getFeatures(request), QgsFeature())
     return feature

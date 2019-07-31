@@ -33,7 +33,7 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsFeature, edit, QgsFeatureRequest
-from qgis.gui import QgsEditorWidgetRegistry, QgsAttributeEditorContext, QgisInterface
+from qgis.gui import QgsGui, QgsEditorWidgetRegistry, QgsAttributeEditorContext, QgisInterface
 
 from ..core.my_settings import MySettings
 from ..core.section import find_section, section_at_id
@@ -66,18 +66,16 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.relationWidgetWrapper = None
         maintenance_layer = QgsProject.instance().mapLayer(self.settings.value("maintenance_layer"))
         if maintenance_layer is not None:
-            field_idx = maintenance_layer.fieldNameIndex('fk_operating_company')
-            widget_config = maintenance_layer.editorWidgetV2Config(field_idx)
+            widget_config = maintenance_layer.editFormConfig().widgetConfig('fk_operating_company')
             editor_context = QgsAttributeEditorContext()
             editor_context.setVectorLayerTools(iface.vectorLayerTools())
-            self.relationWidgetWrapper = QgsEditorWidgetRegistry.instance().create(
+            self.relationWidgetWrapper = QgsGui.editorWidgetRegistry().create(
                 "ValueRelation",
                 maintenance_layer,
-                field_idx,
+                maintenance_layer.fields().indexFromName('fk_operating_company'),
                 widget_config,
                 self.operatingCompanyComboBox,
-                self,
-                editor_context
+                self
             )
 
         self.sectionWidget.finish_init(iface, self.data)
@@ -244,7 +242,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 init_fields = maintenance_layer.dataProvider().fields()
                                 mf.setFields(init_fields)
                                 mf.initAttributes(init_fields.size())
-                                mf['obj_id'] = maintenance_layer.dataProvider().defaultValue(maintenance_layer.fieldNameIndex('obj_id'))
+                                mf['obj_id'] = maintenance_layer.dataProvider().defaultValue(maintenance_layer.fields().indexFromName('obj_id'))
                                 # mf['identifier'] = i_id  # use custom id to retrieve feature
                                 mf['maintenance_type'] = 'examination'
                                 mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
@@ -321,7 +319,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 initFields = damage_layer.dataProvider().fields()
                                 df.setFields(initFields)
                                 df.initAttributes(initFields.size())
-                                df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fieldNameIndex('obj_id'))
+                                df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fields().indexFromName('obj_id'))
                                 df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
                                 df['single_damage_class'] = damage_level_to_vl(observation['Rate'])
@@ -373,7 +371,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 init_fields = file_layer.dataProvider().fields()
                 of.setFields(init_fields)
                 of.initAttributes(init_fields.size())
-                of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fieldNameIndex('obj_id'))
+                of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
                 of['class'] = 3825  # i.e. maintenance event
                 of['kind'] = 3771  # i.e. video
                 of['object'] = maintenance['obj_id']
@@ -398,7 +396,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         init_fields = file_layer.dataProvider().fields()
                         of.setFields(init_fields)
                         of.initAttributes(init_fields.size())
-                        of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fieldNameIndex('obj_id'))
+                        of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
                         of['class'] = 3871  # i.e. damage
                         of['kind'] = 3772  # i.e. photo
                         of['object'] = damage['obj_id']
@@ -411,7 +409,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 init_fields = join_layer.dataProvider().fields()
                 jf.setFields(init_fields)
                 jf.initAttributes(init_fields.size())
-                jf['obj_id'] = join_layer.dataProvider().defaultValue(join_layer.fieldNameIndex('obj_id'))
+                jf['obj_id'] = join_layer.dataProvider().defaultValue(join_layer.fields().indexFromName('obj_id'))
                 jf['fk_wastewater_structure'] = ws_obj_id
                 jf['fk_maintenance_event'] = maintenance['obj_id']
                 join_layer.addFeature(jf)
