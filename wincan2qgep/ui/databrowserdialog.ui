@@ -268,7 +268,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources.qrc"/>
+  <include location="wincan2qgep.resources.qrc"/>
  </resources>
  <connections>
   <connection>

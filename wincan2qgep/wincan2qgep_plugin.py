@@ -34,7 +34,7 @@ from .core.my_settings import MySettings
 from .core.import_data import ImportData
 from .gui.databrowserdialog import DataBrowserDialog
 
-import resources_rc  # NOQA
+import wincan2qgep.resources_rc
 
 
 class Wincan2Qgep:

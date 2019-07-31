@@ -239,7 +239,7 @@
   <customwidget>
    <class>InspectionWidget</class>
    <extends>QWidget</extends>
-   <header location="global">..gui.inspectionwidget</header>
+   <header location="global">wincan2qgep.gui.inspectionwidget</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -260,7 +260,7 @@
   <tabstop>sectionUseEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="../resources.qrc"/>
+  <include location="wincan2qgep.resources.qrc"/>
  </resources>
  <connections>
   <connection>
