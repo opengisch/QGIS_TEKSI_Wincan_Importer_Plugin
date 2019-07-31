@@ -67,12 +67,12 @@ class Wincan2Qgep(QObject):
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
         self.iface.addToolBarIcon(self.actions['openInspection'])
 
-        self.actions['showSettings'] = QAction(
-            QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
-            self.tr("&Settings"),
-            self.iface.mainWindow())
-        self.actions['showSettings'].triggered.connect(self.showSettings)
-        self.iface.addPluginToMenu(self.name, self.actions['showSettings'])
+        # self.actions['showSettings'] = QAction(
+        #     QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
+        #     self.tr("&Settings"),
+        #     self.iface.mainWindow())
+        # self.actions['showSettings'].triggered.connect(self.showSettings)
+        # self.iface.addPluginToMenu(self.name, self.actions['showSettings'])
 
         # self.actions['help'] = QAction(
         #     QIcon(":/plugins/wincan2qgep/icons/help.svg"),
