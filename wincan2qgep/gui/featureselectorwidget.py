@@ -105,7 +105,7 @@ class FeatureSelectorWidget(QWidget):
         self.feature = QgsFeature()
         self.line_edit.clear()
 
-    @pyqtSlot
+    @pyqtSlot()
     def map_identification(self):
         if self.layer is None or self.map_tool is None or self.canvas is None:
             return
