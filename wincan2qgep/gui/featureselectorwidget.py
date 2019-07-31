@@ -24,11 +24,11 @@
 #---------------------------------------------------------------------
 
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings, QTimer
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction
+from qgis.PyQt.QtCore import pyqtSignal, pyqtSlot, QSettings, QTimer
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QToolButton, QAction
 
-from qgis.core import QgsApplication, QgsFeature, Qgis
+from qgis.core import Qgis, QgsApplication, QgsFeature, QgsExpression, QgsExpressionContext, QgsExpressionContextScope
 from qgis.gui import QgsMapToolIdentifyFeature, QgsHighlight
 
 
@@ -52,7 +52,7 @@ class FeatureSelectorWidget(QWidget):
         self.line_edit = QLineEdit(self)
         self.line_edit.setReadOnly(True)
         edit_layout.addWidget(self.line_edit)
-        
+
         self.highlight_feature_button = QToolButton(self)
         self.highlight_feature_button.setPopupMode(QToolButton.MenuButtonPopup)
         self.highlight_feature_action = QAction(QgsApplication.getThemeIcon("/mActionHighlightFeature.svg"), "Highlight feature", self)
@@ -95,7 +95,12 @@ class FeatureSelectorWidget(QWidget):
         if not self.feature.isValid() or self.layer is None:
             return
 
-        feature_title = feature.attribute(self.layer.displayField())
+        expression = QgsExpression(self.layer.displayExpression())
+        context = QgsExpressionContext()
+        scope = QgsExpressionContextScope()
+        context.appendScope(scope)
+        scope.setFeature(feature)
+        feature_title = expression.evaluate(context)
         if feature_title == '':
             feature_title = feature.id()
         self.line_edit.setText(str(feature_title))
@@ -110,7 +115,7 @@ class FeatureSelectorWidget(QWidget):
         if self.layer is None or self.map_tool is None or self.canvas is None:
             return
 
-        self.map_tool.set_layer(self.layer)
+        self.map_tool.setLayer(self.layer)
         self.canvas.setMapTool(self.map_tool)
 
         self.window_widget = QWidget.window(self)
@@ -118,10 +123,9 @@ class FeatureSelectorWidget(QWidget):
         self.canvas.activateWindow()
         self.canvas.setFocus()
 
-        self.map_tool.feature_identified.connect(self.map_tool_feature_identified)
+        self.map_tool.featureIdentified.connect(self.map_tool_feature_identified)
         self.map_tool.deactivated.connect(self.map_tool_deactivated)
 
-    @pyqtSlot(QgsFeature)
     def map_tool_feature_identified(self, feature):
         feature = QgsFeature(feature)
         self.feature_identified.emit(feature)
@@ -141,7 +145,7 @@ class FeatureSelectorWidget(QWidget):
 
         if geom is None:
             return
-  
+
         if canvas_extent == CanvasExtent.Scale:
             feature_bounding_box = geom.boundingBox()
             feature_bounding_box = self.canvas.mapSettings().layerToMapCoordinates(self.layer, feature_bounding_box)
@@ -151,7 +155,7 @@ class FeatureSelectorWidget(QWidget):
                 extent.scale(1.1)
                 self.canvas.setExtent(extent)
                 self.canvas.refresh()
-            
+
         elif canvas_extent == CanvasExtent.Pan:
             centroid = geom.centroid()
             center = centroid.asPoint()
@@ -164,10 +168,10 @@ class FeatureSelectorWidget(QWidget):
         self.highlight = QgsHighlight(self.canvas, geom, self.layer)
 
         settings = QSettings()
-        color = QColor(settings.value("/Map/highlight/color", QGis.DEFAULT_HIGHLIGHT_COLOR.name()))
-        alpha = int(settings.value("/Map/highlight/colorAlpha", QGis.DEFAULT_HIGHLIGHT_COLOR.alpha()))
-        buffer = 2*float(settings.value("/Map/highlight/buffer", QGis.DEFAULT_HIGHLIGHT_BUFFER_MM))
-        min_width = 2*float(settings.value("/Map/highlight/min_width", QGis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM))
+        color = QColor(settings.value("/Map/highlight/color", Qgis.DEFAULT_HIGHLIGHT_COLOR.name()))
+        alpha = int(settings.value("/Map/highlight/colorAlpha", Qgis.DEFAULT_HIGHLIGHT_COLOR.alpha()))
+        buffer = 2*float(settings.value("/Map/highlight/buffer", Qgis.DEFAULT_HIGHLIGHT_BUFFER_MM))
+        min_width = 2*float(settings.value("/Map/highlight/min_width", Qgis.DEFAULT_HIGHLIGHT_MIN_WIDTH_MM))
 
         self.highlight.setColor(color)  # sets also fill with default alpha
         color.setAlpha(alpha)
