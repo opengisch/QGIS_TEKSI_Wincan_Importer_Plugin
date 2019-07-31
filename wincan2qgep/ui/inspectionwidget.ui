@@ -99,7 +99,7 @@
   <customwidget>
    <class>ObservationTable</class>
    <extends>QTableWidget</extends>
-   <header location="global">..gui.observationtable</header>
+   <header location="global">wincan2qgep.gui.observationtable</header>
   </customwidget>
  </customwidgets>
  <resources/>

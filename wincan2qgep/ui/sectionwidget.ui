@@ -245,7 +245,7 @@
   <customwidget>
    <class>FeatureSelectorWidget</class>
    <extends>QWidget</extends>
-   <header location="global">..gui.featureselectorwidget</header>
+   <header location="global">wincan2qgep.gui.featureselectorwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

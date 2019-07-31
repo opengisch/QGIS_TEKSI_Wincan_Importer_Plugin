@@ -258,12 +258,12 @@
   <customwidget>
    <class>QgsFileWidget</class>
    <extends>QWidget</extends>
-   <header>qgsfilewidget.h</header>
+   <header>qgis.gui</header>
   </customwidget>
   <customwidget>
    <class>SectionWidget</class>
    <extends>QWidget</extends>
-   <header location="global">..gui.sectionwidget</header>
+   <header location="global">wincan2qgep.gui.sectionwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
