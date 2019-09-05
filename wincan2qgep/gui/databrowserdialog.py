@@ -244,7 +244,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf.initAttributes(init_fields.size())
                                 mf['obj_id'] = maintenance_layer.dataProvider().defaultValue(maintenance_layer.fields().indexFromName('obj_id'))
                                 # mf['identifier'] = i_id  # use custom id to retrieve feature
-                                mf['maintenance_type'] = 'examination'
+                                mf['maintenance_event_type'] = 'examination'
                                 mf['kind'] = 4564  # vl_maintenance_event_kind: inspection
                                 mf['operator'] = inspection['Operator']
                                 mf['time_point'] = QDateTime(inspection['InspDate'])
@@ -281,13 +281,14 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             offset_section_id = s_id
                             while self.data[p_id]['Sections'][offset_section_id]['UsePreviousSection'] is True:
                                 # get previous section id
-                                # http://stackoverflow.com/questions/28035490/in-python-how-can-i-get-the-next-and-previous-keyvalue-of-a-particular-key-in
-                                offset_section_id = self.data[p_id]['Sections']._OrderedDict__map[offset_section_id][0][2]
-                                print(offset_section_id)
-                                # cumulate offset
+                                offset_section_id_index = list(self.data[p_id]['Sections']).index(offset_section_id)
+                                assert(offset_section_id_index > 0)
+                                offset_section_id = list(self.data[p_id]['Sections'])[offset_section_id_index-1]
+                                # accumulate offset
                                 distance_offset -= self.data[p_id]['Sections'][offset_section_id]['Sectionlength']
+                                print('using previous section: {} with distance offset {}'.format(offset_section_id, distance_offset))
 
-                        # add corresponding damages
+                                # add corresponding damages
                         reach_index = 0
                         structure_condition = 4  # = ok
                         for observation in self.data[p_id]['Sections'][s_id]['Inspections'][i_id]['Observations'].values():
@@ -379,14 +380,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 of['path_relative'] = self.data_path_line_edit.text() + '\Video'
                 file_layer.addFeature(of)
 
-
                 # set fkey maintenance event id to all damages
                 for k, _ in enumerate(damages):
                     damages[k]['fk_examination'] = maintenance['obj_id']
 
                 # write damages
                 for k, damage in enumerate(damages):
-                    damage_layer.addFeature(damage, False)
+                    damage_layer.addFeature(damage)
 
                     # add pictures to od_file with reference to damage
                     layer_id = MySettings().value("file_layer")
@@ -420,8 +420,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 wsl = QgsProject.instance().mapLayer(layer_id)
                 if wsl is not None:
                     request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))
-                    for f in wsl.getFeatures(request):
-                        rf = QgsFeature(f)
+                    rf = next(wsl.getFeatures(request))
                 if rf.isValid():
                     # update structure condition if worse
                     old_level = structure_condition_2_damage_level(rf['structure_condition'])

@@ -39,11 +39,11 @@ def damage_code_to_vl(code: str) -> str:
     if layer is not None:
         request_text = '"value_en" = \'{}\''.format(code)
         request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request))
+        feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return f['code']
+        return feature['code']
     else:
         return None
 
@@ -59,11 +59,11 @@ def damage_level_to_vl(code):
     if layer is not None:
         request_text = '"value_en" = \'EZ{}\''.format(code)
         request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request))
+        feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return f['code']
+        return feature['code']
     else:
         return None
 
@@ -78,11 +78,11 @@ def damage_level_2_structure_condition(level):
     if layer is not None:
         request_text = '"value_en" = \'Z{}\''.format(level)
         request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request))
+        feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return f['code']
+        return feature['code']
     else:
         return None
 
@@ -97,13 +97,12 @@ def structure_condition_2_damage_level(code):
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
         request_text = '"code" = \'{}\''.format(code)
-
         request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request))
+        feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return f['value_en']
+        return feature['value_en']
 
     else:
         return None
