@@ -117,7 +117,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
-        self.progressBar.setFormat('Recherche les collecteurs %v/%m')
+        self.progressBar.setFormat('Searching channels %v/%m')
         self.progressBar.show()
         self.cancelButton.show()
         self.importButton.hide()
@@ -164,7 +164,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
-        self.progressBar.setFormat('Contrôle les collecteurs %v/%m')
+        self.progressBar.setFormat('Checking channels %v/%m')
         self.progressBar.show()
         self.cancelButton.show()
         self.importButton.hide()
@@ -180,7 +180,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         join_layer = QgsProject.instance().mapLayer(join_layer_id)
         if join_layer is None:
             self.cannotImportLabel.show()
-            self.cannotImportLabel.setText('La couche de jointure re_maintenance_event_wastewater_structureest manquante.')
+            self.cannotImportLabel.setText(self.tr("The join layer '{layer_id}' is missing in the project."
+                                                   .format('re_maintenance_event_wastewater_structure')))
             self.hide_progress()
             return
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
@@ -198,8 +199,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                 for i_id, inspection in self.data[p_id]['Sections'][s_id]['Inspections'].items():
                     if inspection['Import']:
-
-                        # offset in case of several sections in inspection data correspond to a single section in qgep data
+                        # offset in case of several sections in inspection
+                        # data correspond to a single section in qgep data
                         distance_offset = 0
 
                         if section['UsePreviousSection'] is not True:
@@ -213,11 +214,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 f = section_at_id(fid)
                                 if f.isValid() is False:
                                     self.cannotImportLabel.show()
-                                    self.cannotImportLabel.setText(
-                                        'L''inspection {i} chambre {c1} à {c2} a un '
-                                        'collecteur assigné qui n''existe pas ou plus.'.format(
+                                    self.cannotImportLabel.setText(self.tr(
+                                        "Inspection {i} from manhole {c1} to {c2}"
+                                        " has an non-existent channel assigned.".format(
                                             i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
-                                        )
+                                        ))
                                     )
                                     self.sectionWidget.select_section(s_id)
                                     self.hide_progress()
@@ -226,10 +227,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             if len(reach_features) == 0:
                                 self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText(
-                                    'L''inspection {i} chambre {c1} à {c2} n''a pas de collecteur assigné.'.format(
-                                        i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
-                                    )
+                                self.cannotImportLabel.setText(self.tr(
+                                        "Inspection {i} from manhole {c1} to {c2}"
+                                        " has no channel assigned.".format(
+                                            i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
+                                        ))
                                 )
                                 self.sectionWidget.select_section(s_id)
                                 self.hide_progress()
@@ -237,7 +239,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             # create maintenance/examination event (one per qgep reach feature)
                             for rf in reach_features:
-                                # in case several sections in qgep data correspond to a single section in inspection data
+                                # in case several sections in qgep data
+                                # correspond to a single section in inspection data
                                 mf = QgsFeature()
                                 init_fields = maintenance_layer.dataProvider().fields()
                                 mf.setFields(init_fields)
@@ -271,9 +274,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             # substract length from previous sections in inspection data
                             if not previous_section_imported:
                                 self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText(
-                                    'L''inspection {} chambre {} à {} utilise le collecteur précédent mais il n''est pas défini.'
-                                    .format(section['Counter'], section['StartNode'], section['EndNode']))
+                                self.cannotImportLabel.setText(self.tr(
+                                    "Inspection {i} from manhole {c1} to {c2}"
+                                    " uses previous channel, but it is not defined.".format(
+                                        i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
+                                    ))
+                                )
                                 self.sectionWidget.select_section(s_id)
                                 self.hide_progress()
                                 return
@@ -304,12 +310,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 break
                                             else:
                                                 self.cannotImportLabel.show()
-                                                self.cannotImportLabel.setText(
-                                                    'L''inspection {} chambre {} à {} a des observations à des '
-                                                    'positions supérieures à la longueu du ou des collecteurs'
-                                                    ' assignés.'.format(
-                                                        section['Counter'], section['StartNode'], section['EndNode']
-                                                    )
+                                                self.cannotImportLabel.setText(self.tr(
+                                                    "Inspection {i} from manhole {c1} to {c2}"
+                                                    " has observations further than the length"
+                                                    " of the assigned channels.".format(
+                                                        i=section['Counter'], c1=section['StartNode'], c2=section['EndNode']
+                                                    ))
                                                 )
                                                 self.sectionWidget.select_section(s_id)
                                                 self.hide_progress()
@@ -317,9 +323,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                                 # create maintenance/examination event
                                 df = QgsFeature()
-                                initFields = damage_layer.dataProvider().fields()
-                                df.setFields(initFields)
-                                df.initAttributes(initFields.size())
+                                init_fields = damage_layer.dataProvider().fields()
+                                df.setFields(init_fields)
+                                df.initAttributes(init_fields.size())
                                 df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fields().indexFromName('obj_id'))
                                 df['damage_type'] = 'channel'
                                 df['comments'] = observation['Text']
@@ -341,7 +347,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.progressBar.setMaximum(len(features))
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
-        self.progressBar.setFormat('Import des données %v/%m')
+        self.progressBar.setFormat('Importing %v/%m')
         self.progressBar.show()
         self.cancelButton.show()
         self.importButton.hide()

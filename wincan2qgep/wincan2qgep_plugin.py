@@ -67,20 +67,6 @@ class Wincan2Qgep(QObject):
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
         self.iface.addToolBarIcon(self.actions['openInspection'])
 
-        # self.actions['showSettings'] = QAction(
-        #     QIcon(":/plugins/wincan2qgep/icons/settings.svg"),
-        #     self.tr("&Settings"),
-        #     self.iface.mainWindow())
-        # self.actions['showSettings'].triggered.connect(self.showSettings)
-        # self.iface.addPluginToMenu(self.name, self.actions['showSettings'])
-
-        # self.actions['help'] = QAction(
-        #     QIcon(":/plugins/wincan2qgep/icons/help.svg"),
-        #     self.tr("Help"),
-        #     self.iface.mainWindow())
-        # self.actions['help'].triggered.connect(lambda: QDesktopServices().openUrl(QUrl("http://3nids.github.io/wincan2qgep")))
-        # self.iface.addPluginToMenu(self.name, self.actions['help'])
-
         self.rubber = QgsRubberBand(self.iface.mapCanvas())
         self.rubber.setColor(QColor(255, 255, 50, 200))
         self.rubber.setIcon(self.rubber.ICON_CIRCLE)
@@ -102,10 +88,6 @@ class Wincan2Qgep(QObject):
     #@pyqtSlot(str, QgsMessageBar.MessageLevel)
     #def display_message(self, message, level):
     #    self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
-
-    # def showSettings(self):
-    #     if ConfigurationDialog().exec_():
-    #         self._reloadFinders()
 
     def open_inspection(self):
         xml_path = self.settings.value('xml_path')

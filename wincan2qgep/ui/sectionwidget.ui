@@ -17,7 +17,7 @@
    <item row="3" column="2">
     <widget class="QPushButton" name="checkAllButton">
      <property name="text">
-      <string>tout cocher</string>
+      <string>check all</string>
      </property>
     </widget>
    </item>
@@ -55,7 +55,7 @@
    <item row="3" column="3">
     <widget class="QPushButton" name="uncheckAllButton">
      <property name="text">
-      <string>tout décocher</string>
+      <string>uncheck all</string>
      </property>
     </widget>
    </item>
@@ -77,14 +77,14 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>Coll. 1</string>
+         <string>Channel 1</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_12">
         <property name="text">
-         <string>Coll. 3</string>
+         <string>Channel 3</string>
         </property>
        </widget>
       </item>
@@ -94,7 +94,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>Coll. 2</string>
+         <string>Channel 2</string>
         </property>
        </widget>
       </item>
@@ -104,7 +104,7 @@
    <item row="0" column="5" colspan="2">
     <widget class="QCheckBox" name="usePreviousSectionCheckBox">
      <property name="text">
-      <string>Réutiliser le collecteur précédent</string>
+      <string>Reuse previous channel</string>
      </property>
     </widget>
    </item>
@@ -128,35 +128,35 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Chambre arrivée</string>
+         <string>To manhole</string>
         </property>
        </widget>
       </item>
       <item row="0" column="4">
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Diamètre</string>
+         <string>Diameter</string>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Longueur</string>
+         <string>Length</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Chambre départ</string>
+         <string>From manhole</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Matériau</string>
+         <string>Material</string>
         </property>
        </widget>
       </item>
@@ -170,7 +170,7 @@
       <item row="0" column="6">
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Profil</string>
+         <string>Profile</string>
         </property>
        </widget>
       </item>
@@ -205,7 +205,7 @@
       <item row="1" column="4">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Largeur</string>
+         <string>Width</string>
         </property>
        </widget>
       </item>
@@ -219,7 +219,7 @@
       <item row="1" column="6">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Utilisation</string>
+         <string>Use</string>
         </property>
        </widget>
       </item>
@@ -260,7 +260,7 @@
   <tabstop>sectionUseEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="wincan2qgep.resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections>
   <connection>
