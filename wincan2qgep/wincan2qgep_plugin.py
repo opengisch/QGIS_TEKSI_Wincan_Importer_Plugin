@@ -61,7 +61,7 @@ class Wincan2Qgep(QObject):
     def initGui(self):
         self.actions['openInspection'] = QAction(
             QIcon(":/plugins/wincan2qgep/icons/wincan_logo.png"),
-            self.tr("Ouvrir une inspection"),
+            self.tr("Open an inspection report"),
             self.iface.mainWindow())
         self.actions['openInspection'].triggered.connect(self.open_inspection)
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
