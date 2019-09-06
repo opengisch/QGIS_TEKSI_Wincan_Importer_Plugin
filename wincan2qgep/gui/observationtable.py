@@ -60,7 +60,7 @@ class ObservationTable(QTableWidget):
                                self.tr('photo'),
                                self.tr('rate'),
                                self.tr('force')]
-        assert(self.column_headers.count() == COLUMN_DATA.count())
+        assert(len(self.column_headers) == len(COLUMN_DATA))
 
     def finish_init(self, data):
         self.data = data
