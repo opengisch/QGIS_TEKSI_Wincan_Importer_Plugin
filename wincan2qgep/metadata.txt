@@ -17,7 +17,7 @@ icon=icons/wincan_logo.png
 
 tags=qgep,wincan,wastewater,inspection
 
-homepage=https://github.com/3nids/wincan2qgep
+homepage=https://qgep.github.io/docs/wincan2qgep/index.html
 tracker=https://github.com/3nids/wincan2qgep/issues
 repository=https://github.com/3nids/wincan2qgep
 
