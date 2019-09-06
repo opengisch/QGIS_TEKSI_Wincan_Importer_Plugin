@@ -30,11 +30,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 
-ColumnHeaders = ['distance', 'code', 'description', 'mpeg', 'photo', 'gravité', 'forcer']
-ColumnData = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
+COLUMN_DATA = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
 
 
 class ObservationTable(QTableWidget):
+
     def __init__(self, parent):
         QTableWidget.__init__(self, parent)
         self.data = None
@@ -53,9 +53,18 @@ class ObservationTable(QTableWidget):
 
         self.itemClicked.connect(self.import_checkbox_clicked)
 
+        self.column_headers = [self.tr('distance'),
+                               self.tr('code'),
+                               self.tr('description'),
+                               self.tr('mpeg'),
+                               self.tr('photo'),
+                               self.tr('rate'),
+                               self.tr('force')]
+        assert(self.column_headers.count() == COLUMN_DATA.count())
+
     def finish_init(self, data):
         self.data = data
-        for c, col in enumerate(ColumnHeaders):
+        for c, col in enumerate(self.column_headers):
             self.insertColumn(c)
             item = QTableWidgetItem(col)
             font = item.font()
@@ -81,7 +90,7 @@ class ObservationTable(QTableWidget):
             r = self.rowCount()
             self.insertRow(r)
 
-            for c, col in enumerate(ColumnData):
+            for c, col in enumerate(COLUMN_DATA):
                 item = QTableWidgetItem('{}'.format(obs[col] if c < 6 else ''))
                 if c in (0, 6):
                     data_column = 'Import' if c == 0 else 'ForceImport'
