@@ -23,7 +23,7 @@
 #
 #---------------------------------------------------------------------
 
-from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
+from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest, QgsApplication, NULL
 
 from wincan2qgep.core.my_settings import MySettings
 
@@ -91,18 +91,20 @@ def structure_condition_2_damage_level(code):
     """
     return damage code to renovation necessity pkey
     """
-    feature = QgsFeature()
-
     layer_id = MySettings().value("vl_wastewater_structure_structure_condition")
     layer = QgsProject.instance().mapLayer(layer_id)
-    if layer is not None:
-        request_text = '"code" = \'{}\''.format(code)
-        request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request), QgsFeature())
-        # print request_text, feature.isValid()
+
+    print(code, QgsApplication.nullRepresentation(), code == QgsApplication.nullRepresentation())
+
+    if layer is None or code == NULL or code is None:
+        return None
+
+    request_text = '"code" = \'{}\''.format(code)
+    request = QgsFeatureRequest().setFilterExpression(request_text)
+    feature = next(layer.getFeatures(request), QgsFeature())
+    # print(request_text, feature.isValid())
 
     if feature.isValid():
         return feature['value_en']
-
     else:
         return None
