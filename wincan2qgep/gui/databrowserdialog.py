@@ -266,7 +266,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 features[rf['ws_obj_id']] = {
                                     'maintenance': QgsFeature(mf),
                                     'damages': [], 'pictures': [],
-                                    'structure_condition': 4
+                                    'ws_structure_condition': 4
                                 }
 
                         else:
@@ -340,7 +340,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 features[ws_obj_id]['damages'].append(df)
                                 features[ws_obj_id]['pictures'].append(pics)
                                 structure_condition = min(structure_condition, observation['Rate'])
-                                features[ws_obj_id]['structure_condition'] = structure_condition
+                                features[ws_obj_id]['ws_structure_condition'] = structure_condition
                 self.progressBar.setValue(i)
                 i += 1
 
@@ -363,7 +363,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 maintenance = elements['maintenance']
                 damages = elements['damages']
                 pictures = elements['pictures']
-                structure_condition = elements['structure_condition']
+                structure_condition = elements['ws_structure_condition']
 
                 if len(damages) == 0:
                     continue
@@ -429,9 +429,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     rf = next(wsl.getFeatures(request))
                 if rf.isValid():
                     # update structure condition if worse
-                    old_level = structure_condition_2_damage_level(rf['structure_condition'])
+                    old_level = structure_condition_2_damage_level(rf['ws_structure_condition'])
                     if old_level is None or old_level > 'Z{}'.format(structure_condition):
-                        rf['structure_condition'] = damage_level_2_structure_condition(structure_condition)
+                        rf['ws_structure_condition'] = damage_level_2_structure_condition(structure_condition)
                         wsl.updateFeature(rf)
 
                 i += 1
