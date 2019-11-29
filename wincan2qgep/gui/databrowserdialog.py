@@ -32,12 +32,14 @@ from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
-from qgis.core import QgsProject, QgsFeature, edit, QgsFeatureRequest
-from qgis.gui import QgsGui, QgsEditorWidgetRegistry, QgsAttributeEditorContext, QgisInterface
+from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
+from qgis.gui import QgsGui, QgsAttributeEditorContext, QgisInterface
 
-from ..core.my_settings import MySettings
-from ..core.section import find_section, section_at_id
-from ..core.vsacode import damage_code_to_vl, damage_level_to_vl, damage_level_2_structure_condition, structure_condition_2_damage_level
+from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.section import find_section, section_at_id
+from wincan2qgep.core.vsacode import damage_code_to_vl, damage_level_to_vl, damage_level_2_structure_condition, structure_condition_2_damage_level
+from wincan2qgep.core.layer_edit import edit
+from wincan2qgep.core.utils import info, dbg_info
 
 Ui_DataBrowserDialog, _ = loadUiType(os.path.join(os.path.dirname(__file__), '..', 'ui', 'databrowserdialog.ui'))
 
@@ -242,7 +244,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # in case several sections in qgep data
                                 # correspond to a single section in inspection data
                                 mf = QgsFeature()
-                                init_fields = maintenance_layer.dataProvider().fields()
+                                init_fields = maintenance_layer.fields()
                                 mf.setFields(init_fields)
                                 mf.initAttributes(init_fields.size())
                                 mf['obj_id'] = maintenance_layer.dataProvider().defaultValue(maintenance_layer.fields().indexFromName('obj_id'))
@@ -292,7 +294,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 offset_section_id = list(self.data[p_id]['Sections'])[offset_section_id_index-1]
                                 # accumulate offset
                                 distance_offset -= self.data[p_id]['Sections'][offset_section_id]['Sectionlength']
-                                print('using previous section: {} with distance offset {}'.format(offset_section_id, distance_offset))
+                                info('using previous section: {} with distance offset {}'.format(offset_section_id, distance_offset))
 
                                 # add corresponding damages
                         reach_index = 0
@@ -323,7 +325,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                                 # create maintenance/examination event
                                 df = QgsFeature()
-                                init_fields = damage_layer.dataProvider().fields()
+                                init_fields = damage_layer.fields()
                                 df.setFields(init_fields)
                                 df.initAttributes(init_fields.size())
                                 df['obj_id'] = damage_layer.dataProvider().defaultValue(damage_layer.fields().indexFromName('obj_id'))
@@ -353,89 +355,97 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.importButton.hide()
         self.cancel = False
 
-        with edit(maintenance_layer):
-            i = 0
-            for ws_obj_id, elements in features.items():
-                QCoreApplication.processEvents()
-                if self.cancel:
-                    break
+        file_layer_id = MySettings().value("file_layer")
+        file_layer = QgsProject.instance().mapLayer(file_layer_id)
 
-                maintenance = elements['maintenance']
-                damages = elements['damages']
-                pictures = elements['pictures']
-                structure_condition = elements['structure_condition']
+        with edit(join_layer):
+            with edit(file_layer):
+                with edit(damage_layer):
+                    with edit(maintenance_layer):
 
-                if len(damages) == 0:
-                    continue
+                        i = 0
+                        for ws_obj_id, elements in features.items():
+                            QCoreApplication.processEvents()
+                            if self.cancel:
+                                break
 
-                # write maintenance feature
-                maintenance_layer.addFeature(maintenance)
+                            maintenance = elements['maintenance']
+                            damages = elements['damages']
+                            pictures = elements['pictures']
+                            structure_condition = elements['structure_condition']
 
-                # write video
-                layer_id = MySettings().value("file_layer")
-                file_layer = QgsProject.instance().mapLayer(layer_id)
-                of = QgsFeature()
-                init_fields = file_layer.dataProvider().fields()
-                of.setFields(init_fields)
-                of.initAttributes(init_fields.size())
-                of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
-                of['class'] = 3825  # i.e. maintenance event
-                of['kind'] = 3771  # i.e. video
-                of['object'] = maintenance['obj_id']
-                of['identifier'] = maintenance['videonumber']
-                of['path_relative'] = self.data_path_line_edit.text() + '\Video'
-                file_layer.addFeature(of)
+                            if len(damages) == 0:
+                                continue
 
-                # set fkey maintenance event id to all damages
-                for k, _ in enumerate(damages):
-                    damages[k]['fk_examination'] = maintenance['obj_id']
+                            # write maintenance feature
+                            ok = maintenance_layer.addFeature(maintenance)
+                            dbg_info('adding feature to maintenance layer (fid: {}): {}'.format(maintenance['obj_id'], 'ok' if ok else 'error'))
 
-                # write damages
-                for k, damage in enumerate(damages):
-                    damage_layer.addFeature(damage)
+                            # write video
+                            of = QgsFeature()
+                            init_fields = file_layer.fields()
+                            of.setFields(init_fields)
+                            of.initAttributes(init_fields.size())
+                            of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
+                            of['class'] = 3825  # i.e. maintenance event
+                            of['kind'] = 3771  # i.e. video
+                            of['object'] = maintenance['obj_id']
+                            of['identifier'] = maintenance['videonumber']
+                            of['path_relative'] = self.data_path_line_edit.text() + '\Video'
+                            ok = file_layer.addFeature(of)
+                            dbg_info('adding feature to filer layer (fid: {}): {}'.format(of['obj_id'], 'ok' if ok else 'error'))
 
-                    # add pictures to od_file with reference to damage
-                    layer_id = MySettings().value("file_layer")
-                    file_layer = QgsProject.instance().mapLayer(layer_id)
-                    for pic in pictures[k]:
-                        of = QgsFeature()
-                        init_fields = file_layer.dataProvider().fields()
-                        of.setFields(init_fields)
-                        of.initAttributes(init_fields.size())
-                        of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
-                        of['class'] = 3871  # i.e. damage
-                        of['kind'] = 3772  # i.e. photo
-                        of['object'] = damage['obj_id']
-                        of['identifier'] = pic
-                        of['path_relative'] = self.data_path_line_edit.text() + '\Picture'
-                        file_layer.addFeature(of)
+                            # set fkey maintenance event id to all damages
+                            for k, _ in enumerate(damages):
+                                damages[k]['fk_examination'] = maintenance['obj_id']
 
-                # write in relation table (wastewater structure - maintenance events)
-                jf = QgsFeature()
-                init_fields = join_layer.dataProvider().fields()
-                jf.setFields(init_fields)
-                jf.initAttributes(init_fields.size())
-                jf['obj_id'] = join_layer.dataProvider().defaultValue(join_layer.fields().indexFromName('obj_id'))
-                jf['fk_wastewater_structure'] = ws_obj_id
-                jf['fk_maintenance_event'] = maintenance['obj_id']
-                join_layer.addFeature(jf)
+                            # write damages
+                            for k, damage in enumerate(damages):
+                                ok = damage_layer.addFeature(damage)
+                                dbg_info('adding feature to damage layer (fid: {}): {}'.format(damage['obj_id'], 'ok' if ok else 'error'))
 
-                # get current reach
-                rf = QgsFeature()
-                layer_id = MySettings().value("wastewater_structure")
-                wsl = QgsProject.instance().mapLayer(layer_id)
-                if wsl is not None:
-                    request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))
-                    rf = next(wsl.getFeatures(request))
-                if rf.isValid():
-                    # update structure condition if worse
-                    old_level = structure_condition_2_damage_level(rf['structure_condition'])
-                    if old_level is None or old_level > 'Z{}'.format(structure_condition):
-                        rf['structure_condition'] = damage_level_2_structure_condition(structure_condition)
-                        wsl.updateFeature(rf)
+                                # add pictures to od_file with reference to damage
+                                for pic in pictures[k]:
+                                    of = QgsFeature()
+                                    init_fields = file_layer.fields()
+                                    of.setFields(init_fields)
+                                    of.initAttributes(init_fields.size())
+                                    of['obj_id'] = file_layer.dataProvider().defaultValue(file_layer.fields().indexFromName('obj_id'))
+                                    of['class'] = 3871  # i.e. damage
+                                    of['kind'] = 3772  # i.e. photo
+                                    of['object'] = damage['obj_id']
+                                    of['identifier'] = pic
+                                    of['path_relative'] = self.data_path_line_edit.text() + '\Picture'
+                                    ok = file_layer.addFeature(of)
+                                    dbg_info('adding picture to file layer (fid: {}): {}'.format(of['obj_id'], 'ok' if ok else 'error'))
 
-                i += 1
-                self.progressBar.setValue(i)
+                            # write in relation table (wastewater structure - maintenance events)
+                            jf = QgsFeature()
+                            init_fields = join_layer.fields()
+                            jf.setFields(init_fields)
+                            jf.initAttributes(init_fields.size())
+                            jf['obj_id'] = join_layer.dataProvider().defaultValue(join_layer.fields().indexFromName('obj_id'))
+                            jf['fk_wastewater_structure'] = ws_obj_id
+                            jf['fk_maintenance_event'] = maintenance['obj_id']
+                            ok = join_layer.addFeature(jf)
+                            dbg_info('adding feature to join layer (fid: {}): {}'.format(jf['obj_id'], 'ok' if ok else 'error'))
+
+                            # get current reach
+                            rf = QgsFeature()
+                            layer_id = MySettings().value("wastewater_structure")
+                            wsl = QgsProject.instance().mapLayer(layer_id)
+                            if wsl is not None:
+                                request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))
+                                rf = next(wsl.getFeatures(request))
+                            if rf.isValid():
+                                # update structure condition if worse
+                                old_level = structure_condition_2_damage_level(rf['structure_condition'])
+                                if old_level is None or old_level > 'Z{}'.format(structure_condition):
+                                    rf['structure_condition'] = damage_level_2_structure_condition(structure_condition)
+                                    wsl.updateFeature(rf)
+
+                            i += 1
+                            self.progressBar.setValue(i)
 
         self.progressBar.hide()
         self.cancelButton.hide()
