@@ -24,15 +24,16 @@
 #---------------------------------------------------------------------
 
 import os.path
-from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator, pyqtSlot
+from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon, QColor
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject
-from qgis.gui import QgsRubberBand, QgsMessageBar, QgisInterface
+from qgis.gui import QgsRubberBand, QgisInterface
 
-from .core.my_settings import MySettings
-from .core.import_data import ImportData
-from .gui.databrowserdialog import DataBrowserDialog
+from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.import_data import ImportData
+from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
+from wincan2qgep.gui.settings_dialog import SettingsDialog
 
 import wincan2qgep.resources_rc
 
@@ -66,6 +67,12 @@ class Wincan2Qgep(QObject):
         self.actions['openInspection'].triggered.connect(self.open_inspection)
         self.iface.addPluginToMenu(self.name, self.actions['openInspection'])
         self.iface.addToolBarIcon(self.actions['openInspection'])
+
+        self.actions['openSettings'] = QAction(
+            self.tr("Settings"),
+            self.iface.mainWindow())
+        self.actions['openSettings'].triggered.connect(self.show_settings)
+        self.iface.addPluginToMenu(self.name, self.actions['openSettings'])
 
         self.rubber = QgsRubberBand(self.iface.mapCanvas())
         self.rubber.setColor(QColor(255, 255, 50, 200))
@@ -103,4 +110,6 @@ class Wincan2Qgep(QObject):
             self.dlg = DataBrowserDialog(self.iface, data, parent_path)
             self.dlg.show()
 
+    def show_settings(self):
+        SettingsDialog().exec_()
 
