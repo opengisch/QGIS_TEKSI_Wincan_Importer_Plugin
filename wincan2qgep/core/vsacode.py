@@ -25,7 +25,7 @@
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest, QgsApplication, NULL
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 
 
 def damage_code_to_vl(code: str) -> str:
@@ -34,7 +34,7 @@ def damage_code_to_vl(code: str) -> str:
     """
     feature = QgsFeature()
 
-    layer_id = MySettings().value("vl_damage_channel_layer")
+    layer_id = Settings().value("vl_damage_channel_layer")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
         request_text = '"value_en" = \'{}\''.format(code)
@@ -54,7 +54,7 @@ def damage_level_to_vl(code):
     """
     feature = QgsFeature()
 
-    layer_id = MySettings().value("vl_damage_single_class")
+    layer_id = Settings().value("vl_damage_single_class")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
         request_text = '"value_en" = \'EZ{}\''.format(code)
@@ -73,7 +73,7 @@ def damage_level_2_structure_condition(level):
     return damage code to renovation necessity pkey
     """
     feature = QgsFeature()
-    layer_id = MySettings().value("vl_wastewater_structure_structure_condition")
+    layer_id = Settings().value("vl_wastewater_structure_structure_condition")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
         request_text = '"value_en" = \'Z{}\''.format(level)
@@ -91,7 +91,7 @@ def structure_condition_2_damage_level(code):
     """
     return damage code to renovation necessity pkey
     """
-    layer_id = MySettings().value("vl_wastewater_structure_structure_condition")
+    layer_id = Settings().value("vl_wastewater_structure_structure_condition")
     layer = QgsProject.instance().mapLayer(layer_id)
 
     print(code, QgsApplication.nullRepresentation(), code == QgsApplication.nullRepresentation())

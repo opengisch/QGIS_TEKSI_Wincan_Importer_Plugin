@@ -25,13 +25,13 @@
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 
 
 def find_section(channel, start_node, end_node):
     feature = QgsFeature()
 
-    layerid = MySettings().value("channel_layer")
+    layerid = Settings().value("channel_layer")
     layer = QgsProject.instance().mapLayer(layerid)
     if layer is not None:
         request_text = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(
@@ -46,7 +46,7 @@ def find_section(channel, start_node, end_node):
 def section_at_id(obj_id):
     feature = QgsFeature()
     if obj_id is not None:
-        layer_id = MySettings().value("channel_layer")
+        layer_id = Settings().value("channel_layer")
         layer = QgsProject.instance().mapLayer(layer_id)
         if layer is not None:
             request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(obj_id))

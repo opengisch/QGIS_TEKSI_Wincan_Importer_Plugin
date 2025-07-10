@@ -31,7 +31,7 @@ from qgis.PyQt.QtCore import pyqtSlot, pyqtSignal
 from qgis.PyQt.QtWidgets import QWidget
 from qgis.PyQt.uic import loadUiType
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 
 Ui_InspectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/inspectionwidget.ui'))
 
@@ -43,7 +43,7 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         self.setupUi(self)
-        self.settings = MySettings()
+        self.settings = Settings()
         self.data = None
         self.projectId = None
         self.sectionId = None

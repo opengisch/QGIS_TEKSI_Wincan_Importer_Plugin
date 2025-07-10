@@ -1,23 +1,23 @@
 [general]
 
-name=Wincan 2 QGEP
+name=TWW Wincan importer
 
-description=Wincan 2 QGEP allows importing Wincan data into QGEP.
+description=TWW Wincan importer allows importing Wincan data into TEKSI wastewater module.
 
-about=Wincan 2 QGEP allows importing pipe inspection TV data in Wincan format into waste-water network data, such as QGEP. Wincan is a software for the inspection and management of the waste water infrastructure (http://www.wincan.com/). The data respects the EN 13508 norm. You can browse inspection data and review each observation and choose what will be imported. Data will be imported into a QGEP project which has a data model respecting the Swiss-norm VSA-DSS.
+about=TWW Wincan importer allows importing pipe inspection TV data in Wincan format into TEKSI Wastewater module. Wincan is a software for the inspection and management of the waste water infrastructure (http://www.wincan.com/). The data respects the EN 13508 norm. You can browse inspection data and review each observation and choose what will be imported. Data will be imported into a TWW project which has a data model respecting the Swiss-norm VSA-DSS.
 
 version=dev
 
-qgisMinimumVersion=3.4
+qgisMinimumVersion=3.40
 
-author=Denis Rouzaud
-email=denis.rouzaud@gmail.com
+author=OPENGIS.ch
+email=info@opengis.ch
 
 icon=icons/wincan_logo.png
 
-tags=qgep,wincan,wastewater,inspection
+tags=qgep,teksi,tww,wincan,wastewater,inspection
 
 homepage=https://qgep.github.io/docs/wincan2qgep/index.html
-tracker=https://github.com/3nids/wincan2qgep/issues
-repository=https://github.com/3nids/wincan2qgep
+tracker=https://github.com/opengisch/wincan2qgep/issues
+repository=https://github.com/opengisch/wincan2qgep
 

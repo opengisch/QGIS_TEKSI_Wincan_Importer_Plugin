@@ -21,7 +21,7 @@ import os
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 from wincan2qgep.qgissettingmanager import SettingDialog, UpdateMode
 
 
@@ -30,7 +30,7 @@ DialogUi, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/settings
 
 class SettingsDialog(QDialog, DialogUi, SettingDialog):
     def __init__(self, parent=None):
-        settings = MySettings()
+        settings = Settings()
         QDialog.__init__(self, parent)
         SettingDialog.__init__(self, setting_manager=settings, mode=UpdateMode.DialogAccept)
         self.setupUi(self)

@@ -31,7 +31,7 @@ from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsApplication
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 from wincan2qgep.core.section import section_at_id
 from wincan2qgep.gui.featureselectorwidget import CanvasExtent
 
@@ -45,7 +45,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         self.setupUi(self)
-        self.settings = MySettings()
+        self.settings = Settings()
         self.data = {}
         self.projectId = None
         self.section_id = None

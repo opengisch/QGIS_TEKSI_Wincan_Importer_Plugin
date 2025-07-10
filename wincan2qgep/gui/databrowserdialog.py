@@ -35,7 +35,7 @@ from qgis.PyQt.uic import loadUiType
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 from qgis.gui import QgsGui, QgsAttributeEditorContext, QgisInterface
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings
 from wincan2qgep.core.section import find_section, section_at_id
 from wincan2qgep.core.vsacode import damage_code_to_vl, damage_level_to_vl, damage_level_2_structure_condition, structure_condition_2_damage_level
 from wincan2qgep.core.layer_edit import edit
@@ -49,7 +49,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         print(os.path.join(os.path.dirname(__file__), '..', 'ui', 'databrowserdialog.ui'))
         QDialog.__init__(self)
         self.setupUi(self)
-        self.settings = MySettings()
+        self.settings = Settings()
         self.data = data
         self.current_project_id = None
         self.channelNameEdit.setFocus()
@@ -355,7 +355,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.importButton.hide()
         self.cancel = False
 
-        file_layer_id = MySettings().value("file_layer")
+        file_layer_id = Settings().value("file_layer")
         file_layer = QgsProject.instance().mapLayer(file_layer_id)
 
         with edit(join_layer):
@@ -432,7 +432,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             # get current reach
                             rf = QgsFeature()
-                            layer_id = MySettings().value("wastewater_structure")
+                            layer_id = Settings().value("wastewater_structure")
                             wsl = QgsProject.instance().mapLayer(layer_id)
                             if wsl is not None:
                                 request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(ws_obj_id))

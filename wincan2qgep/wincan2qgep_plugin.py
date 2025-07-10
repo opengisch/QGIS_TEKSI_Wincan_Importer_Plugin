@@ -27,10 +27,10 @@ import os.path
 from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon, QColor
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsSettingsTree
 from qgis.gui import QgsRubberBand, QgisInterface
 
-from wincan2qgep.core.my_settings import MySettings
+from wincan2qgep.core.settings import Settings, PLUGIN_NAME
 from wincan2qgep.core.import_data import ImportData
 from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
 from wincan2qgep.gui.settings_dialog import SettingsDialog
@@ -40,14 +40,14 @@ import wincan2qgep.resources_rc
 
 class Wincan2Qgep(QObject):
 
-    name = "&Wincan 2 QGEP"
+    name = "&TWW Wincan Importer"
     actions = None
 
     def __init__(self, iface: QgisInterface):
         QObject.__init__(self)
         self.iface = iface
         self.actions = {}
-        self.settings = MySettings()
+        self.settings = Settings()
         self.dlg = None
 
         # translation environment
@@ -91,6 +91,8 @@ class Wincan2Qgep(QObject):
             del self.rubber
         if self.dlg:
             self.dlg.close()
+
+        QgsSettingsTree.unregisterPluginTreeNode(PLUGIN_NAME)
 
     #@pyqtSlot(str, QgsMessageBar.MessageLevel)
     #def display_message(self, message, level):
