@@ -163,7 +163,7 @@
         </property>
         <property name="icon">
          <iconset resource="../resources.qrc">
-          <normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</normaloff>:/plugins/wincan2qgep/icons/magnifier13.svg</iconset>
+          <normaloff>:/plugins/wincan2teksi/icons/magnifier13.svg</normaloff>:/plugins/wincan2teksi/icons/magnifier13.svg</iconset>
         </property>
        </widget>
       </item>
@@ -263,12 +263,12 @@
   <customwidget>
    <class>SectionWidget</class>
    <extends>QWidget</extends>
-   <header location="global">wincan2qgep.gui.sectionwidget</header>
+   <header location="global">wincan2teksi.gui.sectionwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="wincan2qgep.resources.qrc"/>
+  <include location="wincan2teksi.resources.qrc"/>
  </resources>
  <connections>
   <connection>

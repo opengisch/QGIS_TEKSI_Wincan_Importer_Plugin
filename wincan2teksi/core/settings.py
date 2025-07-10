@@ -31,7 +31,7 @@ from qgis.core import (
     QgsSettingsEntryDouble,
 )
 
-PLUGIN_NAME = "TWW Wincan importer"
+PLUGIN_NAME = "wincan2teksi"
 
 
 class Settings:

@@ -35,16 +35,16 @@ from qgis.PyQt.uic import loadUiType
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 from qgis.gui import QgsGui, QgsAttributeEditorContext, QgisInterface
 
-from wincan2qgep.core.settings import Settings
-from wincan2qgep.core.section import find_section, section_at_id
-from wincan2qgep.core.vsacode import (
+from wincan2teksi.core.settings import Settings
+from wincan2teksi.core.section import find_section, section_at_id
+from wincan2teksi.core.vsacode import (
     damage_code_to_vl,
     damage_level_to_vl,
     damage_level_2_structure_condition,
     structure_condition_2_damage_level,
 )
-from wincan2qgep.core.layer_edit import edit
-from wincan2qgep.core.utils import info, dbg_info
+from wincan2teksi.core.layer_edit import edit
+from wincan2teksi.core.utils import info, dbg_info
 
 Ui_DataBrowserDialog, _ = loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui")

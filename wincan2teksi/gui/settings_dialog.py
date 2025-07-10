@@ -21,8 +21,8 @@ import os
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
-from wincan2qgep.core.settings import Settings
-from wincan2qgep.qgissettingmanager import SettingDialog, UpdateMode
+from wincan2teksi.core.settings import Settings
+from wincan2teksi.qgissettingmanager import SettingDialog, UpdateMode
 
 
 DialogUi, _ = loadUiType(os.path.join(os.path.dirname(__file__), "../ui/settings.ui"))

@@ -25,6 +25,6 @@
 
 
 def classFactory(iface):
-    from .wincan2qgep_plugin import Wincan2Qgep
+    from .wincan2teksi_plugin import Wincan2Qgep
 
     return Wincan2Qgep(iface)

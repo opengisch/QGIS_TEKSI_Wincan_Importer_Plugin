@@ -239,13 +239,13 @@
   <customwidget>
    <class>InspectionWidget</class>
    <extends>QWidget</extends>
-   <header location="global">wincan2qgep.gui.inspectionwidget</header>
+   <header location="global">wincan2teksi.gui.inspectionwidget</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FeatureSelectorWidget</class>
    <extends>QWidget</extends>
-   <header location="global">wincan2qgep.gui.featureselectorwidget</header>
+   <header location="global">wincan2teksi.gui.featureselectorwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -260,7 +260,7 @@
   <tabstop>sectionUseEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="wincan2qgep.resources.qrc"/>
+  <include location="wincan2teksi.resources.qrc"/>
  </resources>
  <connections>
   <connection>

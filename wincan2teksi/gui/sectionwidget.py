@@ -31,9 +31,9 @@ from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsApplication
 
-from wincan2qgep.core.settings import Settings
-from wincan2qgep.core.section import section_at_id
-from wincan2qgep.gui.featureselectorwidget import CanvasExtent
+from wincan2teksi.core.settings import Settings
+from wincan2teksi.core.section import section_at_id
+from wincan2teksi.gui.featureselectorwidget import CanvasExtent
 
 Ui_SectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), "../ui/sectionwidget.ui"))
 

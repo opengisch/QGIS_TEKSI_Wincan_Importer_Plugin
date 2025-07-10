@@ -25,7 +25,7 @@
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest, QgsApplication, NULL
 
-from wincan2qgep.core.settings import Settings
+from wincan2teksi.core.settings import Settings
 
 
 def damage_code_to_vl(code: str) -> str:

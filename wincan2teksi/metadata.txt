@@ -17,6 +17,6 @@ icon=icons/wincan_logo.png
 
 tags=qgep,teksi,tww,wincan,wastewater,inspection
 
-homepage=https://qgep.github.io/docs/wincan2qgep/index.html
-tracker=https://github.com/opengisch/wincan2qgep/issues
-repository=https://github.com/opengisch/wincan2qgep
+homepage=https://qgep.github.io/docs/wincan2teksi/index.html
+tracker=https://github.com/opengisch/wincan2teksi/issues
+repository=https://github.com/opengisch/wincan2teksi

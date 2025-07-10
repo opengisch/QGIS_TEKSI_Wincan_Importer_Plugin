@@ -30,14 +30,14 @@ from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject, QgsSettingsTree
 from qgis.gui import QgsRubberBand, QgisInterface
 
-from wincan2qgep.core.settings import Settings, PLUGIN_NAME
-from wincan2qgep.core.import_data import ImportData
-from wincan2qgep.gui.databrowserdialog import DataBrowserDialog
-from wincan2qgep.gui.settings_dialog import SettingsDialog
+from wincan2teksi.core.settings import Settings, PLUGIN_NAME
+from wincan2teksi.core.import_data import ImportData
+from wincan2teksi.gui.databrowserdialog import DataBrowserDialog
+from wincan2teksi.gui.settings_dialog import SettingsDialog
 
 
 class Wincan2Qgep(QObject):
-    name = "&TWW Wincan Importer"
+    name = "&Wincan to TEKSI Importer"
     actions = None
 
     def __init__(self, iface: QgisInterface):
@@ -50,7 +50,7 @@ class Wincan2Qgep(QObject):
         # translation environment
         self.plugin_dir = os.path.dirname(__file__)
         locale = QSettings().value("locale/userLocale")[0:2]
-        locale_path = os.path.join(self.plugin_dir, "i18n", "wincan2qgep_{0}.qm".format(locale))
+        locale_path = os.path.join(self.plugin_dir, "i18n", "wincan2teksi_{0}.qm".format(locale))
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -58,7 +58,7 @@ class Wincan2Qgep(QObject):
 
     def initGui(self):
         self.actions["openInspection"] = QAction(
-            QIcon(":/plugins/wincan2qgep/icons/wincan_logo.png"),
+            QIcon(":/plugins/wincan2teksi/icons/wincan_logo.png"),
             self.tr("Open an inspection report"),
             self.iface.mainWindow(),
         )

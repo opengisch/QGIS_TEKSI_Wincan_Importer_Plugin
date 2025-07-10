@@ -25,7 +25,7 @@
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
-from wincan2qgep.core.settings import Settings
+from wincan2teksi.core.settings import Settings
 
 
 def find_section(channel, start_node, end_node):
