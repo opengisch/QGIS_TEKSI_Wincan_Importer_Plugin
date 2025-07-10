@@ -26,8 +26,8 @@
 #
 # ---------------------------------------------------------------------
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 
 COLUMN_DATA = ["Position", "OpCode", "Text", "MPEGPosition", "PhotoFilename", "Rate", "ForceImport"]
@@ -41,8 +41,8 @@ class ObservationTable(QTableWidget):
         self.sectionId = None
         self.inspectionId = None
 
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setColumnCount(0)
         self.setRowCount(0)
         self.horizontalHeader().setVisible(True)
@@ -97,12 +97,18 @@ class ObservationTable(QTableWidget):
                 item = QTableWidgetItem("{}".format(obs[col] if c < 6 else ""))
                 if c in (0, 6):
                     data_column = "Import" if c == 0 else "ForceImport"
-                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
-                    item.setCheckState(Qt.Checked if obs[data_column] else Qt.Unchecked)
-                    item.setData(Qt.UserRole, o_id)
-                    item.setData(Qt.UserRole + 1, data_column)
+                    item.setFlags(
+                        Qt.ItemFlag.ItemIsEnabled
+                        | Qt.ItemFlag.ItemIsSelectable
+                        | Qt.ItemFlag.ItemIsUserCheckable
+                    )
+                    item.setCheckState(
+                        Qt.CheckState.Checked if obs[data_column] else Qt.CheckState.Unchecked
+                    )
+                    item.setData(Qt.ItemDataRole.UserRole, o_id)
+                    item.setData(Qt.ItemDataRole.UserRole + 1, data_column)
                 else:
-                    item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                    item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
                 font = item.font()
                 font.setPointSize(font.pointSize() - 2)
                 item.setFont(font)
@@ -111,9 +117,9 @@ class ObservationTable(QTableWidget):
         self.resizeColumnsToContents()
 
     def import_checkbox_clicked(self, item):
-        if item.flags() & Qt.ItemIsUserCheckable:
-            o_id = item.data(Qt.UserRole)
-            data_column = item.data(Qt.UserRole + 1)
+        if item.flags() & Qt.ItemFlag.ItemIsUserCheckable:
+            o_id = item.data(Qt.ItemDataRole.UserRole)
+            data_column = item.data(Qt.ItemDataRole.UserRole + 1)
             self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][self.inspectionId][
                 "Observations"
-            ][o_id][data_column] = True if item.checkState() == Qt.Checked else False
+            ][o_id][data_column] = True if item.checkState() == Qt.CheckState.Checked else False

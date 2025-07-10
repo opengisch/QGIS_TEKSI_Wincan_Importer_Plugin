@@ -61,7 +61,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def select_section(self, section_id):
         for r in range(0, self.sectionListWidget.count()):
             item = self.sectionListWidget.item(r)
-            if section_id == item.data(Qt.UserRole):
+            if section_id == item.data(Qt.ItemDataRole.UserRole):
                 self.sectionListWidget.setCurrentItem(item)
                 break
 
@@ -87,16 +87,22 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                 section["Counter"], section["StartNode"], section["EndNode"]
             )
             item = QListWidgetItem(warning_icon, title)
-            item.setData(Qt.UserRole, s_id)
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
-            item.setCheckState(Qt.Checked if section["Import"] else Qt.Unchecked)
+            item.setData(Qt.ItemDataRole.UserRole, s_id)
+            item.setFlags(
+                Qt.ItemFlag.ItemIsEnabled
+                | Qt.ItemFlag.ItemIsSelectable
+                | Qt.ItemFlag.ItemIsUserCheckable
+            )
+            item.setCheckState(
+                Qt.CheckState.Checked if section["Import"] else Qt.CheckState.Unchecked
+            )
             self.sectionListWidget.addItem(item)
         self.update_status()
 
     def update_status(self):
         for r in range(0, self.sectionListWidget.count()):
             item = self.sectionListWidget.item(r)
-            s_id = item.data(Qt.UserRole)
+            s_id = item.data(Qt.ItemDataRole.UserRole)
             section = self.data[self.projectId]["Sections"][s_id]
             ok = section["qgep_channel_id_1"] is not None or section["UsePreviousSection"] is True
             if not ok:
@@ -107,13 +113,13 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                         break
             if ok:
                 # item.setIcon(QIcon())  # doesn't seem to be working next to checkboxes
-                item.setBackground(Qt.white)
+                item.setBackground(Qt.GlobalColor.white)
             else:
                 # item.setIcon(warning_icon)  # doesn't seem to be working next to checkboxes
                 item.setBackground(QColor(255, 190, 190))
 
     def sectionItemChanged(self, item):
-        s_id = item.data(Qt.UserRole)
+        s_id = item.data(Qt.ItemDataRole.UserRole)
         if self.projectId is None:
             return
         self.data[self.projectId]["Sections"][s_id]["Import"] = bool(item.checkState())
@@ -171,7 +177,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         if len(items) < 1:
             return
 
-        self.section_id = items[0].data(Qt.UserRole)
+        self.section_id = items[0].data(Qt.ItemDataRole.UserRole)
 
         # allow use of previous section if not on first section
         self.usePreviousSectionCheckBox.setEnabled(
@@ -204,12 +210,12 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     @pyqtSlot()
     def on_checkAllButton_clicked(self):
         for r in range(0, self.sectionListWidget.count()):
-            self.sectionListWidget.item(r).setCheckState(Qt.Checked)
+            self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Checked)
 
     @pyqtSlot()
     def on_uncheckAllButton_clicked(self):
         for r in range(0, self.sectionListWidget.count()):
-            self.sectionListWidget.item(r).setCheckState(Qt.Unchecked)
+            self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Unchecked)
 
 
 """

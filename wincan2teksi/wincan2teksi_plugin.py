@@ -75,7 +75,7 @@ class Wincan2Teksi(QObject):
         self.rubber.setIcon(self.rubber.ICON_CIRCLE)
         self.rubber.setIconSize(15)
         self.rubber.setWidth(4)
-        self.rubber.setBrushStyle(Qt.NoBrush)
+        self.rubber.setBrushStyle(Qt.BrushStyle.NoBrush)
 
     def unload(self):
         """Unload plugin"""
@@ -111,4 +111,4 @@ class Wincan2Teksi(QObject):
             self.dlg.show()
 
     def show_settings(self):
-        SettingsDialog().exec_()
+        SettingsDialog().exec()

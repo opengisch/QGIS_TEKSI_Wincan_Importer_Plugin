@@ -61,7 +61,7 @@ class FeatureSelectorWidget(QWidget):
         edit_layout.addWidget(self.line_edit)
 
         self.highlight_feature_button = QToolButton(self)
-        self.highlight_feature_button.setPopupMode(QToolButton.MenuButtonPopup)
+        self.highlight_feature_button.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
         self.highlight_feature_action = QAction(
             QgsApplication.getThemeIcon("/mActionHighlightFeature.svg"), "Highlight feature", self
         )
