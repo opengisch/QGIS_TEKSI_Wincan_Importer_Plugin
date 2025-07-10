@@ -36,7 +36,7 @@ from wincan2teksi.gui.databrowserdialog import DataBrowserDialog
 from wincan2teksi.gui.settings_dialog import SettingsDialog
 
 
-class Wincan2Qgep(QObject):
+class Wincan2Teksi(QObject):
     name = "&Wincan to TEKSI Importer"
     actions = None
 

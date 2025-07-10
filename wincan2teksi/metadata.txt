@@ -1,10 +1,10 @@
 [general]
 
-name=TWW Wincan importer
+name=Wincan to TEKSI Importer
 
-description=TWW Wincan importer allows importing Wincan data into TEKSI wastewater module.
+description=Wincan to TEKSI Importer allows importing Wincan data into TEKSI wastewater module.
 
-about=TWW Wincan importer allows importing pipe inspection TV data in Wincan format into TEKSI Wastewater module. Wincan is a software for the inspection and management of the waste water infrastructure (http://www.wincan.com/). The data respects the EN 13508 norm. You can browse inspection data and review each observation and choose what will be imported. Data will be imported into a TWW project which has a data model respecting the Swiss-norm VSA-DSS.
+about=Wincan to TEKSI Importer allows importing pipe inspection TV data in Wincan format into TEKSI Wastewater module. Wincan is a software for the inspection and management of the waste water infrastructure (http://www.wincan.com/). The data respects the EN 13508 norm. You can browse inspection data and review each observation and choose what will be imported. Data will be imported into a TWW project which has a data model respecting the Swiss-norm VSA-DSS.
 
 version=dev
 

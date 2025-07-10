@@ -1,6 +1,6 @@
 # -----------------------------------------------------------
 #
-# QGIS Quick Finder Plugin
+# QGIS TEKSKI Wincan Importer Plugin
 # Copyright (C) 2013 Denis Rouzaud
 #
 # -----------------------------------------------------------
@@ -25,6 +25,6 @@
 
 
 def classFactory(iface):
-    from .wincan2teksi_plugin import Wincan2Qgep
+    from .wincan2teksi_plugin import Wincan2Teksi
 
-    return Wincan2Qgep(iface)
+    return Wincan2Teksi(iface)
