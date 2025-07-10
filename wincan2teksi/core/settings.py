@@ -37,7 +37,7 @@ PLUGIN_NAME = "wincan2teksi"
 class Settings:
     instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> "Settings":
         if cls.instance is None:
             cls.instance = super(Settings, cls).__new__(cls)
 
@@ -51,7 +51,7 @@ class Settings:
             )
 
             cls.wastewater_structure = QgsSettingsEntryString(
-                "wastewater_structure", settings_node, "od_wastewater_structure"
+                "wastewater_structure_layer", settings_node, "od_wastewater_structure"
             )
 
             cls.join_maintence_wastewaterstructure_layer = QgsSettingsEntryString(
@@ -89,3 +89,5 @@ class Settings:
             )
 
             cls.xml_path = QgsSettingsEntryString("xml_path", settings_node, "")
+
+        return cls.instance

@@ -95,7 +95,7 @@ class Wincan2Teksi(QObject):
     #    self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
 
     def open_inspection(self):
-        xml_path = self.settings.value("xml_path")
+        xml_path = self.settings.xml_path.value()
         if xml_path == "":
             xml_path = QgsProject.instance().homePath()
         file_path, _ = QFileDialog.getOpenFileName(
