@@ -1,9 +1,9 @@
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # QGIS Quick Finder Plugin
 # Copyright (C) 2013 Denis Rouzaud
 #
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # licensed under the terms of GNU GPL 2
 #
@@ -21,9 +21,10 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 
 def classFactory(iface):
     from .wincan2qgep_plugin import Wincan2Qgep
+
     return Wincan2Qgep(iface)

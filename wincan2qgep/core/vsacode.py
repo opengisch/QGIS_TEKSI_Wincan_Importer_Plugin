@@ -1,9 +1,9 @@
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # QGIS wincan 2 QGEP Plugin
 # Copyright (C) 2016 Denis Rouzaud
 #
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # licensed under the terms of GNU GPL 2
 #
@@ -21,7 +21,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest, QgsApplication, NULL
 
@@ -37,13 +37,13 @@ def damage_code_to_vl(code: str) -> str:
     layer_id = Settings().value("vl_damage_channel_layer")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        request_text = '"value_en" = \'{}\''.format(code)
+        request_text = "\"value_en\" = '{}'".format(code)
         request = QgsFeatureRequest().setFilterExpression(request_text)
         feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return feature['code']
+        return feature["code"]
     else:
         return None
 
@@ -57,13 +57,13 @@ def damage_level_to_vl(code):
     layer_id = Settings().value("vl_damage_single_class")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        request_text = '"value_en" = \'EZ{}\''.format(code)
+        request_text = "\"value_en\" = 'EZ{}'".format(code)
         request = QgsFeatureRequest().setFilterExpression(request_text)
         feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return feature['code']
+        return feature["code"]
     else:
         return None
 
@@ -76,13 +76,13 @@ def damage_level_2_structure_condition(level):
     layer_id = Settings().value("vl_wastewater_structure_structure_condition")
     layer = QgsProject.instance().mapLayer(layer_id)
     if layer is not None:
-        request_text = '"value_en" = \'Z{}\''.format(level)
+        request_text = "\"value_en\" = 'Z{}'".format(level)
         request = QgsFeatureRequest().setFilterExpression(request_text)
         feature = next(layer.getFeatures(request), QgsFeature())
         # print request_text, feature.isValid()
 
     if feature.isValid():
-        return feature['code']
+        return feature["code"]
     else:
         return None
 
@@ -99,12 +99,12 @@ def structure_condition_2_damage_level(code):
     if layer is None or code == NULL or code is None:
         return None
 
-    request_text = '"code" = \'{}\''.format(code)
+    request_text = "\"code\" = '{}'".format(code)
     request = QgsFeatureRequest().setFilterExpression(request_text)
     feature = next(layer.getFeatures(request), QgsFeature())
     # print(request_text, feature.isValid())
 
     if feature.isValid():
-        return feature['value_en']
+        return feature["value_en"]
     else:
         return None

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # QGIS wincan 2 QGEP Plugin
 # Copyright (C) 2016 Denis Rouzaud
 #
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # licensed under the terms of GNU GPL 2
 #
@@ -24,7 +24,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 import os
 from qgis.PyQt.QtCore import pyqtSlot, pyqtSignal
@@ -33,8 +33,9 @@ from qgis.PyQt.uic import loadUiType
 
 from wincan2qgep.core.settings import Settings
 
-Ui_InspectionWidget, _ = loadUiType(os.path.join(os.path.dirname(__file__), '../ui/inspectionwidget.ui'))
-
+Ui_InspectionWidget, _ = loadUiType(
+    os.path.join(os.path.dirname(__file__), "../ui/inspectionwidget.ui")
+)
 
 
 class InspectionWidget(QWidget, Ui_InspectionWidget):
@@ -57,48 +58,45 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
         self.inspectionCombo.clear()
         self.projectId = projectId
         self.sectionId = sectionId
-        for i_id, inspection in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'].items():
-            self.inspectionCombo.addItem(inspection['InspDate'].toString('dd.MM.yyyy'), i_id)
-            #self.observationTable.clear()
+        for i_id, inspection in self.data[self.projectId]["Sections"][self.sectionId][
+            "Inspections"
+        ].items():
+            self.inspectionCombo.addItem(inspection["InspDate"].toString("dd.MM.yyyy"), i_id)
+            # self.observationTable.clear()
 
     @pyqtSlot(int)
     def on_inspectionCombo_currentIndexChanged(self, idx):
-            self.inspMethodEdit.clear()
-            self.inspectionDirEdit.clear()
-            self.inspectedLengthEdit.clear()
-            self.operatorEdit.clear()
+        self.inspMethodEdit.clear()
+        self.inspectionDirEdit.clear()
+        self.inspectedLengthEdit.clear()
+        self.operatorEdit.clear()
 
-            #self.observationTable.clear()
+        # self.observationTable.clear()
 
-            if self.projectId is None or self.sectionId is None:
-                return
+        if self.projectId is None or self.sectionId is None:
+            return
 
-            if idx < 0:
-                return
+        if idx < 0:
+            return
 
-            self.inspectionId = self.inspectionCombo.itemData(idx)
-            inspection = self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]
+        self.inspectionId = self.inspectionCombo.itemData(idx)
+        inspection = self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][
+            self.inspectionId
+        ]
 
-            self.inspMethodEdit.setText(inspection['InspMethod'])
-            self.inspectionDirEdit.setText(inspection['InspectionDir'])
-            self.inspectedLengthEdit.setText('{}'.format(inspection['InspectedLength']))
-            self.operatorEdit.setText(inspection['Operator'])
-            self.importCheckBox.setChecked(inspection['Import'])
+        self.inspMethodEdit.setText(inspection["InspMethod"])
+        self.inspectionDirEdit.setText(inspection["InspectionDir"])
+        self.inspectedLengthEdit.setText("{}".format(inspection["InspectedLength"]))
+        self.operatorEdit.setText(inspection["Operator"])
+        self.importCheckBox.setChecked(inspection["Import"])
 
-            self.observationTable.set_inspection(self.projectId, self.sectionId, self.inspectionId)
+        self.observationTable.set_inspection(self.projectId, self.sectionId, self.inspectionId)
 
     @pyqtSlot(bool)
     def on_importCheckBox_clicked(self, toImport):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
-        self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Import'] = toImport
+        self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][self.inspectionId][
+            "Import"
+        ] = toImport
         self.importChanged.emit()
-
-
-
-
-
-
-
-
-

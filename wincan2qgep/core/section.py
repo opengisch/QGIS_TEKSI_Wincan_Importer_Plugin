@@ -1,9 +1,9 @@
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # QGIS wincan 2 QGEP Plugin
 # Copyright (C) 2016 Denis Rouzaud
 #
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # licensed under the terms of GNU GPL 2
 #
@@ -21,7 +21,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
@@ -34,8 +34,10 @@ def find_section(channel, start_node, end_node):
     layerid = Settings().value("channel_layer")
     layer = QgsProject.instance().mapLayer(layerid)
     if layer is not None:
-        request_text = '"rp_from_identifier" LIKE \'{}-{}%\' and "rp_to_identifier" LIKE \'{}-{}%\''.format(
-            channel, start_node, channel, end_node
+        request_text = (
+            "\"rp_from_identifier\" LIKE '{}-{}%' and \"rp_to_identifier\" LIKE '{}-{}%'".format(
+                channel, start_node, channel, end_node
+            )
         )
         request = QgsFeatureRequest().setFilterExpression(request_text)
         feature = next(layer.getFeatures(request), QgsFeature())
@@ -49,6 +51,6 @@ def section_at_id(obj_id):
         layer_id = Settings().value("channel_layer")
         layer = QgsProject.instance().mapLayer(layer_id)
         if layer is not None:
-            request = QgsFeatureRequest().setFilterExpression('"obj_id" = \'{}\''.format(obj_id))
+            request = QgsFeatureRequest().setFilterExpression("\"obj_id\" = '{}'".format(obj_id))
             feature = next(layer.getFeatures(request), QgsFeature())
     return feature

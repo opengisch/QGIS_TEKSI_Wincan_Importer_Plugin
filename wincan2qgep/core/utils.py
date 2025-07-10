@@ -20,10 +20,10 @@ DEBUG = True
 
 
 def info(message: str, level: Qgis.MessageLevel = Qgis.Info):
-    QgsMessageLog.logMessage("{}: {}".format('Wincan2QGEP', message), "Wincan2QGEP", level)
-    iface.messageBar().pushMessage('SoLocator', message, level)
+    QgsMessageLog.logMessage("{}: {}".format("Wincan2QGEP", message), "Wincan2QGEP", level)
+    iface.messageBar().pushMessage("SoLocator", message, level)
 
 
 def dbg_info(message: str):
     if DEBUG:
-        QgsMessageLog.logMessage("{}: {}".format('Wincan2QGEP', message), "Wincan2QGEP", Qgis.Info)
+        QgsMessageLog.logMessage("{}: {}".format("Wincan2QGEP", message), "Wincan2QGEP", Qgis.Info)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8 -*-
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # QGIS wincan 2 QGEP Plugin
 # Copyright (C) 2016 Denis Rouzaud
 #
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #
 # licensed under the terms of GNU GPL 2
 #
@@ -24,17 +24,16 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
 
-COLUMN_DATA = ['Position', 'OpCode', 'Text', 'MPEGPosition', 'PhotoFilename', 'Rate', 'ForceImport']
+COLUMN_DATA = ["Position", "OpCode", "Text", "MPEGPosition", "PhotoFilename", "Rate", "ForceImport"]
 
 
 class ObservationTable(QTableWidget):
-
     def __init__(self, parent):
         QTableWidget.__init__(self, parent)
         self.data = None
@@ -53,14 +52,16 @@ class ObservationTable(QTableWidget):
 
         self.itemClicked.connect(self.import_checkbox_clicked)
 
-        self.column_headers = [self.tr('distance'),
-                               self.tr('code'),
-                               self.tr('description'),
-                               self.tr('mpeg'),
-                               self.tr('photo'),
-                               self.tr('rate'),
-                               self.tr('force')]
-        assert(len(self.column_headers) == len(COLUMN_DATA))
+        self.column_headers = [
+            self.tr("distance"),
+            self.tr("code"),
+            self.tr("description"),
+            self.tr("mpeg"),
+            self.tr("photo"),
+            self.tr("rate"),
+            self.tr("force"),
+        ]
+        assert len(self.column_headers) == len(COLUMN_DATA)
 
     def finish_init(self, data):
         self.data = data
@@ -68,7 +69,7 @@ class ObservationTable(QTableWidget):
             self.insertColumn(c)
             item = QTableWidgetItem(col)
             font = item.font()
-            font.setPointSize(font.pointSize()-2)
+            font.setPointSize(font.pointSize() - 2)
             item.setFont(font)
             self.setHorizontalHeaderItem(c, item)
         self.adjustSize()
@@ -86,18 +87,20 @@ class ObservationTable(QTableWidget):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
 
-        for o_id, obs in self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'].items():
+        for o_id, obs in self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][
+            self.inspectionId
+        ]["Observations"].items():
             r = self.rowCount()
             self.insertRow(r)
 
             for c, col in enumerate(COLUMN_DATA):
-                item = QTableWidgetItem('{}'.format(obs[col] if c < 6 else ''))
+                item = QTableWidgetItem("{}".format(obs[col] if c < 6 else ""))
                 if c in (0, 6):
-                    data_column = 'Import' if c == 0 else 'ForceImport'
+                    data_column = "Import" if c == 0 else "ForceImport"
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
                     item.setCheckState(Qt.Checked if obs[data_column] else Qt.Unchecked)
                     item.setData(Qt.UserRole, o_id)
-                    item.setData(Qt.UserRole+1, data_column)
+                    item.setData(Qt.UserRole + 1, data_column)
                 else:
                     item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 font = item.font()
@@ -110,10 +113,7 @@ class ObservationTable(QTableWidget):
     def import_checkbox_clicked(self, item):
         if item.flags() & Qt.ItemIsUserCheckable:
             o_id = item.data(Qt.UserRole)
-            data_column = item.data(Qt.UserRole+1)
-            self.data[self.projectId]['Sections'][self.sectionId]['Inspections'][self.inspectionId]['Observations'][o_id][data_column] = True if item.checkState() == Qt.Checked else False
-
-
-
-
-
+            data_column = item.data(Qt.UserRole + 1)
+            self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][self.inspectionId][
+                "Observations"
+            ][o_id][data_column] = True if item.checkState() == Qt.Checked else False
