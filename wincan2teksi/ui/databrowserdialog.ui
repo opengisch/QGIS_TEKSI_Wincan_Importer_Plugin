@@ -162,8 +162,8 @@
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="../resources.qrc">
-          <normaloff>:/plugins/wincan2teksi/icons/magnifier13.svg</normaloff>:/plugins/wincan2teksi/icons/magnifier13.svg</iconset>
+         <iconset>
+          <normaloff>../icons/magnifier13.svg</normaloff>../icons/magnifier13.svg</iconset>
         </property>
        </widget>
       </item>
@@ -268,7 +268,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="wincan2teksi.resources.qrc"/>
  </resources>
  <connections>
   <connection>

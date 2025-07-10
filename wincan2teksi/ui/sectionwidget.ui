@@ -259,9 +259,6 @@
   <tabstop>pipeWidthEdit</tabstop>
   <tabstop>sectionUseEdit</tabstop>
  </tabstops>
- <resources>
-  <include location="wincan2teksi.resources.qrc"/>
- </resources>
  <connections>
   <connection>
    <sender>usePreviousSectionCheckBox</sender>

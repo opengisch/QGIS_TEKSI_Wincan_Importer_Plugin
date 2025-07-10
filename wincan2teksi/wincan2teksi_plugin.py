@@ -58,7 +58,7 @@ class Wincan2Teksi(QObject):
 
     def initGui(self):
         self.actions["openInspection"] = QAction(
-            QIcon(":/plugins/wincan2teksi/icons/wincan_logo.png"),
+            QIcon("icons/wincan_logo.png"),
             self.tr("Open an inspection report"),
             self.iface.mainWindow(),
         )
