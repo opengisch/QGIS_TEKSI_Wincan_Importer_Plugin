@@ -88,6 +88,6 @@ class Settings:
                 "vl_wastewater_structure_structure_condition",
             )
 
-            cls.xml_path = QgsSettingsEntryString("xml_path", settings_node, "")
+            cls.db3_path = QgsSettingsEntryString("db3_path", settings_node, "")
 
         return cls.instance

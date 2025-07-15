@@ -31,7 +31,7 @@ from qgis.core import QgsProject, QgsSettingsTree
 from qgis.gui import QgsRubberBand, QgisInterface
 
 from wincan2teksi.core.settings import Settings, PLUGIN_NAME
-from wincan2teksi.core.import_data import ImportData
+from wincan2teksi.core.read_data import read_data
 from wincan2teksi.gui.databrowserdialog import DataBrowserDialog
 from wincan2teksi.gui.settings_dialog import SettingsDialog
 
@@ -95,19 +95,19 @@ class Wincan2Teksi(QObject):
     #    self.iface.messageBar().pushMessage("Wincan 2 QGEP", message, level)
 
     def open_inspection(self):
-        xml_path = self.settings.xml_path.value()
-        if xml_path == "":
-            xml_path = QgsProject.instance().homePath()
+        db3_path = self.settings.db3_path.value()
+        if db3_path == "":
+            db3_path = QgsProject.instance().homePath()
         file_path, _ = QFileDialog.getOpenFileName(
-            None, "Open WIncan inspection data", xml_path, "Wincan file (*.xml)"
+            None, "Open WIncan inspection data", db3_path, "Wincan file (*.db3)"
         )
 
         if file_path:
             absolute_path = os.path.dirname(os.path.realpath(file_path))
             parent_path = os.path.abspath(os.path.join(absolute_path, os.pardir))
-            self.settings.set_value("xml_path", absolute_path)
-            data = ImportData(file_path).data
-            self.dlg = DataBrowserDialog(self.iface, data, parent_path)
+            self.settings.db3_path.setValue(absolute_path)
+            projects = read_data(file_path)
+            self.dlg = DataBrowserDialog(self.iface, projects, parent_path)
             self.dlg.show()
 
     def show_settings(self):
