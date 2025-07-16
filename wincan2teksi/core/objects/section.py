@@ -12,6 +12,7 @@ class Section:
         flow_direction: int = None,
         from_node: str = None,
         to_node: str = None,
+        import_: bool = True,
     ):
         self.pk = pk
         self.name = name

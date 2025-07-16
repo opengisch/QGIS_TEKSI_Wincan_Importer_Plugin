@@ -24,7 +24,8 @@ def __read_table(cursor: sqlite3.Cursor, table_name: str, where_clause: str = No
     return [dict(zip(columns, row)) for row in rows]
 
 
-def read_data(file_path: str) -> list[Project]:
+def read_data(file_path: str) -> dict[str, Project]:
+    """Reads data from a Wincan SQLite database file and returns a dictionary of projects."""
     if not Path(file_path).exists():
         raise FileNotFoundError(f"File {file_path} does not exist.")
 
@@ -80,4 +81,5 @@ def read_data(file_path: str) -> list[Project]:
             project.add_section(section)
         logging.info(f"Found {len(project.sections)} sections in project {project.name}")
 
+    projects = {project.pk: project for project in projects}
     return projects

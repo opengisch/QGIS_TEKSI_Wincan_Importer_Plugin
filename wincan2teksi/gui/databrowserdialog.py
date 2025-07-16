@@ -44,6 +44,7 @@ from wincan2teksi.core.vsacode import (
     structure_condition_2_damage_level,
 )
 from wincan2teksi.core.layer_edit import edit
+from wincan2teksi.core.objects import Project
 from wincan2teksi.core.utils import info, dbg_info
 
 Ui_DataBrowserDialog, _ = loadUiType(
@@ -52,12 +53,12 @@ Ui_DataBrowserDialog, _ = loadUiType(
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
-    def __init__(self, iface: QgisInterface, data, data_path=""):
+    def __init__(self, iface: QgisInterface, projects: [Project], data_path=""):
         print(os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui"))
         QDialog.__init__(self)
         self.setupUi(self)
         self.settings = Settings()
-        self.data = data
+        self.projects = projects
         self.current_project_id = None
         self.channelNameEdit.setFocus()
         self.cancel = False
@@ -87,10 +88,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 self,
             )
 
-        self.sectionWidget.finish_init(iface, self.data)
+        self.sectionWidget.finish_init(iface, self.projects)
 
-        for p_id, project in self.data.items():
-            self.projectCombo.addItem(project["Name"], p_id)
+        for project in self.projects.values():
+            self.projectCombo.addItem(project.name, project.pk)
 
         self.channelNameEdit.setText("")
         # self.on_searchButton_clicked()
@@ -98,13 +99,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
     @pyqtSlot(str)
     def on_channelNameEdit_textChanged(self, txt):
         if self.current_project_id is not None:
-            self.data[self.current_project_id]["Channel"] = txt
+            self.projects[self.current_project_id].channel = txt
 
     @pyqtSlot(int)
     def on_projectCombo_currentIndexChanged(self, idx):
         self.current_project_id = self.projectCombo.itemData(idx)
-        self.dateTimeEdit.setDateTime(self.data[self.current_project_id]["Date"])
-        self.channelNameEdit.setText(self.data[self.current_project_id]["Channel"])
+        self.dateTimeEdit.setDateTime(self.projects[self.current_project_id].date)
+        self.channelNameEdit.setText(self.projects[self.current_project_id].channel)
         self.sectionWidget.set_project_id(self.current_project_id)
 
     @pyqtSlot()
@@ -120,8 +121,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         # init progress bar
         c = 0
-        for p_id in self.data.keys():
-            for s_id, section in self.data[p_id]["Sections"].items():
+        for p_id in self.projects.keys():
+            for s_id, section in self.projects[p_id]["Sections"].items():
                 c += 1
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
@@ -134,24 +135,24 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         i = 0
 
         # find sections
-        channel = self.data[self.current_project_id]["Channel"]
-        for p_id in self.data.keys():
+        channel = self.projects[self.current_project_id].channel
+        for p_id in self.projects.keys():
             if self.cancel:
                 break
-            for s_id, section in self.data[p_id]["Sections"].items():
+            for s_id, section in self.projects[p_id].sections.values():
                 QCoreApplication.processEvents()
                 if self.cancel:
                     break
-                feature = find_section(channel, section["StartNode"], section["EndNode"])
+                feature = find_section(channel, section.start_node, section.end_node)
                 if not feature.isValid() and self.settings.remove_trailing_chars.value():
                     # try without trailing alpha char
                     feature = find_section(
                         channel,
-                        re.sub("\D*$", "", section["StartNode"]),
-                        re.sub("\D*$", "", section["EndNode"]),
+                        re.sub("\D*$", "", section.start_node),
+                        re.sub("\D*$", "", section.end_node),
                     )
                 if feature.isValid():
-                    self.data[p_id]["Sections"][s_id]["qgep_channel_id_1"] = feature.attribute(
+                    self.projects[p_id].sections[s_id].qgep_channel_id_1 = feature.attribute(
                         "obj_id"
                     )
                 self.progressBar.setValue(i)
@@ -169,8 +170,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         # init progress bar
         c = 0
-        for p_id in self.data.keys():
-            for s_id, section in self.data[p_id]["Sections"].items():
+        for p_id in self.projects.keys():
+            for section in self.projects[p_id].sections.values():
                 c += 1
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
@@ -198,29 +199,33 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
             return
         features = {}  # dictionnary with waste water structure id (reach) as key, and as values: a dict with maintenance event and damages
 
-        for p_id in self.data.keys():
+        for p_id in self.projects.keys():
             previous_section_imported = True
-            for s_id, section in self.data[p_id]["Sections"].items():
+            for s_id, section in self.projects[p_id].sections.items():
                 if self.cancel:
                     self.hide_progress()
                     return
 
-                if section["Import"] is not True:
+                if section.import_ is not True:
                     previous_section_imported = False
                     continue
 
-                for i_id, inspection in self.data[p_id]["Sections"][s_id]["Inspections"].items():
-                    if inspection["Import"]:
+                for i_id, inspection in self.projects[p_id].sections[s_id].inspections.items():
+                    if inspection.import_:
                         # offset in case of several sections in inspection
                         # data correspond to a single section in qgep data
                         distance_offset = 0
 
-                        if section["UsePreviousSection"] is not True:
+                        if section.use_previous_section is not True:
                             previous_section_imported = True
                             # get corresponding reaches in qgep project
                             reach_features = []
 
-                            for fid in [section["qgep_channel_id_{}".format(i)] for i in (1, 2, 3)]:
+                            for fid in [
+                                section.qgep_channel_id_1,
+                                section.qgep_channel_id_2,
+                                section.qgep_channel_id_3,
+                            ]:
                                 if fid is None:
                                     break
                                 f = section_at_id(fid)
@@ -301,9 +306,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     self.tr(
                                         "Inspection {i} from manhole {c1} to {c2}"
                                         " uses previous channel, but it is not defined.".format(
-                                            i=section["Counter"],
-                                            c1=section["StartNode"],
-                                            c2=section["EndNode"],
+                                            i=section.counter,
+                                            c1=section.start_node,
+                                            c2=section.end_node,
                                         )
                                     )
                                 )
@@ -313,21 +318,21 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             distance_offset = 0
                             offset_section_id = s_id
                             while (
-                                self.data[p_id]["Sections"][offset_section_id]["UsePreviousSection"]
+                                self.projects[p_id].sections[offset_section_id].use_previous_section
                                 is True
                             ):
                                 # get previous section id
-                                offset_section_id_index = list(self.data[p_id]["Sections"]).index(
+                                offset_section_id_index = list(self.projects[p_id].sections).index(
                                     offset_section_id
                                 )
                                 assert offset_section_id_index > 0
-                                offset_section_id = list(self.data[p_id]["Sections"])[
+                                offset_section_id = list(self.projects[p_id].sections)[
                                     offset_section_id_index - 1
                                 ]
                                 # accumulate offset
-                                distance_offset -= self.data[p_id]["Sections"][offset_section_id][
-                                    "Sectionlength"
-                                ]
+                                distance_offset -= (
+                                    self.projects[p_id].sections[offset_section_id].section_length
+                                )
                                 info(
                                     "using previous section: {} with distance offset {}".format(
                                         offset_section_id, distance_offset
@@ -337,24 +342,20 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # add corresponding damages
                         reach_index = 0
                         structure_condition = 4  # = ok
-                        for observation in self.data[p_id]["Sections"][s_id]["Inspections"][i_id][
-                            "Observations"
-                        ].values():
-                            if observation["Import"]:
-                                distance = observation["Position"] + distance_offset
-                                if not observation["ForceImport"]:
-                                    while (
-                                        distance > reach_features[reach_index]["length_effective"]
-                                    ):
+                        for observation in self.projects[p_id]["Sections"][s_id]["Inspections"][
+                            i_id
+                        ]["Observations"].values():
+                            if observation.import_:
+                                distance = observation.position + distance_offset
+                                if not observation.force_import:
+                                    while distance > reach_features[reach_index].length_effective:
                                         if reach_index < len(reach_features) - 1:
-                                            distance -= reach_features[reach_index][
-                                                "length_effective"
-                                            ]
+                                            distance -= reach_features[reach_index].length_effective
                                             reach_index += 1
                                         else:
-                                            if distance <= reach_features[reach_index][
-                                                "length_effective"
-                                            ] + self.settings.value(
+                                            if distance <= reach_features[
+                                                reach_index
+                                            ].length_effective + self.settings.value(
                                                 "tolerance_channel_length"
                                             ):  # add 50cm tolerance
                                                 break
@@ -365,9 +366,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                         "Inspection {i} from manhole {c1} to {c2}"
                                                         " has observations further than the length"
                                                         " of the assigned channels.".format(
-                                                            i=section["Counter"],
-                                                            c1=section["StartNode"],
-                                                            c2=section["EndNode"],
+                                                            i=section.counter,
+                                                            c1=section.start_node,
+                                                            c2=section.end_node,
                                                         )
                                                     )
                                                 )
@@ -384,20 +385,20 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     damage_layer.fields().indexFromName("obj_id")
                                 )
                                 df["damage_type"] = "channel"
-                                df["comments"] = observation["Text"]
-                                df["single_damage_class"] = damage_level_to_vl(observation["Rate"])
+                                df["comments"] = observation.text
+                                df["single_damage_class"] = damage_level_to_vl(observation.rate)
                                 df["channel_damage_code"] = int(
-                                    damage_code_to_vl(observation["OpCode"])
+                                    damage_code_to_vl(observation.op_code)
                                 )
                                 df["distance"] = distance
-                                df["video_counter"] = observation["MPEGPosition"]
+                                df["video_counter"] = observation.mpeg_position
                                 # pictures
-                                pics = observation["PhotoFilename"]
+                                pics = observation.photo_filename
                                 # get wastewater structure id
                                 ws_obj_id = reach_features[reach_index]["ws_obj_id"]
                                 features[ws_obj_id]["damages"].append(df)
                                 features[ws_obj_id]["pictures"].append(pics)
-                                structure_condition = min(structure_condition, observation["Rate"])
+                                structure_condition = min(structure_condition, observation.rate)
                                 features[ws_obj_id]["structure_condition"] = structure_condition
                 self.progressBar.setValue(i)
                 i += 1
