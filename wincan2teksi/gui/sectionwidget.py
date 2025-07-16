@@ -66,7 +66,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                 break
 
     def finish_init(self, iface, data):
-        layer_id = self.settings.value("channel_layer")
+        layer_id = self.settings.channel_layer.value()
         for selector in (self.section_1_selector, self.section_2_selector, self.section_3_selector):
             selector.set_layer(QgsProject.instance().mapLayer(layer_id))
             selector.set_canvas(iface.mapCanvas())

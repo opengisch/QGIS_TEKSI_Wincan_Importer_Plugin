@@ -34,6 +34,7 @@ from wincan2teksi.core.settings import Settings, PLUGIN_NAME
 from wincan2teksi.core.read_data import read_data
 from wincan2teksi.gui.databrowserdialog import DataBrowserDialog
 from wincan2teksi.gui.settings_dialog import SettingsDialog
+from pathlib import Path
 
 
 class Wincan2Teksi(QObject):
@@ -48,17 +49,17 @@ class Wincan2Teksi(QObject):
         self.dlg = None
 
         # translation environment
-        self.plugin_dir = os.path.dirname(__file__)
+        self.plugin_dir = Path(__file__).parent
         locale = QSettings().value("locale/userLocale")[0:2]
-        locale_path = os.path.join(self.plugin_dir, "i18n", "wincan2teksi_{0}.qm".format(locale))
-        if os.path.exists(locale_path):
+        locale_path = self.plugin_dir / "i18n" / f"wincan2teksi_{locale}.qm"
+        if locale_path.exists():
             self.translator = QTranslator()
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
         self.actions["openInspection"] = QAction(
-            QIcon("icons/wincan_logo.png"),
+            QIcon(str(self.plugin_dir / "icons" / "wincan_logo.png")),
             self.tr("Open an inspection report"),
             self.iface.mainWindow(),
         )

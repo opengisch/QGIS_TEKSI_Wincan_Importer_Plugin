@@ -73,7 +73,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.relationWidgetWrapper = None
-        maintenance_layer = QgsProject.instance().mapLayer(self.settings.value("maintenance_layer"))
+        maintenance_layer = QgsProject.instance().mapLayer(self.settings.maintenance_layer.value())
         if maintenance_layer is not None:
             widget_config = maintenance_layer.editFormConfig().widgetConfig("fk_operating_company")
             editor_context = QgsAttributeEditorContext()
@@ -143,7 +143,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 if self.cancel:
                     break
                 feature = find_section(channel, section["StartNode"], section["EndNode"])
-                if not feature.isValid() and self.settings.value("remove_trailing_chars"):
+                if not feature.isValid() and self.settings.remove_trailing_chars.value():
                     # try without trailing alpha char
                     feature = find_section(
                         channel,
@@ -183,11 +183,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         i = 0
 
         # initialize maintenance and damage layers and features
-        maintenance_layer_id = self.settings.value("maintenance_layer")
+        maintenance_layer_id = self.settings.maintenance_layer.value()
         maintenance_layer = QgsProject.instance().mapLayer(maintenance_layer_id)
-        damage_layer_id = self.settings.value("damage_layer")
+        damage_layer_id = self.settings.damage_layer.value()
         damage_layer = QgsProject.instance().mapLayer(damage_layer_id)
-        join_layer_id = self.settings.value("join_maintence_wastewaterstructure_layer")
+        join_layer_id = self.settings.join_maintence_wastewaterstructure_layer.value()
         join_layer = QgsProject.instance().mapLayer(join_layer_id)
         if join_layer is None:
             self.cannotImportLabel.show()
