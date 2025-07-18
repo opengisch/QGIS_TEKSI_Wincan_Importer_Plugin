@@ -121,9 +121,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         # init progress bar
         c = 0
-        for p_id in self.projects.keys():
-            for s_id, section in self.projects[p_id]["Sections"].items():
-                c += 1
+        for project in self.projects.values():
+            c += len(project.sections)
         self.progressBar.setMaximum(c)
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(0)
@@ -136,25 +135,23 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
         # find sections
         channel = self.projects[self.current_project_id].channel
-        for p_id in self.projects.keys():
+        for project in self.projects.values():
             if self.cancel:
                 break
-            for s_id, section in self.projects[p_id].sections.values():
+            for section in project.sections.values():
                 QCoreApplication.processEvents()
                 if self.cancel:
                     break
-                feature = find_section(channel, section.start_node, section.end_node)
+                feature = find_section(channel, section.from_node, section.to_node)
                 if not feature.isValid() and self.settings.remove_trailing_chars.value():
                     # try without trailing alpha char
                     feature = find_section(
                         channel,
-                        re.sub("\D*$", "", section.start_node),
-                        re.sub("\D*$", "", section.end_node),
+                        re.sub("\D*$", "", section.from_node),
+                        re.sub("\D*$", "", section.to_node),
                     )
                 if feature.isValid():
-                    self.projects[p_id].sections[s_id].teksi_channel_id_1 = feature.attribute(
-                        "obj_id"
-                    )
+                    section.teksi_channel_id_1 = feature.attribute("obj_id")
                 self.progressBar.setValue(i)
                 i += 1
         self.progressBar.hide()
@@ -307,8 +304,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         "Inspection {i} from manhole {c1} to {c2}"
                                         " uses previous channel, but it is not defined.".format(
                                             i=section.counter,
-                                            c1=section.start_node,
-                                            c2=section.end_node,
+                                            c1=section.from_node,
+                                            c2=section.to_node,
                                         )
                                     )
                                 )
@@ -367,8 +364,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                         " has observations further than the length"
                                                         " of the assigned channels.".format(
                                                             i=section.counter,
-                                                            c1=section.start_node,
-                                                            c2=section.end_node,
+                                                            c1=section.from_node,
+                                                            c2=section.to_node,
                                                         )
                                                     )
                                                 )

@@ -31,7 +31,7 @@ from wincan2teksi.core.settings import Settings
 def find_section(channel, start_node, end_node):
     feature = QgsFeature()
 
-    layerid = Settings().value("channel_layer")
+    layerid = Settings().channel_layer.value()
     layer = QgsProject.instance().mapLayer(layerid)
     if layer is not None:
         request_text = (
