@@ -61,7 +61,9 @@ class InspectionWidget(QWidget, Ui_InspectionWidget):
         for i_id, inspection in (
             self.data[self.projectId].sections[self.sectionId].inspections.items()
         ):
-            self.inspectionCombo.addItem(inspection.start_date.toString("dd.MM.yyyy"), i_id)
+            self.inspectionCombo.addItem(
+                inspection.start_date.toString("dd.MM.yyyy HH:mm:ss"), i_id
+            )
             # self.observationTable.clear()
 
     @pyqtSlot(int)

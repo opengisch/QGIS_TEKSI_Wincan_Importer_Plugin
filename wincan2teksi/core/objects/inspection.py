@@ -40,7 +40,7 @@ class Inspection:
             direction=data["INS_InspectionDir"],
             inspection_length=data["INS_InspectedLength"],
             highest_grade=data["INS_HighestGrade"],
-            start_date=QDateTime.fromString(data["INS_StartDate"], "yyyy-MM-dd HH:mm:ss"),
+            start_date=QDateTime.fromString(data["INS_StartDate"][:23], "yyyy-MM-dd HH:mm:ss.zzz"),
             method=data["INS_Method"],
             operator=data["INS_Operator_REF"],
         )

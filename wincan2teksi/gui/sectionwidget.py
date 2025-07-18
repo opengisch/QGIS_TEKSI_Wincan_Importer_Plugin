@@ -83,7 +83,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             return
 
         for s_id, section in self.projects[prjId].sections.items():
-            title = f"{section.counter}: de {section.start_node} a {section.end_node}"
+            title = f"{section.counter}: de {section.from_node} a {section.to_node}"
             item = QListWidgetItem(warning_icon, title)
             item.setData(Qt.ItemDataRole.UserRole, s_id)
             item.setFlags(
@@ -164,6 +164,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.sectionlengthEdit.clear()
         self.sectionUseEdit.clear()
         self.startNodeEdit.clear()
+        self.addressEdit.clear()
 
         self.section_id = None
         # self.inspectionWidget.clear()
@@ -196,14 +197,15 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.section_1_selector.highlight_feature(CanvasExtent.Pan)
 
         self.usePreviousSectionCheckBox.setChecked(section.use_previous_section)
-        self.endNodeEdit.setText(section.end_node)
+        self.endNodeEdit.setText(section.to_node)
         self.pipeDiaEdit.setText("{}".format(section.section_size))
         self.pipeMaterialEdit.setText(section.pipe_material)
         # self.pipeWidthEdit.setText("{}".format(section.pipe_width))
         self.profileEdit.setText(section.profile)
         self.sectionlengthEdit.setText("{}".format(section.section_length))
         self.sectionUseEdit.setText(section.section_use)
-        self.startNodeEdit.setText(section.start_node)
+        self.startNodeEdit.setText(section.from_node)
+        self.addressEdit.setText(section.address)
 
         self.inspectionWidget.set_section(self.projectId, self.section_id)
 

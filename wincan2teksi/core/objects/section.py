@@ -12,6 +12,7 @@ class Section:
         flow_direction: int = None,
         from_node: str = None,
         to_node: str = None,
+        address: str = None,
         import_: bool = True,
     ):
         self.pk = pk
@@ -30,10 +31,10 @@ class Section:
         self.flow_direction = flow_direction
         self.from_node = from_node
         self.to_node = to_node
+        self.address = address
 
+        # TODO: Check if these are missing
         self.counter = None
-        self.start_node = None
-        self.end_node = None
         self.section_use = None
         self.pipe_material = None
         self.profile = None
@@ -51,6 +52,7 @@ class Section:
             flow_direction=data["OBJ_FlowDir"],
             from_node=data["OBJ_FromNode_REF"],
             to_node=data["OBJ_ToNode_REF"],
+            address=f"{data['OBJ_City']} {data['OBJ_Street']}",
         )
 
     def add_inspection(self, inspection: "Inspection"):
