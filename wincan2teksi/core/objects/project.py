@@ -9,6 +9,7 @@ class Project:
         self.name = name
         self.date = date
         self.root_path = root_path
+        self.channel = None
         self.sections = {}
 
     @classmethod
@@ -16,7 +17,7 @@ class Project:
         return cls(
             pk=data["PRJ_PK"],
             name=data["PRJ_Key"],
-            date=data["PRJ_Date"],
+            date=QDateTime.fromString(data["PRJ_Date"], "yyyy-MM-dd HH:mm:ss"),
         )
 
     def add_section(self, section: "Section"):

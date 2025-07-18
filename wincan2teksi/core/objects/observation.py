@@ -28,6 +28,9 @@ class Observation:
         self.obs_value_3 = obs_value_3
         self.rate = rate
         self.memo = memo
+        self.photo_filename = None  # TODO: handle photo filenames
+        self.import_ = True
+        self.force_import = False
 
     @classmethod
     def from_dict(cls, data: dict):

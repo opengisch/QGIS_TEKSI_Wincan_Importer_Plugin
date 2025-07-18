@@ -18,6 +18,7 @@ class Section:
         self.name = name
         self.project_pk = project_pk
         self.inspections = {}
+        self.import_ = import_
 
         self.teksi_channel_id_1 = None
         self.teksi_channel_id_2 = None

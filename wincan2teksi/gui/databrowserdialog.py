@@ -152,7 +152,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         re.sub("\D*$", "", section.end_node),
                     )
                 if feature.isValid():
-                    self.projects[p_id].sections[s_id].qgep_channel_id_1 = feature.attribute(
+                    self.projects[p_id].sections[s_id].teksi_channel_id_1 = feature.attribute(
                         "obj_id"
                     )
                 self.progressBar.setValue(i)
@@ -222,9 +222,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             reach_features = []
 
                             for fid in [
-                                section.qgep_channel_id_1,
-                                section.qgep_channel_id_2,
-                                section.qgep_channel_id_3,
+                                section.teksi_channel_id_1,
+                                section.teksi_channel_id_2,
+                                section.teksi_channel_id_3,
                             ]:
                                 if fid is None:
                                     break

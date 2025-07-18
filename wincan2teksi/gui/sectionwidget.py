@@ -46,7 +46,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         QWidget.__init__(self, parent)
         self.setupUi(self)
         self.settings = Settings()
-        self.data = {}
+        self.projects = {}
         self.projectId = None
         self.section_id = None
 
@@ -65,13 +65,13 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                 self.sectionListWidget.setCurrentItem(item)
                 break
 
-    def finish_init(self, iface, data):
+    def finish_init(self, iface, projects):
         layer_id = self.settings.channel_layer.value()
         for selector in (self.section_1_selector, self.section_2_selector, self.section_3_selector):
             selector.set_layer(QgsProject.instance().mapLayer(layer_id))
             selector.set_canvas(iface.mapCanvas())
-        self.data = data
-        self.inspectionWidget.finish_init(self.data)
+        self.projects = projects
+        self.inspectionWidget.finish_init(self.projects)
 
     def set_project_id(self, prjId=None):
         self.sectionListWidget.clear()
@@ -82,10 +82,8 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         if self.projectId is None:
             return
 
-        for s_id, section in self.data[prjId]["Sections"].items():
-            title = "{0}: de {1} a {2}".format(
-                section["Counter"], section["StartNode"], section["EndNode"]
-            )
+        for s_id, section in self.projects[prjId].sections.items():
+            title = f"{section.counter}: de {section.start_node} a {section.end_node}"
             item = QListWidgetItem(warning_icon, title)
             item.setData(Qt.ItemDataRole.UserRole, s_id)
             item.setFlags(
@@ -94,7 +92,7 @@ class SectionWidget(QWidget, Ui_SectionWidget):
                 | Qt.ItemFlag.ItemIsUserCheckable
             )
             item.setCheckState(
-                Qt.CheckState.Checked if section["Import"] else Qt.CheckState.Unchecked
+                Qt.CheckState.Checked if section.import_ else Qt.CheckState.Unchecked
             )
             self.sectionListWidget.addItem(item)
         self.update_status()
@@ -103,12 +101,12 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         for r in range(0, self.sectionListWidget.count()):
             item = self.sectionListWidget.item(r)
             s_id = item.data(Qt.ItemDataRole.UserRole)
-            section = self.data[self.projectId]["Sections"][s_id]
-            ok = section["qgep_channel_id_1"] is not None or section["UsePreviousSection"] is True
+            section = self.projects[self.projectId].sections[s_id]
+            ok = section.teksi_channel_id_1 is not None or section.use_previous_section is True
             if not ok:
                 ok = True
-                for inspection in section["Inspections"].values():
-                    if inspection["Import"]:
+                for inspection in section.inspections.values():
+                    if inspection.import_:
                         ok = False
                         break
             if ok:
@@ -122,35 +120,35 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         s_id = item.data(Qt.ItemDataRole.UserRole)
         if self.projectId is None:
             return
-        self.data[self.projectId]["Sections"][s_id]["Import"] = bool(item.checkState())
+        self.projects[self.projectId].sections[s_id].import_ = bool(item.checkState())
 
     def set_qgep_channel_id1(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]["Sections"][self.section_id]["qgep_channel_id_1"] = (
-            feature.attribute("obj_id")
-        )
+        self.projects[self.projectId].sections[
+            self.section_id
+        ].teksi_channel_id_1 = feature.attribute("obj_id")
         self.update_status()
 
     def set_qgep_channel_id2(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]["Sections"][self.section_id]["qgep_channel_id_2"] = (
-            feature.attribute("obj_id")
-        )
+        self.projects[self.projectId].sections[
+            self.section_id
+        ].teksi_channel_id_2 = feature.attribute("obj_id")
 
     def set_qgep_channel_id3(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]["Sections"][self.section_id]["qgep_channel_id_3"] = (
-            feature.attribute("obj_id")
-        )
+        self.projects[self.projectId].sections[
+            self.section_id
+        ].teksi_channel_id_3 = feature.attribute("obj_id")
 
     @pyqtSlot(bool)
     def on_usePreviousSectionCheckBox_toggled(self, checked):
         if self.projectId is None or self.section_id is None:
             return
-        self.data[self.projectId]["Sections"][self.section_id]["UsePreviousSection"] = checked
+        self.projects[self.projectId].sections[self.section_id].use_previous_section = checked
         self.update_status()
 
     @pyqtSlot()
@@ -181,29 +179,31 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
         # allow use of previous section if not on first section
         self.usePreviousSectionCheckBox.setEnabled(
-            self.section_id != list(self.data[self.projectId]["Sections"].keys())[0]
+            self.section_id != list(self.projects[self.projectId].sections.keys())[0]
         )
 
-        section = self.data[self.projectId]["Sections"][self.section_id]
+        section = self.projects[self.projectId].sections[self.section_id]
 
-        for i, selector in enumerate(
-            (self.section_1_selector, self.section_2_selector, self.section_3_selector)
+        for selector, channel_id in (
+            (self.section_1_selector, section.teksi_channel_id_1),
+            (self.section_2_selector, section.teksi_channel_id_2),
+            (self.section_3_selector, section.teksi_channel_id_3),
         ):
-            feature = section_at_id(section["qgep_channel_id_{}".format(i + 1)])
+            feature = section_at_id(channel_id)
             if feature.isValid():
                 selector.set_feature(feature)
 
         self.section_1_selector.highlight_feature(CanvasExtent.Pan)
 
-        self.usePreviousSectionCheckBox.setChecked(section["UsePreviousSection"])
-        self.endNodeEdit.setText(section["EndNode"])
-        self.pipeDiaEdit.setText("{}".format(section["PipeDia"]))
-        self.pipeMaterialEdit.setText(section["PipeMaterial"])
-        self.pipeWidthEdit.setText("{}".format(section["PipeWidth"]))
-        self.profileEdit.setText(section["Profile"])
-        self.sectionlengthEdit.setText("{}".format(section["Sectionlength"]))
-        self.sectionUseEdit.setText(section["SectionUse"])
-        self.startNodeEdit.setText(section["StartNode"])
+        self.usePreviousSectionCheckBox.setChecked(section.use_previous_section)
+        self.endNodeEdit.setText(section.end_node)
+        self.pipeDiaEdit.setText("{}".format(section.section_size))
+        self.pipeMaterialEdit.setText(section.pipe_material)
+        # self.pipeWidthEdit.setText("{}".format(section.pipe_width))
+        self.profileEdit.setText(section.profile)
+        self.sectionlengthEdit.setText("{}".format(section.section_length))
+        self.sectionUseEdit.setText(section.section_use)
+        self.startNodeEdit.setText(section.start_node)
 
         self.inspectionWidget.set_section(self.projectId, self.section_id)
 

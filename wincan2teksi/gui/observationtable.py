@@ -29,8 +29,8 @@
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 
-
-COLUMN_DATA = ["Position", "OpCode", "Text", "MPEGPosition", "PhotoFilename", "Rate", "ForceImport"]
+IMPORT = 0
+FORCE_IMPORT = 1
 
 
 class ObservationTable(QTableWidget):
@@ -61,7 +61,6 @@ class ObservationTable(QTableWidget):
             self.tr("rate"),
             self.tr("force"),
         ]
-        assert len(self.column_headers) == len(COLUMN_DATA)
 
     def finish_init(self, data):
         self.data = data
@@ -87,26 +86,45 @@ class ObservationTable(QTableWidget):
         if self.projectId is None or self.sectionId is None or self.inspectionId is None:
             return
 
-        for o_id, obs in self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][
-            self.inspectionId
-        ]["Observations"].items():
+        for o_id, obs in (
+            self.data[self.projectId]
+            .sections[self.sectionId]
+            .inspections[self.inspectionId]
+            .observations.items()
+        ):
             r = self.rowCount()
             self.insertRow(r)
 
-            for c, col in enumerate(COLUMN_DATA):
-                item = QTableWidgetItem("{}".format(obs[col] if c < 6 else ""))
+            for c, data in enumerate(
+                (
+                    obs.distance,
+                    obs.code,
+                    obs.text,
+                    obs.time,
+                    obs.photo_filename,
+                    obs.rate,
+                    obs.force_import,
+                )
+            ):
+                item = QTableWidgetItem(str(data) if c != 6 else None)
                 if c in (0, 6):
-                    data_column = "Import" if c == 0 else "ForceImport"
                     item.setFlags(
                         Qt.ItemFlag.ItemIsEnabled
                         | Qt.ItemFlag.ItemIsSelectable
                         | Qt.ItemFlag.ItemIsUserCheckable
                     )
-                    item.setCheckState(
-                        Qt.CheckState.Checked if obs[data_column] else Qt.CheckState.Unchecked
-                    )
+                    if c == 0:
+                        item.setCheckState(
+                            Qt.CheckState.Checked if obs.import_ else Qt.CheckState.Unchecked
+                        )
+                        item.setData(Qt.ItemDataRole.UserRole + 1, IMPORT)
+
+                    else:
+                        item.setCheckState(
+                            Qt.CheckState.Checked if obs.force_import else Qt.CheckState.Unchecked
+                        )
+                        item.setData(Qt.ItemDataRole.UserRole + 1, FORCE_IMPORT)
                     item.setData(Qt.ItemDataRole.UserRole, o_id)
-                    item.setData(Qt.ItemDataRole.UserRole + 1, data_column)
                 else:
                     item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
                 font = item.font()
@@ -120,6 +138,17 @@ class ObservationTable(QTableWidget):
         if item.flags() & Qt.ItemFlag.ItemIsUserCheckable:
             o_id = item.data(Qt.ItemDataRole.UserRole)
             data_column = item.data(Qt.ItemDataRole.UserRole + 1)
-            self.data[self.projectId]["Sections"][self.sectionId]["Inspections"][self.inspectionId][
-                "Observations"
-            ][o_id][data_column] = True if item.checkState() == Qt.CheckState.Checked else False
+            if data_column == IMPORT:
+                self.data[self.projectId].sections[self.sectionId].inspections[
+                    self.inspectionId
+                ].observations[o_id].import_ = (
+                    True if item.checkState() == Qt.CheckState.Checked else False
+                )
+            elif data_column == FORCE_IMPORT:
+                self.data[self.projectId].sections[self.sectionId].inspections[
+                    self.inspectionId
+                ].observations[o_id].force_import = (
+                    True if item.checkState() == Qt.CheckState.Checked else False
+                )
+            else:
+                raise
