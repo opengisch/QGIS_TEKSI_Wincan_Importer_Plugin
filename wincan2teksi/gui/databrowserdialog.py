@@ -28,7 +28,7 @@
 import re
 import os
 
-from qgis.PyQt.QtCore import pyqtSlot, QDateTime, QCoreApplication
+from qgis.PyQt.QtCore import pyqtSlot, QCoreApplication
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
 
@@ -284,16 +284,16 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # mf['identifier'] = i_id  # use custom id to retrieve feature
                                 mf["maintenance_event_type"] = "examination"
                                 mf["kind"] = 4564  # vl_maintenance_event_kind: inspection
-                                mf["operator"] = inspection["Operator"]
-                                mf["time_point"] = QDateTime(inspection["InspDate"])
+                                mf["operator"] = inspection.operator
+                                mf["time_point"] = inspection.start_date
                                 mf["remark"] = ""
                                 mf["status"] = 2550  # vl_maintenance_event: accomplished
-                                mf["inspected_length"] = section["Sectionlength"]
-                                mf["videonumber"] = inspection["VideoName"]
+                                mf["inspected_length"] = section.section_length
+                                # mf["videonumber"] = inspection.video_name
                                 mf["base_data"] = self.pdf_path_widget.filePath()
                                 if self.relationWidgetWrapper is not None:
                                     mf["fk_operating_company"] = self.relationWidgetWrapper.value()
-                                if inspection["CodeInspectionDir"] == "D":
+                                if inspection.direction == 1:
                                     mf["fk_reach_point"] = rf["rp_from_obj_id"]
                                 else:
                                     mf["fk_reach_point"] = rf["rp_to_obj_id"]
@@ -350,21 +350,28 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # add corresponding damages
                         reach_index = 0
                         structure_condition = 4  # = ok
-                        for observation in self.projects[p_id]["Sections"][s_id]["Inspections"][
-                            i_id
-                        ]["Observations"].values():
+                        for observation in (
+                            self.projects[p_id]
+                            .sections[s_id]
+                            .inspections[i_id]
+                            .observations.values()
+                        ):
                             if observation.import_:
-                                distance = observation.position + distance_offset
+                                distance = observation.distance + distance_offset
                                 if not observation.force_import:
-                                    while distance > reach_features[reach_index].length_effective:
+                                    while (
+                                        distance > reach_features[reach_index]["length_effective"]
+                                    ):
                                         if reach_index < len(reach_features) - 1:
-                                            distance -= reach_features[reach_index].length_effective
+                                            distance -= reach_features[reach_index][
+                                                "length_effective"
+                                            ]
                                             reach_index += 1
                                         else:
-                                            if distance <= reach_features[
-                                                reach_index
-                                            ].length_effective + self.settings.value(
-                                                "tolerance_channel_length"
+                                            if (
+                                                distance
+                                                <= reach_features[reach_index]["length_effective"]
+                                                + self.settings.tolerance_channel_length.value()
                                             ):  # add 50cm tolerance
                                                 break
                                             else:
@@ -395,9 +402,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df["damage_type"] = "channel"
                                 df["comments"] = observation.text
                                 df["single_damage_class"] = damage_level_to_vl(observation.rate)
-                                df["channel_damage_code"] = int(
-                                    damage_code_to_vl(observation.op_code)
-                                )
+                                df["channel_damage_code"] = int(damage_code_to_vl(observation.code))
                                 df["distance"] = distance
                                 df["video_counter"] = observation.mpeg_position
                                 # pictures
@@ -420,7 +425,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.importButton.hide()
         self.cancel = False
 
-        file_layer_id = Settings().value("file_layer")
+        file_layer_id = Settings().file_layer.value()
         file_layer = QgsProject.instance().mapLayer(file_layer_id)
 
         with edit(join_layer):
@@ -524,7 +529,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             # get current reach
                             rf = QgsFeature()
-                            layer_id = Settings().value("wastewater_structure")
+                            layer_id = Settings().wastewater_structure_layer.value()
                             wsl = QgsProject.instance().mapLayer(layer_id)
                             if wsl is not None:
                                 request = QgsFeatureRequest().setFilterExpression(
