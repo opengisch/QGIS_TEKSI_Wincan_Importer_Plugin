@@ -36,6 +36,7 @@ from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 from qgis.gui import QgsGui, QgsAttributeEditorContext, QgisInterface
 
 from wincan2teksi.core.settings import Settings
+from wincan2teksi.core.exceptions import W2TLayerNotFound
 from wincan2teksi.core.section import find_section, section_at_id
 from wincan2teksi.core.vsacode import (
     damage_code_to_vl,
@@ -142,16 +143,26 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                 QCoreApplication.processEvents()
                 if self.cancel:
                     break
-                feature = find_section(channel, section.from_node, section.to_node)
-                if not feature.isValid() and self.settings.remove_trailing_chars.value():
-                    # try without trailing alpha char
-                    feature = find_section(
-                        channel,
-                        re.sub("\D*$", "", section.from_node),
-                        re.sub("\D*$", "", section.to_node),
+                try:
+                    feature = find_section(channel, section.from_node, section.to_node)
+                    if not feature.isValid() and self.settings.remove_trailing_chars.value():
+                        # try without trailing alpha char
+                        feature = find_section(
+                            channel,
+                            re.sub("\D*$", "", section.from_node),
+                            re.sub("\D*$", "", section.to_node),
+                        )
+                    if feature.isValid():
+                        section.teksi_channel_id_1 = feature.attribute("obj_id")
+                except W2TLayerNotFound as e:
+                    self.cannotImportLabel.show()
+                    self.cannotImportLabel.setText(
+                        self.tr("The channel layer is missing in the project: {error}").format(
+                            error=str(e)
+                        )
                     )
-                if feature.isValid():
-                    section.teksi_channel_id_1 = feature.attribute("obj_id")
+                    self.hide_progress()
+                    return
                 self.progressBar.setValue(i)
                 i += 1
         self.progressBar.hide()
@@ -390,7 +401,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df["distance"] = distance
                                 df["video_counter"] = observation.mpeg_position
                                 # pictures
-                                pics = observation.photo_filename
+                                pics = observation.photo_filenames
                                 # get wastewater structure id
                                 ws_obj_id = reach_features[reach_index]["ws_obj_id"]
                                 features[ws_obj_id]["damages"].append(df)

@@ -50,7 +50,7 @@ class Settings:
                 "tolerance_channel_length", settings_node, 1
             )
 
-            cls.wastewater_structure = QgsSettingsEntryString(
+            cls.wastewater_structure_layer = QgsSettingsEntryString(
                 "wastewater_structure_layer", settings_node, "od_wastewater_structure"
             )
 

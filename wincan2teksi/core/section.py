@@ -25,6 +25,7 @@
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 
+from wincan2teksi.core.exceptions import W2TLayerNotFound
 from wincan2teksi.core.settings import Settings
 
 
@@ -33,15 +34,19 @@ def find_section(channel, start_node, end_node):
 
     layerid = Settings().channel_layer.value()
     layer = QgsProject.instance().mapLayer(layerid)
-    if layer is not None:
-        request_text = (
-            "\"rp_from_identifier\" LIKE '{}-{}%' and \"rp_to_identifier\" LIKE '{}-{}%'".format(
-                channel, start_node, channel, end_node
-            )
+    if layer is None:
+        raise W2TLayerNotFound(
+            f"Channel layer with ID {layerid} not found in the current QGIS project."
         )
-        request = QgsFeatureRequest().setFilterExpression(request_text)
-        feature = next(layer.getFeatures(request), QgsFeature())
-        # print requestText, feature.isValid()
+
+    request_text = (
+        "\"rp_from_identifier\" LIKE '{}-{}%' and \"rp_to_identifier\" LIKE '{}-{}%'".format(
+            channel, start_node, channel, end_node
+        )
+    )
+    request = QgsFeatureRequest().setFilterExpression(request_text)
+    feature = next(layer.getFeatures(request), QgsFeature())
+    # print requestText, feature.isValid()
     return feature
 
 
@@ -50,7 +55,10 @@ def section_at_id(obj_id):
     if obj_id is not None:
         layer_id = Settings().value("channel_layer")
         layer = QgsProject.instance().mapLayer(layer_id)
-        if layer is not None:
-            request = QgsFeatureRequest().setFilterExpression("\"obj_id\" = '{}'".format(obj_id))
-            feature = next(layer.getFeatures(request), QgsFeature())
+        if layer is None:
+            raise W2TLayerNotFound(
+                f"Channel layer with ID {layer_id} not found in the current QGIS project."
+            )
+        request = QgsFeatureRequest().setFilterExpression("\"obj_id\" = '{}'".format(obj_id))
+        feature = next(layer.getFeatures(request), QgsFeature())
     return feature

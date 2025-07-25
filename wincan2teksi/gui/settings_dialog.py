@@ -20,13 +20,24 @@
 import os
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUiType
-from qgis.gui import (
-    QgsSettingsStringComboBoxWrapper,
-)
+from qgis.core import QgsMapLayerModel
 
 from wincan2teksi.core.settings import Settings
 
 DialogUi, _ = loadUiType(os.path.join(os.path.dirname(__file__), "../ui/settings.ui"))
+
+SETTINGS = (
+    "wastewater_structure_layer",
+    "join_maintence_wastewaterstructure_layer",
+    "channel_layer",
+    "cover_layer",
+    "maintenance_layer",
+    "damage_layer",
+    "file_layer",
+    "vl_damage_channel_layer",
+    "vl_damage_single_class",
+    "vl_wastewater_structure_structure_condition",
+)
 
 
 class SettingsDialog(QDialog, DialogUi):
@@ -35,25 +46,18 @@ class SettingsDialog(QDialog, DialogUi):
         QDialog.__init__(self, parent)
         self.setupUi(self)
 
-        for setting_key in (
-            "wastewater_structure_layer",
-            "join_maintence_wastewaterstructure_layer",
-            "channel_layer",
-            "cover_layer",
-            "maintenance_layer",
-            "damage_layer",
-            "file_layer",
-            "vl_damage_channel_layer",
-            "vl_damage_single_class",
-            "vl_wastewater_structure_structure_condition",
-        ):
-            wrapper = QgsSettingsStringComboBoxWrapper(
-                setting_key,
-                self.settings.value(setting_key),
-                QgsSettingsStringComboBoxWrapper.Mode.Data,
+        for setting_key in SETTINGS:
+            widget = getattr(self, setting_key)
+            setting = getattr(self.settings, setting_key)
+            widget.setCurrentIndex(
+                widget.findData(setting.value(), QgsMapLayerModel.CustomRole.LayerId)
             )
-            self.wrappers.append(wrapper)
 
     def accept(self):
-        for wrapper in self.wrappers:
-            wrapper.setSettingFromWidget()
+        for setting_key in SETTINGS:
+            widget = getattr(self, setting_key)
+            setting = getattr(self.settings, setting_key)
+            setting.setValue(
+                widget.itemData(widget.currentIndex(), QgsMapLayerModel.CustomRole.LayerId)
+            )
+        super(SettingsDialog, self).accept()
