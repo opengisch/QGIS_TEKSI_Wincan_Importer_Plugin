@@ -101,7 +101,7 @@ class ObservationTable(QTableWidget):
                     obs.code,
                     obs.text,
                     obs.time,
-                    obs.photo_filename,
+                    obs.photo_filenames,
                     obs.rate,
                     obs.force_import,
                 )

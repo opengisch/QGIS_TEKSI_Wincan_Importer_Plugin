@@ -75,8 +75,14 @@ def read_data(file_path: str) -> dict[str, Project]:
                     logging.debug(
                         f"Found observation in inspection {inspection.name} (PK: {inspection.pk})"
                     )
+                    pictures = __read_table(
+                        cursor,
+                        "SECOBSMM",
+                        f"OMM_Observation_FK = '{observation.pk}' AND OMM_Type IN ('PI1','PI2') AND OMM_Deleted IS NULL",
+                    )
+                    pictures = [p["OMM_FileName"] for p in pictures]
+                    observation.photo_filenames = pictures
                     inspection.add_observation(observation)
-
                 section.add_inspection(inspection)
             project.add_section(section)
         logging.info(f"Found {len(project.sections)} sections in project {project.name}")
