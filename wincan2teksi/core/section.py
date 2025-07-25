@@ -28,8 +28,13 @@ from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
 from wincan2teksi.core.exceptions import W2TLayerNotFound
 from wincan2teksi.core.settings import Settings
 
+from wincan2teksi.core.utils import logger
+
 
 def find_section(channel, start_node, end_node):
+    logger.debug(
+        f"Finding section for channel {channel}, start node {start_node}, end node {end_node}"
+    )
     feature = QgsFeature()
 
     layerid = Settings().channel_layer.value()

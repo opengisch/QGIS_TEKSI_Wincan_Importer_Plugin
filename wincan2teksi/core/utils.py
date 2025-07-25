@@ -15,8 +15,34 @@
 
 from qgis.core import Qgis, QgsMessageLog
 from qgis.utils import iface
+import logging
+
 
 DEBUG = True
+
+if DEBUG:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+
+
+class QgisDebugHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            QgsMessageLog.logMessage(
+                "{}: {}".format("Wincan2QGEP", msg), "Wincan TEKSI Importer", Qgis.MessageLevel.Info
+            )
+        except Exception:
+            pass
+
+
+if DEBUG:
+    handler = QgisDebugHandler()
+    handler.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
 
 
 def info(message: str, level: Qgis.MessageLevel = Qgis.MessageLevel.Info):
