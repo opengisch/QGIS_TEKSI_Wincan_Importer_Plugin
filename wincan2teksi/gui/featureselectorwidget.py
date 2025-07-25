@@ -205,7 +205,7 @@ class FeatureSelectorWidget(QWidget):
         self.highlight.setFillColor(color)  # sets fill with alpha
         self.highlight.setBuffer(buffer)
         self.highlight.setMinWidth(min_width)
-        self.highlight.setWidth(4.0)
+        self.highlight.setWidth(4)
         self.highlight.show()
 
         self.timer = QTimer(self)

@@ -44,11 +44,11 @@ def find_section(channel, start_node, end_node):
             f"Channel layer with ID {layerid} not found in the current QGIS project."
         )
 
-    request_text = (
-        "\"rp_from_identifier\" LIKE '{}-{}%' and \"rp_to_identifier\" LIKE '{}-{}%'".format(
-            channel, start_node, channel, end_node
-        )
-    )
+    if channel:
+        request_text = f"\"rp_from_identifier\" LIKE '{channel}-{start_node}%' and \"rp_to_identifier\" LIKE '{channel}-{end_node}%'"
+    else:
+        request_text = f"\"rp_from_identifier\" LIKE '{start_node}%' and \"rp_to_identifier\" LIKE '{end_node}%'"
+
     request = QgsFeatureRequest().setFilterExpression(request_text)
     feature = next(layer.getFeatures(request), QgsFeature())
     # print requestText, feature.isValid()
@@ -58,7 +58,7 @@ def find_section(channel, start_node, end_node):
 def section_at_id(obj_id):
     feature = QgsFeature()
     if obj_id is not None:
-        layer_id = Settings().value("channel_layer")
+        layer_id = Settings().channel_layer.value()
         layer = QgsProject.instance().mapLayer(layer_id)
         if layer is None:
             raise W2TLayerNotFound(

@@ -42,6 +42,13 @@ def read_data(file_path: str) -> dict[str, Project]:
         )
         for section_data in sections:
             section = Section.from_dict(section_data)
+            section.from_node = __read_table(
+                cursor, "NODE", f"OBJ_PK = '{section.from_node}' AND OBJ_Deleted IS NULL"
+            )[0]["OBJ_Key"]
+            section.to_node = __read_table(
+                cursor, "NODE", f"OBJ_PK = '{section.to_node}' AND OBJ_Deleted IS NULL"
+            )[0]["OBJ_Key"]
+
             logging.debug(
                 f"Found section: {section.name} (PK: {section.pk}) in project {project.name}"
             )
