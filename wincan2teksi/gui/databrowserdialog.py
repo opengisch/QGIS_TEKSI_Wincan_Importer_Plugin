@@ -46,7 +46,7 @@ from wincan2teksi.core.vsacode import (
 )
 from wincan2teksi.core.layer_edit import edit
 from wincan2teksi.core.objects import Project
-from wincan2teksi.core.utils import info, dbg_info
+from wincan2teksi.core.utils import info, logger
 
 Ui_DataBrowserDialog, _ = loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui")
@@ -54,7 +54,7 @@ Ui_DataBrowserDialog, _ = loadUiType(
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
-    def __init__(self, iface: QgisInterface, projects: [Project], data_path=""):
+    def __init__(self, iface: QgisInterface, projects: list[Project], data_path=""):
         print(os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui"))
         QDialog.__init__(self)
         self.setupUi(self)
@@ -289,7 +289,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf["remark"] = ""
                                 mf["status"] = 2550  # vl_maintenance_event: accomplished
                                 mf["inspected_length"] = section.section_length
-                                # mf["videonumber"] = inspection.video_name
+                                mf["videonumber"] = ""  # inspection.video_name TODO
                                 mf["base_data"] = self.pdf_path_widget.filePath()
                                 if self.relationWidgetWrapper is not None:
                                     mf["fk_operating_company"] = self.relationWidgetWrapper.value()
@@ -448,11 +448,23 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             # write maintenance feature
                             ok = maintenance_layer.addFeature(maintenance)
-                            dbg_info(
-                                "adding feature to maintenance layer (fid: {}): {}".format(
-                                    maintenance["obj_id"], "ok" if ok else "error"
+                            if ok:
+                                logger.debug(
+                                    "adding feature to maintenance layer (fid: {}): ok".format(
+                                        maintenance["obj_id"]
+                                    )
                                 )
-                            )
+                            else:
+                                _fields = ""
+                                for name, value in zip(
+                                    maintenance_layer.fields().names(), maintenance.attributes()
+                                ):
+                                    _fields += f"{name}: {value}\n"
+                                logger.error(
+                                    f"error adding feature to maintenance layer (fid: {maintenance['obj_id']}): error. "
+                                    f"{_fields}"
+                                )
+                                return
 
                             # write video
                             of = QgsFeature()
@@ -468,11 +480,20 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             of["identifier"] = maintenance["videonumber"]
                             of["path_relative"] = self.data_path_line_edit.text() + "\Video"
                             ok = file_layer.addFeature(of)
-                            dbg_info(
-                                "adding feature to filer layer (fid: {}): {}".format(
-                                    of["obj_id"], "ok" if ok else "error"
+                            if ok:
+                                logger.debug(
+                                    f"adding feature to file layer (fid: {of['obj_id']}): ok"
                                 )
-                            )
+                            else:
+                                _fields = ""
+                                for name, value in zip(
+                                    file_layer.fields().names(), of.attributes()
+                                ):
+                                    _fields += f"{name}: {value}\n"
+                                logger.error(
+                                    f"error adding feature to file layer (fid: {of['obj_id']}): error. "
+                                    f"{_fields}"
+                                )
 
                             # set fkey maintenance event id to all damages
                             for k, _ in enumerate(damages):
@@ -481,7 +502,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             # write damages
                             for k, damage in enumerate(damages):
                                 ok = damage_layer.addFeature(damage)
-                                dbg_info(
+                                logger.debug(
                                     "adding feature to damage layer (fid: {}): {}".format(
                                         damage["obj_id"], "ok" if ok else "error"
                                     )
@@ -504,7 +525,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         self.data_path_line_edit.text() + "\Picture"
                                     )
                                     ok = file_layer.addFeature(of)
-                                    dbg_info(
+                                    logger.debug(
                                         "adding picture to file layer (fid: {}): {}".format(
                                             of["obj_id"], "ok" if ok else "error"
                                         )
@@ -521,7 +542,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             jf["fk_wastewater_structure"] = ws_obj_id
                             jf["fk_maintenance_event"] = maintenance["obj_id"]
                             ok = join_layer.addFeature(jf)
-                            dbg_info(
+                            logger.debug(
                                 "adding feature to join layer (fid: {}): {}".format(
                                     jf["obj_id"], "ok" if ok else "error"
                                 )
