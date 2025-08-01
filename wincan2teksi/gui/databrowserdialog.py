@@ -47,6 +47,7 @@ from wincan2teksi.core.vsacode import (
 from wincan2teksi.core.layer_edit import edit
 from wincan2teksi.core.objects import Project
 from wincan2teksi.core.utils import info, logger
+import sys
 
 Ui_DataBrowserDialog, _ = loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui")
@@ -464,6 +465,11 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     f"error adding feature to maintenance layer (fid: {maintenance['obj_id']}): error. "
                                     f"{_fields}"
                                 )
+                                self.hide_progress()
+                                self.cannotImportLabel.show()
+                                self.cannotImportLabel.setText(
+                                    self.tr("Error adding maintenance event to layer.")
+                                )
                                 return
 
                             # write video
@@ -494,6 +500,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     f"error adding feature to file layer (fid: {of['obj_id']}): error. "
                                     f"{_fields}"
                                 )
+                                self.hide_progress()
+                                self.cannotImportLabel.show()
+                                self.cannotImportLabel.setText(
+                                    self.tr("Error adding video to layer.")
+                                )
+                                return
 
                             # set fkey maintenance event id to all damages
                             for k, _ in enumerate(damages):
@@ -521,15 +533,37 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     of["kind"] = 3772  # i.e. photo
                                     of["object"] = damage["obj_id"]
                                     of["identifier"] = pic
-                                    of["path_relative"] = (
-                                        self.data_path_line_edit.text() + "\Picture"
-                                    )
-                                    ok = file_layer.addFeature(of)
-                                    logger.debug(
-                                        "adding picture to file layer (fid: {}): {}".format(
-                                            of["obj_id"], "ok" if ok else "error"
+                                    if sys.platform.startswith("win"):
+                                        of["path_relative"] = (
+                                            self.data_path_line_edit.text() + "\\Picture\\Sec"
                                         )
-                                    )
+                                    else:
+                                        of["path_relative"] = (
+                                            self.data_path_line_edit.text() + "/Picture/Sec"
+                                        )
+                                    ok = file_layer.addFeature(of)
+                                    if ok:
+                                        logger.debug(
+                                            "adding picture to file layer (fid: {}): ok".format(
+                                                of["obj_id"]
+                                            )
+                                        )
+                                    else:
+                                        _fields = ""
+                                        for name, value in zip(
+                                            file_layer.fields().names(), of.attributes()
+                                        ):
+                                            _fields += f"{name}: {value}\n"
+                                        logger.error(
+                                            f"error adding picture to file layer (fid: {of['obj_id']}): error. "
+                                            f"{_fields}"
+                                        )
+                                        self.hide_progress()
+                                        self.cannotImportLabel.show()
+                                        self.cannotImportLabel.setText(
+                                            self.tr("Error adding picture to file layer.")
+                                        )
+                                        return
 
                             # write in relation table (wastewater structure - maintenance events)
                             jf = QgsFeature()
