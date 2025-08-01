@@ -29,6 +29,16 @@ def read_data(file_path: str) -> dict[str, Project]:
     if not Path(file_path).exists():
         raise FileNotFoundError(f"File {file_path} does not exist.")
 
+    meta_path = Path(file_path).with_name(Path(file_path).stem + "_meta" + Path(file_path).suffix)
+    operators = {}
+    if not meta_path.exists():
+        logging.warning(f"Meta file {meta_path} does not exist.")
+    else:
+        conn = sqlite3.connect(meta_path)
+        cursor = conn.cursor()
+        logging.info(f"Read meta file: {meta_path}")
+        operators = __read_table(cursor, "OPERATOR")
+
     conn = sqlite3.connect(file_path)
     cursor = conn.cursor()
 
@@ -66,6 +76,10 @@ def read_data(file_path: str) -> dict[str, Project]:
                 logging.debug(
                     f"Found inspection: {inspection.name} (PK: {inspection.pk}) in section {section.name}"
                 )
+                if operators:
+                    for operator in operators:
+                        if operator["OP_PK"] == inspection.operator:
+                            inspection.operator = operator["OP_Name1"]
 
                 observations = __read_table(
                     cursor,
