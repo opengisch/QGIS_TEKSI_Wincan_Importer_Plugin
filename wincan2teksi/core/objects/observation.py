@@ -28,7 +28,7 @@ class Observation:
         self.obs_value_3 = obs_value_3
         self.rate = rate
         self.memo = memo
-        self.photo_filenames = []
+        self.mmfiles = []
         self.mpeg_position = None  # TODO
         self.import_ = True
         self.force_import = False

@@ -96,13 +96,16 @@ def read_data(file_path: str) -> dict[str, Project]:
                     logging.debug(
                         f"Found observation in inspection {inspection.name} (PK: {inspection.pk})"
                     )
-                    pictures = __read_table(
+                    mmfiles = __read_table(
                         cursor,
                         "SECOBSMM",
-                        f"OMM_Observation_FK = '{observation.pk}' AND OMM_Type IN ('PI1','PI2') AND OMM_Deleted IS NULL",
+                        f"OMM_Observation_FK = '{observation.pk}' AND OMM_Deleted IS NULL",
                     )
-                    pictures = [p["OMM_FileName"] for p in pictures]
-                    observation.photo_filenames = pictures
+                    for mmfile in mmfiles:
+                        if mmfile["OMM_Type"] in ("PI1", "PI2"):
+                            observation.mmfiles.append(("picture", mmfile["OMM_FileName"]))
+                        else:
+                            observation.mmfiles.append(("video", mmfile["OMM_FileName"]))
                     inspection.add_observation(observation)
                 section.add_inspection(inspection)
             project.add_section(section)

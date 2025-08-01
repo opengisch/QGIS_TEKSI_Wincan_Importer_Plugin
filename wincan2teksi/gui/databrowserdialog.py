@@ -47,7 +47,6 @@ from wincan2teksi.core.vsacode import (
 from wincan2teksi.core.layer_edit import edit
 from wincan2teksi.core.objects import Project
 from wincan2teksi.core.utils import info, logger
-import sys
 
 Ui_DataBrowserDialog, _ = loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui")
@@ -302,7 +301,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 features[rf["ws_obj_id"]] = {
                                     "maintenance": QgsFeature(mf),
                                     "damages": [],
-                                    "pictures": [],
+                                    "media": [],
                                     "structure_condition": 4,
                                 }
 
@@ -406,12 +405,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df["channel_damage_code"] = int(damage_code_to_vl(observation.code))
                                 df["distance"] = distance
                                 df["video_counter"] = observation.mpeg_position
-                                # pictures
-                                pics = observation.photo_filenames
+                                # media files
+                                mms = observation.mmfiles
                                 # get wastewater structure id
                                 ws_obj_id = reach_features[reach_index]["ws_obj_id"]
                                 features[ws_obj_id]["damages"].append(df)
-                                features[ws_obj_id]["pictures"].append(pics)
+                                features[ws_obj_id]["media"].append(mms)
                                 structure_condition = min(structure_condition, observation.rate)
                                 features[ws_obj_id]["structure_condition"] = structure_condition
                 self.progressBar.setValue(i)
@@ -441,7 +440,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             maintenance = elements["maintenance"]
                             damages = elements["damages"]
-                            pictures = elements["pictures"]
+                            media = elements["media"]
                             structure_condition = elements["structure_condition"]
 
                             if len(damages) == 0:
@@ -520,8 +519,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     )
                                 )
 
-                                # add pictures to od_file with reference to damage
-                                for pic in pictures[k]:
+                                # add media files to od_file with reference to damage
+                                for mf in media[k]:
                                     of = QgsFeature()
                                     init_fields = file_layer.fields()
                                     of.setFields(init_fields)
@@ -530,21 +529,26 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         file_layer.fields().indexFromName("obj_id")
                                     )
                                     of["class"] = 3871  # i.e. damage
-                                    of["kind"] = 3772  # i.e. photo
+                                    of["kind"] = 3772 if mf[0] == "picture" else 3775  # i.e. video
                                     of["object"] = damage["obj_id"]
-                                    of["identifier"] = pic
-                                    if sys.platform.startswith("win"):
+                                    of["identifier"] = mf[1]
+                                    sep = os.path.sep
+                                    if mf[0] == "picture":
                                         of["path_relative"] = (
-                                            self.data_path_line_edit.text() + "\\Picture\\Sec"
+                                            self.data_path_line_edit.text()
+                                            + f"{sep}Picture{sep}Sec"
+                                        )
+                                    elif mf[0] == "video":
+                                        of["path_relative"] = (
+                                            self.data_path_line_edit.text() + f"{sep}Video{sep}Sec"
                                         )
                                     else:
-                                        of["path_relative"] = (
-                                            self.data_path_line_edit.text() + "/Picture/Sec"
-                                        )
+                                        logger.error(f"unknown media type {mf[0]} for file {mf[1]}")
+                                        continue
                                     ok = file_layer.addFeature(of)
                                     if ok:
                                         logger.debug(
-                                            "adding picture to file layer (fid: {}): ok".format(
+                                            "adding media to file layer (fid: {}): ok".format(
                                                 of["obj_id"]
                                             )
                                         )
@@ -555,13 +559,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         ):
                                             _fields += f"{name}: {value}\n"
                                         logger.error(
-                                            f"error adding picture to file layer (fid: {of['obj_id']}): error. "
+                                            f"error adding media to file layer (fid: {of['obj_id']}): error. "
                                             f"{_fields}"
                                         )
                                         self.hide_progress()
                                         self.cannotImportLabel.show()
                                         self.cannotImportLabel.setText(
-                                            self.tr("Error adding picture to file layer.")
+                                            self.tr("Error adding media to file layer.")
                                         )
                                         return
 
