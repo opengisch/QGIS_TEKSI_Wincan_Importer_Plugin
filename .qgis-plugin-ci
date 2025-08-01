@@ -1,6 +1,6 @@
-plugin_path: wincan2qgep
-github_organization_slug: QGEP
-project_slug: qgis_wincan2qgep
+plugin_path: wincan2teksi
+github_organization_slug: opengisch
+project_slug: QGIS_TEKSI_Wincan_Importer_Plugin
 
 transifex_coordinator: 3nids
 transifex_organization: QGEP
