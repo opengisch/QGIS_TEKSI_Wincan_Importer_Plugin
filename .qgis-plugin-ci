@@ -3,7 +3,8 @@ github_organization_slug: opengisch
 project_slug: QGIS_TEKSI_Wincan_Importer_Plugin
 
 transifex_coordinator: 3nids
-transifex_organization: QGEP
+transifex_organization: opengisch
+transifex_project: qgis_teksi_wincan_importer_plugin
 translation_languages:
   - fr
   - it
