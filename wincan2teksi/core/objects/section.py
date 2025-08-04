@@ -14,6 +14,7 @@ class Section:
         to_node: str = None,
         address: str = None,
         import_: bool = True,
+        counter: int = None,
     ):
         self.pk = pk
         self.name = name
@@ -33,8 +34,9 @@ class Section:
         self.to_node = to_node
         self.address = address
 
+        self.counter = counter
+
         # TODO: Check if these are missing
-        self.counter = None
         self.section_use = None
         self.pipe_material = None
         self.profile = None
@@ -53,6 +55,7 @@ class Section:
             from_node=data["OBJ_FromNode_REF"],
             to_node=data["OBJ_ToNode_REF"],
             address=f"{data['OBJ_City']} {data['OBJ_Street']}",
+            counter=data["OBJ_SortOrder"],
         )
 
     def add_inspection(self, inspection: "Inspection"):
