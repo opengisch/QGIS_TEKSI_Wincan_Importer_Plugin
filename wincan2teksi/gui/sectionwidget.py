@@ -58,6 +58,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
         self.sectionListWidget.itemChanged.connect(self.sectionItemChanged)
 
+        self.filter_unmatched_sections_active = False
+        self.filterUnmatchedSectionsButton.clicked.connect(self.filter_unmatched_sections)
+
     def select_section(self, section_id):
         for r in range(0, self.sectionListWidget.count()):
             item = self.sectionListWidget.item(r)
@@ -115,6 +118,25 @@ class SectionWidget(QWidget, Ui_SectionWidget):
             else:
                 # item.setIcon(warning_icon)  # doesn't seem to be working next to checkboxes
                 item.setBackground(QColor(255, 190, 190))
+
+    def filter_unmatched_sections(self):
+        self.filter_unmatched_sections_active = not self.filter_unmatched_sections_active
+        if self.filter_unmatched_sections_active:
+            self.filterUnmatchedSectionsButton.setText(self.tr("Show all sections"))
+        else:
+            self.filterUnmatchedSectionsButton.setText(self.tr("Filter unmatched sections"))
+        for r in range(0, self.sectionListWidget.count()):
+            item = self.sectionListWidget.item(r)
+            if not self.filter_unmatched_sections_active:
+                item.setHidden(False)
+                continue
+
+            s_id = item.data(Qt.ItemDataRole.UserRole)
+            section = self.projects[self.projectId].sections[s_id]
+            is_matched = (
+                section.teksi_channel_id_1 is not None or section.use_previous_section is True
+            )
+            item.setHidden(is_matched)
 
     def sectionItemChanged(self, item):
         s_id = item.data(Qt.ItemDataRole.UserRole)
