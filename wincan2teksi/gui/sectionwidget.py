@@ -50,9 +50,9 @@ class SectionWidget(QWidget, Ui_SectionWidget):
         self.projectId = None
         self.section_id = None
 
-        self.section_1_selector.feature_identified.connect(self.set_qgep_channel_id1)
-        self.section_2_selector.feature_identified.connect(self.set_qgep_channel_id2)
-        self.section_3_selector.feature_identified.connect(self.set_qgep_channel_id3)
+        self.section_1_selector.feature_changed.connect(self.set_qgep_channel_id1)
+        self.section_2_selector.feature_changed.connect(self.set_qgep_channel_id2)
+        self.section_3_selector.feature_changed.connect(self.set_qgep_channel_id3)
 
         self.inspectionWidget.importChanged.connect(self.update_status)
 
@@ -147,24 +147,23 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     def set_qgep_channel_id1(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.projects[self.projectId].sections[
-            self.section_id
-        ].teksi_channel_id_1 = feature.attribute("obj_id")
+        obj_id = feature.attribute("obj_id") if feature.isValid() else None
+        self.projects[self.projectId].sections[self.section_id].teksi_channel_id_1 = obj_id
         self.update_status()
 
     def set_qgep_channel_id2(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.projects[self.projectId].sections[
-            self.section_id
-        ].teksi_channel_id_2 = feature.attribute("obj_id")
+        obj_id = feature.attribute("obj_id") if feature.isValid() else None
+        self.projects[self.projectId].sections[self.section_id].teksi_channel_id_2 = obj_id
+        self.update_status()
 
     def set_qgep_channel_id3(self, feature):
         if self.projectId is None or self.section_id is None:
             return
-        self.projects[self.projectId].sections[
-            self.section_id
-        ].teksi_channel_id_3 = feature.attribute("obj_id")
+        obj_id = feature.attribute("obj_id") if feature.isValid() else None
+        self.projects[self.projectId].sections[self.section_id].teksi_channel_id_3 = obj_id
+        self.update_status()
 
     @pyqtSlot(bool)
     def on_usePreviousSectionCheckBox_toggled(self, checked):

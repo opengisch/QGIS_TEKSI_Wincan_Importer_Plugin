@@ -46,7 +46,7 @@ class CanvasExtent(object):
 
 
 class FeatureSelectorWidget(QWidget):
-    feature_identified = pyqtSignal(QgsFeature)
+    feature_changed = pyqtSignal(QgsFeature)
 
     def __init__(self, parent):
         QWidget.__init__(self, parent)
@@ -59,6 +59,12 @@ class FeatureSelectorWidget(QWidget):
         self.line_edit = QLineEdit(self)
         self.line_edit.setReadOnly(True)
         edit_layout.addWidget(self.line_edit)
+
+        self.clear_button = QToolButton(self)
+        self.clear_button.setIcon(QgsApplication.getThemeIcon("/mActionRemove.svg"))
+        self.clear_button.setToolTip(self.tr("Clear feature selection"))
+        self.clear_button.clicked.connect(self.clear)
+        edit_layout.addWidget(self.clear_button)
 
         self.highlight_feature_button = QToolButton(self)
         self.highlight_feature_button.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
@@ -128,6 +134,7 @@ class FeatureSelectorWidget(QWidget):
     def clear(self):
         self.feature = QgsFeature()
         self.line_edit.clear()
+        self.feature_changed.emit(self.feature)
 
     @pyqtSlot()
     def map_identification(self):
@@ -147,7 +154,7 @@ class FeatureSelectorWidget(QWidget):
 
     def map_tool_feature_identified(self, feature):
         feature = QgsFeature(feature)
-        self.feature_identified.emit(feature)
+        self.feature_changed.emit(feature)
         self.unset_map_tool()
         self.set_feature(feature)
 
