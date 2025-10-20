@@ -243,9 +243,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         self.tr(
                                             "Inspection {i} from manhole {c1} to {c2}"
                                             " has an non-existent channel assigned.".format(
-                                                i=section["Counter"],
-                                                c1=section["StartNode"],
-                                                c2=section["EndNode"],
+                                                i=section.counter,
+                                                c1=section.fron_node,
+                                                c2=section.to_node,
                                             )
                                         )
                                     )
@@ -260,9 +260,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     self.tr(
                                         "Inspection {i} from manhole {c1} to {c2}"
                                         " has no channel assigned.".format(
-                                            i=section["Counter"],
-                                            c1=section["StartNode"],
-                                            c2=section["EndNode"],
+                                            i=section.counter,
+                                            c1=section.fron_node,
+                                            c2=section.to_node,
                                         )
                                     )
                                 )
