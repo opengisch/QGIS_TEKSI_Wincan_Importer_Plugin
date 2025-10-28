@@ -174,9 +174,13 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
     @pyqtSlot()
     def on_sectionListWidget_itemSelectionChanged(self):
-        self.section_1_selector.clear()
-        self.section_2_selector.clear()
-        self.section_3_selector.clear()
+        for selector, channel_id_slot in (
+            (self.section_1_selector, self.set_qgep_channel_id1),
+            (self.section_2_selector, self.set_qgep_channel_id2),
+            (self.section_3_selector, self.set_qgep_channel_id3),
+        ):
+            selector.feature_changed.disconnect(channel_id_slot)
+            selector.clear()
         self.endNodeEdit.clear()
         self.pipeDiaEdit.clear()
         self.pipeMaterialEdit.clear()
@@ -206,14 +210,15 @@ class SectionWidget(QWidget, Ui_SectionWidget):
 
         section = self.projects[self.projectId].sections[self.section_id]
 
-        for selector, channel_id in (
-            (self.section_1_selector, section.teksi_channel_id_1),
-            (self.section_2_selector, section.teksi_channel_id_2),
-            (self.section_3_selector, section.teksi_channel_id_3),
+        for selector, channel_id, channel_id_slot in (
+            (self.section_1_selector, section.teksi_channel_id_1, self.set_qgep_channel_id1),
+            (self.section_2_selector, section.teksi_channel_id_2, self.set_qgep_channel_id2),
+            (self.section_3_selector, section.teksi_channel_id_3, self.set_qgep_channel_id3),
         ):
             feature = section_at_id(channel_id)
             if feature.isValid():
                 selector.set_feature(feature)
+            selector.feature_changed.connect(channel_id_slot)
 
         self.section_1_selector.highlight_feature(CanvasExtent.Pan)
 
