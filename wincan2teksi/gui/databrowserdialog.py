@@ -411,7 +411,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 ws_obj_id = reach_features[reach_index]["ws_obj_id"]
                                 features[ws_obj_id]["damages"].append(df)
                                 features[ws_obj_id]["media"].append(mms)
-                                structure_condition = min(structure_condition, observation.rate)
+                                if observation.rate is not None:
+                                    structure_condition = min(structure_condition, observation.rate)
                                 features[ws_obj_id]["structure_condition"] = structure_condition
                 self.progressBar.setValue(i)
                 i += 1
