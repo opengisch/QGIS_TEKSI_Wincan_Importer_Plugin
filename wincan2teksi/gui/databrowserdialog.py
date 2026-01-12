@@ -65,14 +65,13 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.cancel = False
 
         self.data_path_line_edit.setText(data_path)
+
         self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
         self.progressBar.hide()
         self.cancelButton.hide()
-
-        self.pdf_path_widget.setDefaultRoot(data_path)
 
         self.relationWidgetWrapper = None
         maintenance_layer = QgsProject.instance().mapLayer(self.settings.maintenance_layer.value())
@@ -289,7 +288,6 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 mf["remark"] = ""
                                 mf["status"] = 2550  # vl_maintenance_event: accomplished
                                 mf["inspected_length"] = section.section_length
-                                mf["videonumber"] = ""  # inspection.video_name TODO
                                 mf["base_data"] = self.pdf_path_widget.filePath()
                                 if self.relationWidgetWrapper is not None:
                                     mf["fk_operating_company"] = self.relationWidgetWrapper.value()
@@ -473,39 +471,53 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 return
 
                             # write video
-                            of = QgsFeature()
-                            init_fields = file_layer.fields()
-                            of.setFields(init_fields)
-                            of.initAttributes(init_fields.size())
-                            of["obj_id"] = file_layer.dataProvider().defaultValue(
-                                file_layer.fields().indexFromName("obj_id")
-                            )
-                            of["class"] = 3825  # i.e. maintenance event
-                            of["kind"] = 3771  # i.e. video
-                            of["object"] = maintenance["obj_id"]
-                            of["identifier"] = maintenance["videonumber"]
-                            of["path_relative"] = self.data_path_line_edit.text() + "\Video"
-                            ok = file_layer.addFeature(of)
-                            if ok:
-                                logger.debug(
-                                    f"adding feature to file layer (fid: {of['obj_id']}): ok"
-                                )
-                            else:
-                                _fields = ""
-                                for name, value in zip(
-                                    file_layer.fields().names(), of.attributes()
-                                ):
-                                    _fields += f"{name}: {value}\n"
-                                logger.error(
-                                    f"error adding feature to file layer (fid: {of['obj_id']}): error. "
-                                    f"{_fields}"
-                                )
-                                self.hide_progress()
-                                self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText(
-                                    self.tr("Error adding video to layer.")
-                                )
-                                return
+                            video_found = False
+                            for k, _ in enumerate(damages):
+                                if video_found:
+                                    break
+                                for mf in media[k]:
+                                    if mf[0] == "video":
+                                        of = QgsFeature()
+                                        init_fields = file_layer.fields()
+                                        of.setFields(init_fields)
+                                        of.initAttributes(init_fields.size())
+                                        of["obj_id"] = file_layer.dataProvider().defaultValue(
+                                            file_layer.fields().indexFromName("obj_id")
+                                        )
+                                        of["class"] = 3825  # i.e. maintenance event
+                                        of["kind"] = 3775  # i.e. video
+                                        of["object"] = maintenance["obj_id"]
+                                        of["identifier"] = mf[1]
+                                        sep = os.path.sep
+                                        of["path_relative"] = of["path_relative"] = (
+                                            self.data_path_line_edit.text() + f"{sep}Video{sep}Sec"
+                                        )
+                                        ok = file_layer.addFeature(of)
+                                        if ok:
+                                            logger.debug(
+                                                f"adding feature to file layer (fid: {of['obj_id']}): ok"
+                                            )
+                                            video_found = True
+                                            break
+                                        else:
+                                            _fields = ""
+                                            for name, value in zip(
+                                                file_layer.fields().names(), of.attributes()
+                                            ):
+                                                _fields += f"{name}: {value}\n"
+                                            logger.error(
+                                                f"error adding feature to file layer (fid: {of['obj_id']}): error. "
+                                                f"{_fields}"
+                                            )
+                                            self.hide_progress()
+                                            self.cannotImportLabel.show()
+                                            self.cannotImportLabel.setText(
+                                                self.tr("Error adding video to layer.")
+                                            )
+                                            return
+                                    logger.debug(
+                                        f"no video found for maintenance event (fid: {maintenance['obj_id']})"
+                                    )
 
                             # set fkey maintenance event id to all damages
                             for k, _ in enumerate(damages):
@@ -547,6 +559,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         logger.error(f"unknown media type {mf[0]} for file {mf[1]}")
                                         continue
                                     ok = file_layer.addFeature(of)
+
                                     if ok:
                                         logger.debug(
                                             "adding media to file layer (fid: {}): ok".format(

@@ -27,7 +27,7 @@ import os.path
 from qgis.PyQt.QtCore import Qt, QObject, QSettings, QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon, QColor
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
-from qgis.core import QgsProject, QgsSettingsTree
+from qgis.core import Qgis, QgsProject, QgsSettingsTree
 from qgis.gui import QgsRubberBand, QgisInterface
 
 from wincan2teksi.core.settings import Settings, PLUGIN_NAME
@@ -109,7 +109,15 @@ class Wincan2Teksi(QObject):
             absolute_path = os.path.dirname(os.path.realpath(file_path))
             parent_path = os.path.abspath(os.path.join(absolute_path, os.pardir))
             self.settings.db3_path.setValue(absolute_path)
-            projects = read_data(file_path)
+            try:
+                projects = read_data(file_path)
+            except Exception as e:
+                self.iface.messageBar().pushMessage(
+                    "Wincan 2 TEKSI",
+                    f"Error reading Wincan file: {e}",
+                    level=Qgis.MessageLevel.Critical,
+                )
+                return
             self.dlg = DataBrowserDialog(self.iface, projects, parent_path)
             self.dlg.show()
 

@@ -6,6 +6,7 @@ import sqlite3
 import logging
 
 from wincan2teksi.core.objects import Project, Section, Inspection, Observation
+from wincan2teksi.core.exceptions import InvalidProjectFile
 
 # codes which should not be imported by default
 SkipCode = "BCD"
@@ -42,7 +43,11 @@ def read_data(file_path: str) -> dict[str, Project]:
     conn = sqlite3.connect(file_path)
     cursor = conn.cursor()
 
-    project_data = __read_table(cursor, "PROJECT", "PRJ_Deleted IS NULL")
+    try:
+        project_data = __read_table(cursor, "PROJECT", "PRJ_Deleted IS NULL")
+    except sqlite3.OperationalError as e:
+        raise InvalidProjectFile(f"Invalid project file: {file_path}") from e
+
     projects = [Project.from_dict(data) for data in project_data]
 
     for project in projects:
