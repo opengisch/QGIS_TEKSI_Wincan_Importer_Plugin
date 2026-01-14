@@ -403,11 +403,25 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     if always_skip_invalid_codes:
                                         observation.import_ = False
                                         continue
+                                    message = ""
+                                    if single_damage_class is None:
+                                        message = self.tr(
+                                            "Invalid damage level: '{level}'".format(
+                                                level=observation.rate
+                                            )
+                                        )
+                                    if channel_damage_code is None:
+                                        message += self.tr(
+                                            "Invalid damage code: '{code}'".format(
+                                                code=observation.code
+                                            )
+                                        )
                                     reply = QMessageBox.question(
                                         self,
                                         self.tr("Invalid damage data"),
                                         self.tr(
-                                            "Inspection {i} from manhole {c1} to {c2} has invalid damage code or level. "
+                                            "Inspection {i} from manhole {c1} to {c2} has invalid damage code or level.\n"
+                                            f"{message}\n"
                                             "Skip this inspection? Do you want to continue?".format(
                                                 i=section.counter,
                                                 c1=section.from_node,
@@ -419,11 +433,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     if reply == QMessageBox.No:
                                         self.hide_progress()
                                         return
-                                    elif reply == QMessageBox.Yes:
-                                        observation.import_ = False
                                     elif reply == QMessageBox.YesToAll:
                                         always_skip_invalid_codes = True
-                                        observation.import_ = False
                                     continue
 
                                 df = QgsFeature()
