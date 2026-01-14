@@ -238,12 +238,14 @@ class SectionWidget(QWidget, Ui_SectionWidget):
     @pyqtSlot()
     def on_checkAllButton_clicked(self):
         for r in range(0, self.sectionListWidget.count()):
-            self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Checked)
+            if not self.sectionListWidget.item(r).isHidden():
+                self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Checked)
 
     @pyqtSlot()
     def on_uncheckAllButton_clicked(self):
         for r in range(0, self.sectionListWidget.count()):
-            self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Unchecked)
+            if not self.sectionListWidget.item(r).isHidden():
+                self.sectionListWidget.item(r).setCheckState(Qt.CheckState.Unchecked)
 
 
 """

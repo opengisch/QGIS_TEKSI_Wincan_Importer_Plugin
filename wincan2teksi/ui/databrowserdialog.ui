@@ -152,6 +152,9 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="useLink" stdset="0">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>

@@ -67,6 +67,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.data_path_line_edit.setText(data_path)
 
         self.meta_file_widget.setDefaultRoot(data_path)
+        self.meta_file_widget.setReadOnly(True)
+
         self.pdf_path_widget.setDefaultRoot(data_path)
 
         if data.meta_file:
