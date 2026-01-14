@@ -219,6 +219,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         for p_id in self.projects.keys():
             previous_section_imported = True
             for s_id, section in self.projects[p_id].sections.items():
+                QCoreApplication.processEvents()
                 if self.cancel:
                     self.hide_progress()
                     return
