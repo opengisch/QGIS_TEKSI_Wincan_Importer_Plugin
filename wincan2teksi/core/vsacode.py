@@ -28,6 +28,10 @@ from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest, QgsApplication,
 from wincan2teksi.core.settings import Settings
 from wincan2teksi.core.exceptions import W2TLayerNotFound
 
+CODE_PREMATCH = {
+    "BAG": "BAGA",
+}
+
 
 def damage_code_to_vl(code: str) -> str:
     """
@@ -42,6 +46,7 @@ def damage_code_to_vl(code: str) -> str:
             f"Damage channel layer with ID {layer_id} not found in the current QGIS project."
         )
     if layer is not None:
+        code = CODE_PREMATCH.get(code, code)
         request_text = "\"value_en\" = '{}'".format(code)
         request = QgsFeatureRequest().setFilterExpression(request_text)
         feature = next(layer.getFeatures(request), QgsFeature())
