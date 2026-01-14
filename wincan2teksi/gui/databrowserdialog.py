@@ -69,10 +69,12 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         self.meta_file_widget.setDefaultRoot(data_path)
         self.meta_file_widget.setReadOnly(True)
 
-        self.pdf_path_widget.setDefaultRoot(data_path)
-
         if data.meta_file:
             self.meta_file_widget.setFilePath(data.meta_file)
+
+        self.pdf_path_widget.setDefaultRoot(data_path)
+        if data.pdf_file:
+            self.pdf_path_widget.setFilePath(data.pdf_file)
 
         self.cannotImportArea.hide()
         self.progressBar.setTextVisible(True)

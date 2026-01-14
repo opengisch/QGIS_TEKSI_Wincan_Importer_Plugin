@@ -16,6 +16,7 @@ class WinCanData:
     def __init__(self):
         self.file = None
         self.meta_file = None
+        self.pdf_file = None
         self.projects = {}
 
 
@@ -32,15 +33,17 @@ def __read_table(cursor: sqlite3.Cursor, table_name: str, where_clause: str = No
     return [dict(zip(columns, row)) for row in rows]
 
 
-def read_data(file_path: str) -> WinCanData:
+def read_data(file: str) -> WinCanData:
     """Reads data from a Wincan SQLite database file and returns a dictionary of projects."""
-    if not Path(file_path).exists():
-        raise FileNotFoundError(f"File {file_path} does not exist.")
+    if not Path(file).exists():
+        raise FileNotFoundError(f"File {file} does not exist.")
 
     data = WinCanData()
-    data.file = file_path
+    data.file = file
 
-    meta_path = Path(file_path).with_name(Path(file_path).stem + "_meta" + Path(file_path).suffix)
+    file_path = Path(file)
+
+    meta_path = file_path.with_name(file_path.stem + "_meta" + file_path.suffix)
     operators = {}
     if not meta_path.exists():
         logger.warning(f"Meta file {meta_path} does not exist.")
@@ -53,6 +56,12 @@ def read_data(file_path: str) -> WinCanData:
 
     conn = sqlite3.connect(file_path)
     cursor = conn.cursor()
+
+    pdf_path = file_path.parent.parent / "Misc" / "Docu" / (file_path.stem + ".pdf")
+    if not pdf_path.exists():
+        logger.warning(f"PDF file {pdf_path} does not exist.")
+    else:
+        data.pdf_file = str(pdf_path)
 
     try:
         project_data = __read_table(cursor, "PROJECT", "PRJ_Deleted IS NULL")

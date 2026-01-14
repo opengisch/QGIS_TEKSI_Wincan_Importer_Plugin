@@ -147,7 +147,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2" colspan="3">
+      <item row="2" column="2" colspan="2">
        <widget class="QgsFileWidget" name="meta_file_widget" native="true">
         <property name="enabled">
          <bool>true</bool>
