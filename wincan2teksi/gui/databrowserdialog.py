@@ -414,14 +414,15 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 c2=section.to_node,
                                             )
                                         ),
-                                        QMessageBox.Yes | QMessageBox.Always | QMessageBox.No,
+                                        QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No,
                                     )
                                     if reply == QMessageBox.No:
                                         self.hide_progress()
                                         return
                                     elif reply == QMessageBox.Yes:
                                         observation.import_ = False
-                                    elif reply == QMessageBox.Always:
+                                    elif reply == QMessageBox.YesToAll:
+                                        always_skip_invalid_codes = True
                                         observation.import_ = False
                                     continue
 
