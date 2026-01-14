@@ -3,19 +3,10 @@
 # ...existing code...
 from pathlib import Path
 import sqlite3
-import logging
 
 from wincan2teksi.core.objects import Project, Section, Inspection, Observation
 from wincan2teksi.core.exceptions import InvalidProjectFile
-
-DEBUG = True
-
-if DEBUG:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger(__name__)
+from wincan2teksi.core.utils import logger
 
 # codes which should not be imported by default
 SkipCode = "BCD"

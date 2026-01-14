@@ -72,7 +72,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         if data.meta_file:
             self.meta_file_widget.setFilePath(data.meta_file)
 
-        self.cannotImportLabel.hide()
+        self.cannotImportArea.hide()
         self.progressBar.setTextVisible(True)
         self.progressBar.hide()
         self.cancelButton.hide()
@@ -158,7 +158,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                     if feature.isValid():
                         section.teksi_channel_id_1 = feature.attribute("obj_id")
                 except W2TLayerNotFound as e:
-                    self.cannotImportLabel.show()
+                    self.cannotImportArea.show()
                     self.cannotImportLabel.setText(
                         self.tr("The channel layer is missing in the project: {error}").format(
                             error=str(e)
@@ -177,7 +177,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        self.cannotImportLabel.hide()
+        self.cannotImportArea.hide()
 
         always_skip_invalid_codes = False
 
@@ -204,7 +204,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
         join_layer_id = self.settings.join_maintence_wastewaterstructure_layer.value()
         join_layer = QgsProject.instance().mapLayer(join_layer_id)
         if join_layer is None:
-            self.cannotImportLabel.show()
+            self.cannotImportArea.show()
             self.cannotImportLabel.setText(
                 self.tr("The join layer '{layer_id}' is missing in the project.")
             )
@@ -243,7 +243,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     break
                                 f = section_at_id(fid)
                                 if f.isValid() is False:
-                                    self.cannotImportLabel.show()
+                                    self.cannotImportArea.show()
                                     self.cannotImportLabel.setText(
                                         self.tr(
                                             "Inspection {i} from manhole {c1} to {c2}"
@@ -260,7 +260,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 reach_features.append(QgsFeature(f))
 
                             if len(reach_features) == 0:
-                                self.cannotImportLabel.show()
+                                self.cannotImportArea.show()
                                 self.cannotImportLabel.setText(
                                     self.tr(
                                         "Inspection {i} from manhole {c1} to {c2}"
@@ -313,7 +313,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             # in case several sections in inspection data correspond to a single section in qgep data
                             # substract length from previous sections in inspection data
                             if not previous_section_imported:
-                                self.cannotImportLabel.show()
+                                self.cannotImportArea.show()
                                 self.cannotImportLabel.setText(
                                     self.tr(
                                         "Inspection {i} from manhole {c1} to {c2}"
@@ -379,7 +379,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                             ):  # add 50cm tolerance
                                                 break
                                             else:
-                                                self.cannotImportLabel.show()
+                                                self.cannotImportArea.show()
                                                 self.cannotImportLabel.setText(
                                                     self.tr(
                                                         "Inspection {i} from manhole {c1} to {c2}"
@@ -398,6 +398,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 # create maintenance/examination event
                                 single_damage_class = damage_level_to_vl(observation.rate)
                                 channel_damage_code = damage_code_to_vl(observation.code)
+                                if channel_damage_code is not None:
+                                    channel_damage_code = int(channel_damage_code)
 
                                 if single_damage_class is None or channel_damage_code is None:
                                     if always_skip_invalid_codes:
@@ -422,7 +424,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         self.tr(
                                             "Inspection {i} from manhole {c1} to {c2} has invalid damage code or level.\n"
                                             f"{message}\n"
-                                            "Skip this inspection? Do you want to continue?".format(
+                                            "Insert without value?".format(
                                                 i=section.counter,
                                                 c1=section.from_node,
                                                 c2=section.to_node,
@@ -435,7 +437,10 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                         return
                                     elif reply == QMessageBox.YesToAll:
                                         always_skip_invalid_codes = True
-                                    continue
+
+                                    if single_damage_class is None:
+                                        # set to unknown
+                                        single_damage_class = 4561
 
                                 df = QgsFeature()
                                 init_fields = damage_layer.fields()
@@ -447,7 +452,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 df["damage_type"] = "channel"
                                 df["comments"] = observation.text
                                 df["single_damage_class"] = single_damage_class
-                                df["channel_damage_code"] = int(channel_damage_code)
+                                df["channel_damage_code"] = channel_damage_code
                                 df["distance"] = distance
                                 df["video_counter"] = observation.mpeg_position
                                 # media files
@@ -528,15 +533,16 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 file_layer.fields().names(), of.attributes()
                                             ):
                                                 _fields += f"{name}: {value}\n"
-                                            logger.error(
-                                                f"error adding feature to file layer (fid: {of['obj_id']}): error. "
-                                                f"{_fields}"
+                                            message = (
+                                                self.tr(
+                                                    f"error adding feature to file layer (fid: {of['obj_id']}): error. "
+                                                )
+                                                + f"{_fields}"
                                             )
+                                            logger.error(message)
                                             self.hide_progress()
-                                            self.cannotImportLabel.show()
-                                            self.cannotImportLabel.setText(
-                                                self.tr("Error adding video to layer.")
-                                            )
+                                            self.cannotImportArea.show()
+                                            self.cannotImportLabel.setText(message)
                                             return
                                     logger.debug(
                                         f"no video found for maintenance event (fid: {maintenance['obj_id']})"
@@ -556,15 +562,15 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                     maintenance_layer.fields().names(), maintenance.attributes()
                                 ):
                                     _fields += f"{name}: {value}\n"
-                                logger.error(
-                                    f"error adding feature to maintenance layer (fid: {maintenance['obj_id']}): error. "
-                                    f"{_fields}"
+                                message = (
+                                    self.tr(
+                                        f"error adding feature to maintenance layer (fid: {maintenance['obj_id']}): error. "
+                                    )
+                                    + f"{_fields}"
                                 )
                                 self.hide_progress()
-                                self.cannotImportLabel.show()
-                                self.cannotImportLabel.setText(
-                                    self.tr("Error adding maintenance event to layer.")
-                                )
+                                self.cannotImportArea.show()
+                                self.cannotImportLabel.setText(message)
                                 return
 
                             # set fkey maintenance event id to all damages
@@ -574,11 +580,29 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             # write damages
                             for k, damage in enumerate(damages):
                                 ok = damage_layer.addFeature(damage)
-                                logger.debug(
-                                    "adding feature to damage layer (fid: {}): {}".format(
-                                        damage["obj_id"], "ok" if ok else "error"
+                                if ok:
+                                    logger.debug(
+                                        "adding feature to damage layer (fid: {}): {}".format(
+                                            damage["obj_id"], "ok" if ok else "error"
+                                        )
                                     )
-                                )
+                                else:
+                                    _fields = ""
+                                    for name, value in zip(
+                                        damage_layer.fields().names(), damage.attributes()
+                                    ):
+                                        _fields += f"{name}: {value}\n"
+                                    message = (
+                                        self.tr(
+                                            f"error adding feature to damage layer (fid: {damage['obj_id']}): error. "
+                                        )
+                                        + f"{_fields}"
+                                    )
+                                    logger.error(message)
+                                    self.hide_progress()
+                                    self.cannotImportArea.show()
+                                    self.cannotImportLabel.setText(message)
+                                    return
 
                                 # add media files to od_file with reference to damage
                                 for mf in media[k]:
@@ -620,15 +644,16 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                             file_layer.fields().names(), of.attributes()
                                         ):
                                             _fields += f"{name}: {value}\n"
-                                        logger.error(
-                                            f"error adding media to file layer (fid: {of['obj_id']}): error. "
-                                            f"{_fields}"
+                                        message = (
+                                            self.tr(
+                                                f"error adding media to file layer (fid: {of['obj_id']}): error. "
+                                            )
+                                            + f"{_fields}"
                                         )
+                                        logger.error(message)
                                         self.hide_progress()
-                                        self.cannotImportLabel.show()
-                                        self.cannotImportLabel.setText(
-                                            self.tr("Error adding media to file layer.")
-                                        )
+                                        self.cannotImportArea.show()
+                                        self.cannotImportLabel.setText(message)
                                         return
 
                             # write in relation table (wastewater structure - maintenance events)
@@ -642,11 +667,29 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                             jf["fk_wastewater_structure"] = ws_obj_id
                             jf["fk_maintenance_event"] = maintenance["obj_id"]
                             ok = join_layer.addFeature(jf)
-                            logger.debug(
-                                "adding feature to join layer (fid: {}): {}".format(
-                                    jf["obj_id"], "ok" if ok else "error"
+                            if ok:
+                                logger.debug(
+                                    "adding feature to join layer (fid: {}): ok".format(
+                                        jf["obj_id"]
+                                    )
                                 )
-                            )
+                            else:
+                                _fields = ""
+                                for name, value in zip(
+                                    join_layer.fields().names(), jf.attributes()
+                                ):
+                                    _fields += f"{name}: {value}\n"
+                                message = (
+                                    self.tr(
+                                        f"error adding feature to join layer (fid: {jf['obj_id']}): error. "
+                                    )
+                                    + f"{_fields}"
+                                )
+                                logger.error(message)
+                                self.hide_progress()
+                                self.cannotImportArea.show()
+                                self.cannotImportLabel.setText(message)
+                                return
 
                             # get current reach
                             rf = QgsFeature()
