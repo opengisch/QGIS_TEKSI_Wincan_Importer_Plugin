@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/plugins/wincan2teksi">
-    <file>icons/wincan_logo.png</file>
-    <file>icons/magnifier13.svg</file>
-  </qresource>
-</RCC>
