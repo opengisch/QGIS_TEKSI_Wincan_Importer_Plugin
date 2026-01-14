@@ -491,6 +491,9 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                         for ws_obj_id, elements in features.items():
                             QCoreApplication.processEvents()
                             if self.cancel:
+                                self.progressBar.hide()
+                                self.cancelButton.hide()
+                                self.importButton.show()
                                 break
 
                             maintenance = elements["maintenance"]
@@ -719,6 +722,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             i += 1
                             self.progressBar.setValue(i)
+                            self.processEvents()
 
         self.progressBar.hide()
         self.cancelButton.hide()
