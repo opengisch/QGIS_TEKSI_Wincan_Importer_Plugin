@@ -110,7 +110,7 @@ class Wincan2Teksi(QObject):
             parent_path = os.path.abspath(os.path.join(absolute_path, os.pardir))
             self.settings.db3_path.setValue(absolute_path)
             try:
-                projects = read_data(file_path)
+                data = read_data(file_path)
             except Exception as e:
                 self.iface.messageBar().pushMessage(
                     "Wincan 2 TEKSI",
@@ -118,7 +118,7 @@ class Wincan2Teksi(QObject):
                     level=Qgis.MessageLevel.Critical,
                 )
                 return
-            self.dlg = DataBrowserDialog(self.iface, projects, parent_path)
+            self.dlg = DataBrowserDialog(self.iface, data, parent_path)
             self.dlg.show()
 
     def show_settings(self):

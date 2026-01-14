@@ -29,7 +29,7 @@ import re
 import os
 
 from qgis.PyQt.QtCore import pyqtSlot, QCoreApplication
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog, QMessageBox
 from qgis.PyQt.uic import loadUiType
 
 from qgis.core import QgsProject, QgsFeature, QgsFeatureRequest
@@ -45,7 +45,7 @@ from wincan2teksi.core.vsacode import (
     structure_condition_2_damage_level,
 )
 from wincan2teksi.core.layer_edit import edit
-from wincan2teksi.core.objects import Project
+from wincan2teksi.core.read_data import WinCanData
 from wincan2teksi.core.utils import info, logger
 
 Ui_DataBrowserDialog, _ = loadUiType(
@@ -54,19 +54,23 @@ Ui_DataBrowserDialog, _ = loadUiType(
 
 
 class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
-    def __init__(self, iface: QgisInterface, projects: list[Project], data_path=""):
+    def __init__(self, iface: QgisInterface, data: WinCanData, data_path=""):
         print(os.path.join(os.path.dirname(__file__), "..", "ui", "databrowserdialog.ui"))
         QDialog.__init__(self)
         self.setupUi(self)
         self.settings = Settings()
-        self.projects = projects
+        self.projects = data.projects
         self.current_project_id = None
         self.channelNameEdit.setFocus()
         self.cancel = False
 
         self.data_path_line_edit.setText(data_path)
 
+        self.meta_file_widget.setDefaultRoot(data_path)
         self.pdf_path_widget.setDefaultRoot(data_path)
+
+        if data.meta_file:
+            self.meta_file_widget.setFilePath(data.meta_file)
 
         self.cannotImportLabel.hide()
         self.progressBar.setTextVisible(True)
@@ -174,6 +178,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
     @pyqtSlot()
     def on_importButton_clicked(self):
         self.cannotImportLabel.hide()
+
+        always_skip_invalid_codes = False
 
         # init progress bar
         c = 0
@@ -390,6 +396,35 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                                 return
 
                                 # create maintenance/examination event
+                                single_damage_class = damage_level_to_vl(observation.rate)
+                                channel_damage_code = damage_code_to_vl(observation.code)
+
+                                if single_damage_class is None or channel_damage_code is None:
+                                    if always_skip_invalid_codes:
+                                        observation.import_ = False
+                                        continue
+                                    reply = QMessageBox.question(
+                                        self,
+                                        self.tr("Invalid damage data"),
+                                        self.tr(
+                                            "Inspection {i} from manhole {c1} to {c2} has invalid damage code or level. "
+                                            "Skip this inspection? Do you want to continue?".format(
+                                                i=section.counter,
+                                                c1=section.from_node,
+                                                c2=section.to_node,
+                                            )
+                                        ),
+                                        QMessageBox.Yes | QMessageBox.Always | QMessageBox.No,
+                                    )
+                                    if reply == QMessageBox.No:
+                                        self.hide_progress()
+                                        return
+                                    elif reply == QMessageBox.Yes:
+                                        observation.import_ = False
+                                    elif reply == QMessageBox.Always:
+                                        observation.import_ = False
+                                    continue
+
                                 df = QgsFeature()
                                 init_fields = damage_layer.fields()
                                 df.setFields(init_fields)
@@ -399,8 +434,8 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
                                 )
                                 df["damage_type"] = "channel"
                                 df["comments"] = observation.text
-                                df["single_damage_class"] = damage_level_to_vl(observation.rate)
-                                df["channel_damage_code"] = int(damage_code_to_vl(observation.code))
+                                df["single_damage_class"] = single_damage_class
+                                df["channel_damage_code"] = int(channel_damage_code)
                                 df["distance"] = distance
                                 df["video_counter"] = observation.mpeg_position
                                 # media files

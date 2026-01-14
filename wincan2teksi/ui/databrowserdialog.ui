@@ -227,10 +227,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="meta_file_label">
-        <property name="text">
-         <string/>
+      <item row="2" column="2" colspan="3">
+       <widget class="QgsFileWidget" name="meta_file_widget" native="true">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
