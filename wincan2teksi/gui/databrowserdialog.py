@@ -722,7 +722,7 @@ class DataBrowserDialog(QDialog, Ui_DataBrowserDialog):
 
                             i += 1
                             self.progressBar.setValue(i)
-                            self.processEvents()
+                            QCoreApplication.processEvents()
 
         self.progressBar.hide()
         self.cancelButton.hide()
