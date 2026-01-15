@@ -61,5 +61,6 @@ jobs:
       run: |
         VERSION=${{ github.ref_name }}
         qgis-plugin-ci release ${VERSION} \
+          --qgis-token ${{ secrets.QGIS_TOKEN }} \
           --github-token ${{ secrets.GITHUB_TOKEN }} \
           --transifex-token "${{ secrets.TX_TOKEN }}"
