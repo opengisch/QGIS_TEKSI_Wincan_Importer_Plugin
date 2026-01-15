@@ -20,6 +20,6 @@ icon=icons/wincan_logo.png
 
 tags=qgep,teksi,tww,wincan,wastewater,inspection
 
-homepage=https://qgep.github.io/docs/QGIS_TEKSI_Wincan_Vx_Importer_Plugin/index.html
+homepage=https://github.com/opengisch/QGIS_TEKSI_Wincan_Vx_Importer_Plugin
 tracker=https://github.com/opengisch/QGIS_TEKSI_Wincan_Vx_Importer_Plugin/issues
 repository=https://github.com/opengisch/QGIS_TEKSI_Wincan_Vx_Importer_Plugin
